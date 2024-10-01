@@ -11,21 +11,18 @@ str_column="Unnamed: "
 
 #Purge des lignes contenant des informations dans des colonnes inexistantes
 
-for i in range(24,86):
+for i in range(24,87):
     index = 0
     for y in data[str_column+str(i)]:
-        # remove rows 
         if (pd.notna(y)):
             data = data.drop([index])
         index += 1
             
-print(data.columns)
-
-data = data.drop(data["Unnamed: 24"], axis=1)
-
 #Purge des colonnes inexistantes
 
-for i in range(24,86):
-#    data = data.drop(columns=data[str_column+str(i)])
+for i in range(24,87):
+ data = data.drop(columns=[str_column+str(i)])
 
+print(data.columns)
+print(data.shape)
 
