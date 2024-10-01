@@ -45,16 +45,19 @@ def nettoyageUTF8(nomFichier):
 
 def ajoutLongeurDescription(df):
     df['description_length'] = df["description"].str.count(' ')+1
+    return df
 
 def ajoutLongeurTitre(df):
     df['title_length'] = df["title"].str.len()
+    return df
 
 def ajoutLongeurSerie(df):
     df['series_length'] = df["books_in_series"].str.count(',')+1
+    return df
 
 nomFichierCSV = 'data/books.csv'
 df = nettoyageUTF8(nomFichierCSV)
-ajoutLongeurDescription(df)
-ajoutLongeurTitre(df)
-ajoutLongeurSerie(df)
+df = ajoutLongeurDescription(df)
+df = ajoutLongeurTitre(df)
+df = ajoutLongeurSerie(df)
 
