@@ -62,11 +62,11 @@ booksFormat ={"id":int,
 
 
 print(data.shape)
-(52188, 24)
 
 print(f"\n--- Nettoyage ISBN13    ---\n")
 
 index = 0
+nbr_case_supr = 0
 for cell in data['isbn13']:
 
     if pd.isna(cell):
@@ -76,37 +76,46 @@ for cell in data['isbn13']:
     elif type(cell) == int:
         pass 
 
-    elif (cell.isnumeric()):
+    elif (type(cell) == float or cell.isnumeric()):
         # print(f"\n--- CONVERT {cell} to int")
-        data["isbn13"] = data["isbn13"].replace([cell], int(cell))
-    
+        data.loc[index, 'isbn13'] = int(cell) 
+
     else:
         print(f"\n--- DROPPING {cell} at {index} ---\n")
-        data = data.drop(index)
-    
+        print(data.loc[index, 'isbn13'])
+        data = data.drop(index)    
+        nbr_case_supr+=1
     index+=1
 
 print(f"\n--- Nettoyage ISBN13 OK ---\n")
 
+# (52188, 24)
+# print(data.shape, nbr_case_supr)
+# (52180, 24) 8
+
+
+
 def chercheurAnomalie(data,booksFormat):
     index = 0
     for i in data:
-        # if (i!="isbn13"):
-            for y in data[i]:
-                if (type(y)!=booksFormat[i] and (pd.notna(y))):
+        for y in data[i]:
+            if (type(y)!=booksFormat[i] and (pd.notna(y))):
+                if(type(y)==str and not y.isnumeric()):
                     print(y,type(y),i)
     index+=1
 
-print(data.shape)
+chercheurAnomalie(data,booksFormat)
 
-10:1496102266
-B07CX9MNQL 
-B009NN5RJY
-B00596V3OM
-B003U2RVVQ
-HSN1800000160
-10:1984254994
 
+# B009NN5RJY <class 'str'> isbn13
+# B00596V3OM <class 'str'> isbn13
+# B003U2RVVQ <class 'str'> isbn13
+# HSN1800000160 <class 'str'> isbn13
+# 10:1984254994 <class 'str'> isbn13
+
+# 13:9780615700 <class 'str'> isbn13
+# 10:1496102266 <class 'str'> isbn13
+# B07CX9MNQL <class 'str'> isbn13
 # B009NN5RJY <class 'str'> isbn13
 # B00596V3OM <class 'str'> isbn13
 # B003U2RVVQ <class 'str'> isbn13
