@@ -63,30 +63,30 @@ booksFormat ={"id":int,
 
 # print(data.shape)
 
-def nettoyeurISBN13(data):
-    print(f"\n--- Nettoyage ISBN13    ---\n")
-    for index, cell in data['isbn13'].items():
+# def nettoyeurISBN13(data):
+#     print(f"\n--- Nettoyage ISBN13    ---\n")
+#     for index, cell in data['isbn13'].items():
 
-        if pd.isna(cell):
-            # print(f"\n--- cell {cell} is null")
-            pass
+#         if pd.isna(cell):
+#             # print(f"\n--- cell {cell} is null")
+#             pass
 
-        elif type(cell) == int:
-            pass 
+#         elif type(cell) == int:
+#             pass 
 
-        elif (type(cell) == float or cell.isnumeric()):
-            # print(f"\n--- CONVERT {cell} to int")
-            data.loc[index, 'isbn13'] = int(cell) 
+#         elif (type(cell) == float or cell.isnumeric()):
+#             # print(f"\n--- CONVERT {cell} to int")
+#             data.loc[index, 'isbn13'] = int(cell) 
 
-        else:
-            # print(f"\n--- DROPPING {cell} at {index} ---\n")
-            # print(data.loc[index, 'isbn13'])
-            data = data.drop(index)    
-    print(f"\n--- Nettoyage ISBN13 OK ---\n")
-    return data
+#         else:
+#             # print(f"\n--- DROPPING {cell} at {index} ---\n")
+#             # print(data.loc[index, 'isbn13'])
+#             data = data.drop(index)    
+#     print(f"\n--- Nettoyage ISBN13 OK ---\n")
+#     return data
 
-data = nettoyeurISBN13(data)
-# print(data.shape)
+# data = nettoyeurISBN13(data)
+# # print(data.shape)
 
 
 def nettoyeurAverageRating(data):
@@ -94,11 +94,40 @@ def nettoyeurAverageRating(data):
     #Convertie les virgules en point puis les string en float
     data['average_rating'] = data['average_rating'].replace({',': '.'}, regex=True)
     data['average_rating'] = pd.to_numeric(data['average_rating'],downcast='float')
+    print(f"\n--- Nettoyage Average Rating OK ---\n")
     return data
 
 data = nettoyeurAverageRating(data)
 
+def nettoyeurGlobal(data,booksFormat):
+    print(f"\n--- Nettoyage Global---\n")
+    for i in data:
+        print(f"\n--- Nettoyage {i} ---\n")
+        try:
+            data[i] = data[i].astype(booksFormat[i])
+        except :
+            for index, cell in data[i].items():
+                if pd.isna(cell):
+                    pass
 
+                elif type(cell) == booksFormat[i]:
+                    pass 
+
+                elif ((booksFormat[i] == float or booksFormat[i] == int) and (type(cell) == float or cell.isnumeric())):
+                    if(booksFormat[i]==float):
+                        data.loc[index, i] = float(cell) 
+                    if(booksFormat[i]==int):
+                        data.loc[index, i] = int(cell) 
+
+                else:
+                    data = data.drop(index)    
+        print(f"\n--- Nettoyage {i} OK ---\n")
+    print(f"\n--- Nettoyage Global OK ---\n")
+
+
+    return data
+
+data = nettoyeurGlobal(data,booksFormat)
 
 def chercheurAnomalie(data,booksFormat):
     index = 0
@@ -109,3 +138,6 @@ def chercheurAnomalie(data,booksFormat):
     index+=1
 
 chercheurAnomalie(data,booksFormat)
+
+
+
