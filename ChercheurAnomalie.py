@@ -64,10 +64,8 @@ booksFormat ={"id":int,
 print(data.shape)
 
 print(f"\n--- Nettoyage ISBN13    ---\n")
-
-index = 0
-nbr_case_supr = 0
-for cell in data['isbn13']:
+# index = 0
+for index, cell in data['isbn13'].items():
 
     if pd.isna(cell):
         # print(f"\n--- cell {cell} is null")
@@ -84,14 +82,11 @@ for cell in data['isbn13']:
         print(f"\n--- DROPPING {cell} at {index} ---\n")
         print(data.loc[index, 'isbn13'])
         data = data.drop(index)    
-        nbr_case_supr+=1
-    index+=1
+
+    # index+=1
 
 print(f"\n--- Nettoyage ISBN13 OK ---\n")
 
-# (52188, 24)
-# print(data.shape, nbr_case_supr)
-# (52180, 24) 8
 
 
 
@@ -107,20 +102,9 @@ def chercheurAnomalie(data,booksFormat):
 chercheurAnomalie(data,booksFormat)
 
 
-# B009NN5RJY <class 'str'> isbn13
-# B00596V3OM <class 'str'> isbn13
-# B003U2RVVQ <class 'str'> isbn13
-# HSN1800000160 <class 'str'> isbn13
-# 10:1984254994 <class 'str'> isbn13
+# 10:1984254994
 
-# 13:9780615700 <class 'str'> isbn13
-# 10:1496102266 <class 'str'> isbn13
-# B07CX9MNQL <class 'str'> isbn13
-# B009NN5RJY <class 'str'> isbn13
-# B00596V3OM <class 'str'> isbn13
-# B003U2RVVQ <class 'str'> isbn13
-# HSN1800000160 <class 'str'> isbn13
-# 10:1984254994 <class 'str'> isbn13
+
 
 
 # print(f"\n--- Chercher anomalies    ---\n")
