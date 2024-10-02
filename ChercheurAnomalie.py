@@ -63,31 +63,29 @@ booksFormat ={"id":int,
 
 print(data.shape)
 
-print(f"\n--- Nettoyage ISBN13    ---\n")
-# index = 0
-for index, cell in data['isbn13'].items():
+def nettoyeurISBN13(data):
+    print(f"\n--- Nettoyage ISBN13    ---\n")
+    for index, cell in data['isbn13'].items():
 
-    if pd.isna(cell):
-        # print(f"\n--- cell {cell} is null")
-        pass
+        if pd.isna(cell):
+            # print(f"\n--- cell {cell} is null")
+            pass
 
-    elif type(cell) == int:
-        pass 
+        elif type(cell) == int:
+            pass 
 
-    elif (type(cell) == float or cell.isnumeric()):
-        # print(f"\n--- CONVERT {cell} to int")
-        data.loc[index, 'isbn13'] = int(cell) 
+        elif (type(cell) == float or cell.isnumeric()):
+            # print(f"\n--- CONVERT {cell} to int")
+            data.loc[index, 'isbn13'] = int(cell) 
 
-    else:
-        print(f"\n--- DROPPING {cell} at {index} ---\n")
-        print(data.loc[index, 'isbn13'])
-        data = data.drop(index)    
+        else:
+            print(f"\n--- DROPPING {cell} at {index} ---\n")
+            print(data.loc[index, 'isbn13'])
+            data = data.drop(index)    
+    print(f"\n--- Nettoyage ISBN13 OK ---\n")
+    return data
 
-    # index+=1
-
-print(f"\n--- Nettoyage ISBN13 OK ---\n")
-
-
+data = nettoyeurISBN13(data)
 
 
 def chercheurAnomalie(data,booksFormat):
