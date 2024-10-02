@@ -22,14 +22,20 @@ def extract_year_no_nan(date_str):
     
     return 0
 
+# Appliquer la fonction à la colonne 'date_published' et stocker le résultat dans une colonne temporaire
 data['date_published_formated'] = data['date_published'].apply(extract_year_no_nan)
 
+# Replacer la colonne 'date_published' par la nouvelle colonne formattée
 data['date_published'] = data['date_published_formated']
 
+# Supprimer colonne temporaire
 data = data.drop(columns=['date_published_formated'])
 
+# Afficher les 10 premières valeurs de la colonne 'date_published'
 print(data[['date_published']].head(10))
 
+# Sauvegarder les données dans un nouveau fichier CSV
 data.to_csv('books_forma_dates.csv', index=False)
 
+# Afficher les 5 premières lignes du nouveau fichier CSV
 print(data.head())
