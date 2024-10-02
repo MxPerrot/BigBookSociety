@@ -97,14 +97,14 @@ def nettoyeurAverageRating(data):
     print(f"\n--- Nettoyage Average Rating OK ---\n")
     return data
 
-data = nettoyeurAverageRating(data)
+# data = nettoyeurAverageRating(data)
 
 def nettoyeurGlobal(data,booksFormat):
     print(f"\n--- Nettoyage Global---\n")
     for i in data:
         print(f"\n--- Nettoyage {i} ---\n")
         try:
-            data[i] = data[i].astype(booksFormat[i])
+            data[i] = pd.to_numeric(data[i], booksFormat[i]).fillna(pd.nan)
         except :
             for index, cell in data[i].items():
                 if pd.isna(cell):
@@ -140,4 +140,38 @@ def chercheurAnomalie(data,booksFormat):
 chercheurAnomalie(data,booksFormat)
 
 
+# import time
+
+# nbr_anomalie_1 = 0
+# for index, cell in data["number_of_pages"].items():
+#     if pd.isna(cell):
+#         pass
+
+#     elif type(cell) == booksFormat["number_of_pages"]:
+#         pass 
+
+#     elif ((booksFormat["number_of_pages"] == float or booksFormat["number_of_pages"] == int) and (type(cell) == float or cell.isnumeric())):
+#         if(booksFormat["number_of_pages"]==float):
+#             data.loc[index, "number_of_pages"] = float(cell) 
+#             print("a")
+#         if(booksFormat["number_of_pages"]==int):
+#             data.loc[index, "number_of_pages"] = int(cell) 
+#             print(int(cell))
+#             nbr_anomalie_1+=1
+
+#     else:
+#         data = data.drop(index)    
+#         print("c")
+
+# time.sleep(10)
+
+# print(data["number_of_pages"])
+
+
+# index = 0
+# nbr_anomalie = 0
+# for y in data["number_of_pages"]:
+#     if (type(y)!=booksFormat["number_of_pages"] and (pd.notna(y))):
+#         nbr_anomalie+=1
+#     index+=1
 
