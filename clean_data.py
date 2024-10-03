@@ -259,11 +259,15 @@ def main():
     books_data = addDescriptionLength(books_data)
     books_data = addTitleLength(books_data)
     books_data = addSeriesLength(books_data)
+    books_data.to_csv('./data/Cleaned_books.csv', index=False)
+
 
     authors_data = UTF8Cleaner(AUTHORS_CSV)
     authors_data = converterStrFloat(authors_data,"book_average_rating")
     authors_data = converterStrFloat(authors_data,"author_average_rating")
     authors_data = columnTypeFormater(authors_data,COLUMNS_TYPES_AUTHORS)
+    authors_data.to_csv('./data/Cleaned_authors.csv', index=False)
+
 
 
 if __name__ == "__main__":
