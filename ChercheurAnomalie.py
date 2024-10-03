@@ -4,12 +4,9 @@ import numpy as np
 
 data = pd.read_csv("data/books.csv")
 
-#cols = ["Unnamed: " + str(i) for i in range(24,86)]
 str_column="Unnamed: "
 
-#print(data.shape)
-
-#Purge des lignes contenant des informations dans des colonnes inexistantes
+print(data.shape)
 
 print(f"\n--- Purge ligne vide     ---\n")
 
@@ -20,8 +17,6 @@ for i in range(24,87):
             data = data.drop([index])
         index += 1
 print(f"\n--- Purge ligne vide OK ---\n")
-            
-#Purge des colonnes inexistantes
 
 print(f"\n--- Purge colonnes unnamed    ---\n")
 
@@ -30,7 +25,6 @@ for i in range(24,87):
 
 print(f"\n--- Purge colonnes unnamed OK ---\n")
 
-#Détecter Anomalie colonne
 
 
 
@@ -57,8 +51,28 @@ booksFormat ={"id":int,
 "characters":str,
 "awards":str,
 "books_in_series":str,
-"description":str,
+"description":str
 }
+
+authorFormat ={"author_average_rating":float,
+"author_gender":str,
+"author_genres":str,
+"author_id":int,
+"author_name":str,
+"author_rating_count":int,
+"author_review_count":int,
+"birthplace":str,
+"book_average_rating":float,
+"book_id":int,
+"book_title":str,
+"genre_1":str,
+"genre_2":str,
+"num_ratings":int,
+"num_reviews":int,
+"pages":int,
+"publish_date":str
+}
+
 
 
 # print(data.shape)
@@ -97,50 +111,52 @@ def nettoyeurAverageRating(data):
     print(f"\n--- Nettoyage Average Rating OK ---\n")
     return data
 
-# data = nettoyeurAverageRating(data)
+data = nettoyeurAverageRating(data)
 
-def nettoyeurGlobal(data,booksFormat):
+def nettoyeurGlobal(data,Format):
     print(f"\n--- Nettoyage Global---\n")
     for i in data:
         print(f"\n--- Nettoyage {i} ---\n")
         try:
-            data[i] = pd.to_numeric(data[i], booksFormat[i]).fillna(pd.nan)
+            if(Format[i]!=str):
+                data[i] = data[i].fillna(-1).astype(Format[i])
+            data[i] = pd.to_numeric(data[i], Format[i])
         except :
             for index, cell in data[i].items():
                 if pd.isna(cell):
+
                     pass
 
-                elif type(cell) == booksFormat[i]:
+                elif type(cell) == Format[i]:
                     pass 
 
-                elif ((booksFormat[i] == float or booksFormat[i] == int) and (type(cell) == float or cell.isnumeric())):
-                    if(booksFormat[i]==float):
+                elif ((Format[i] == float or Format[i] == int) and (type(cell) == int or type(cell) == float or cell.isnumeric())):
+                    if(Format[i]==float):
                         data.loc[index, i] = float(cell) 
-                    if(booksFormat[i]==int):
+                    if(Format[i]==int):
                         data.loc[index, i] = int(cell) 
 
                 else:
                     data = data.drop(index)    
         print(f"\n--- Nettoyage {i} OK ---\n")
     print(f"\n--- Nettoyage Global OK ---\n")
-
-
     return data
 
 data = nettoyeurGlobal(data,booksFormat)
 
-def chercheurAnomalie(data,booksFormat):
+def chercheurAnomalie(data,Format):
     index = 0
     for i in data:
         for y in data[i]:
-            if (type(y)!=booksFormat[i] and (pd.notna(y))):
+            if (type(y)!=Format[i] and (pd.notna(y))):
                 print(y,type(y),i)
     index+=1
 
-chercheurAnomalie(data,booksFormat)
+# chercheurAnomalie(data,booksFormat)
+print(data.shape)
 
-
-# import time
+# 52199
+# 52180
 
 # nbr_anomalie_1 = 0
 # for index, cell in data["number_of_pages"].items():
