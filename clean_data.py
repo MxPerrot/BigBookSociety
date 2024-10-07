@@ -99,35 +99,13 @@ def UTF8Cleaner(fileName):
     """
     Remplace les caratères mal encodés d'un fichier CSV et les renvoie sous forme de dataframe
     """
-    correspondanceUTF8 = {
-        'Ã©': 'é',
-        'Ã¨': 'è',
-        'Ã¯': 'ï',
-        'Ã´': 'ô',
-        'Ã§': 'ç',
-        'Ãª': 'ê',
-        'Ã¹' : 'ù',
-        'Ã¦' : 'æ',
-        'Å'  : 'œ',
-        'Ã«' : 'ë',
-        'Ã¼' : 'ü',
-        'Ã¢' : 'â',
-        'â¬' : '€',
-        'Â©' : '©',
-        'Â¤' : '¤',
-        'Ã£' : 'ã',
-        'Å±' : 'ű',
-        'Ãº' : 'ú',
-        'Ã¶' : 'ö',
-        'Ã'  : 'à'
-    }
-
+    
     # Ouvre le document et le met dans une chaine
     with open(fileName, 'r') as file:
         document = file.read()
 
         # Remplace les caractères mal encodés par le caractère original
-        for key,value in correspondanceUTF8.items() :
+        for key,value in UTF8_CORRESPONDANCY.items() :
             #print(key + " -> " + value)
             document = document.replace(key, value)
 
