@@ -219,31 +219,55 @@ def addSeriesLength(df):
     df['series_length'] = df["books_in_series"].str.count(',')+1
     return df
 
+def removeLeadingTrailingSpaces(df,format):
+    """
+    for every column of the dataframe supposed to be a string,
+    apply the strip function to its content
+    
+    df : pandas DataFrame
+    format : type of column dict for the dataframe 
+    """
+
+    for column in df.columns:
+        if format.get(column) == str:
+            df[column] = df[column].str.strip()
+    return df
+
+
+
+
 
 #######################################
 #                MAIN                 #
 #######################################
 
 def main():
+
     """
     Main function
     """
     
+    # Cleaning
     books_data = UTF8Cleaner(BOOKS_CSV)
     books_data = columnDeleter(books_data)
     books_data = converterStrFloat(books_data,"average_rating")
     books_data = columnTypeFormater(books_data,COLUMNS_TYPES_BOOKS)
+    authors_data = removeLeadingTrailingSpaces(books_data,COLUMNS_TYPES_BOOKS)
     books_data = dateCleaner(books_data)
+
+    # Adding rows for additional analysis
     books_data = addDescriptionLength(books_data)
     books_data = addTitleLength(books_data)
     books_data = addSeriesLength(books_data)
     books_data.to_csv('./data/Cleaned_books.csv', index=False)
 
 
+    # Cleaning
     authors_data = UTF8Cleaner(AUTHORS_CSV)
     authors_data = converterStrFloat(authors_data,"book_average_rating")
     authors_data = converterStrFloat(authors_data,"author_average_rating")
     authors_data = columnTypeFormater(authors_data,COLUMNS_TYPES_AUTHORS)
+    authors_data = removeLeadingTrailingSpaces(authors_data,COLUMNS_TYPES_AUTHORS)
     authors_data.to_csv('./data/Cleaned_authors.csv', index=False)
 
 
