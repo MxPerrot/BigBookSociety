@@ -20,7 +20,6 @@ def getGenre(genresWithVotes):
     else:
         return "None"
     
-    
 
 df['genre'] = df.genre_and_votes.apply(getGenre)
 print(df['genre'])
