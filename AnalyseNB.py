@@ -10,8 +10,8 @@ if 'average_rating' in df.columns and 'number_of_pages' in df.columns and 'ratin
 
     plt.figure(figsize=(10, 6))
     
-    sizes = df_filtered['rating_count'] / df_filtered['rating_count'].max() * 200  # Ajuster les tailles pour ne pas être trop gros
-    colors = df_filtered['average_rating']  # Utilisation d'une échelle de couleur basée sur la note moyenne
+    sizes = df_filtered['rating_count'] / df_filtered['rating_count'].max() * 200 
+    colors = df_filtered['average_rating'] 
 
     scatter = plt.scatter(df_filtered['average_rating'], df_filtered['number_of_pages'], 
                           s=sizes, alpha=0.6, linewidth=0.5, c=colors, cmap='coolwarm', edgecolor='black')
