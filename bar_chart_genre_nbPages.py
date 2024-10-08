@@ -1,37 +1,31 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-import re
 
-# Lecture des données
+# Lecture CSV
 data = pd.read_csv('./data/Cleaned_books.csv')
 
-data = data.dropna(subset=['genre_and_votes', 'number_of_pages'])
+# Calcul de la moyenne des pages par genre
+moyennePagesGenre = data.groupby('genre_and_votes')['number_of_pages'].mean().reset_index()
 
-data['genre_and_votes'] = data['genre_and_votes'].apply(lambda x: re.sub(r'\s*\d+\s*', '', x).strip())
+# Trie les genres par moyenne du nombre de pages en ordre décroissant
+moyennePagesGenre = moyennePagesGenre.sort_values(by='number_of_pages', ascending=False)
 
-data = data.assign(genres=data['genre_and_votes'].str.split(',')).explode('genres')
-
-data['genres'] = data['genres'].str.strip()
-
-num_categories = data['genres'].nunique()
-print(f"Number of unique genres: {num_categories}")
-
-avg_pages_per_genre = data.groupby('genres')['number_of_pages'].mean().reset_index()
-
-avg_pages_per_genre = avg_pages_per_genre.sort_values(by='number_of_pages', ascending=False)
-
-
+# On limite l'affichage à 20 genres pour ne pas surcharger le graphique
 num_genres_to_display = 20  
-top_genres = avg_pages_per_genre.head(num_genres_to_display)
+top_genres = moyennePagesGenre.head(num_genres_to_display)
 
+colors = plt.cm.get_cmap('tab20', num_genres_to_display).colors  
 
-# Bar chart
+# Affichage des genres et de leur moyenne de pages dans le terminal
+for index, row in moyennePagesGenre.iterrows():
+    print(f"Genre: {row['genre_and_votes']}, Moyenne de pages: {row['number_of_pages']:.2f}")
+
+# Création du graphique en barres avec les couleurs
 plt.figure(figsize=(12, 6))
-plt.bar(top_genres['genres'], top_genres['number_of_pages'])
+plt.bar(top_genres['genre_and_votes'], top_genres['number_of_pages'], color=colors)
 plt.xlabel('Genre')
-plt.ylabel('Average Number of Pages')
-plt.title('Average Number of Pages by Genre')
+plt.ylabel('Nombre moyen de pages')
+plt.title('Nombre moyen de pages par genre')
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
