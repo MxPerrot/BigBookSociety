@@ -24,7 +24,11 @@ data = definir_genre(data)
 data = data[data['number_of_pages'] > 0]
 
 # Moyenne du nombre de pages par genre
-moyennePagesGenre = data.groupby('genre')['number_of_pages'].mean().reset_index()
+moyennePagesGenre = data.groupby('genre')['number_of_pages'].agg(['mean', 'count', 'std']).reset_index()
+moyennePagesGenre.columns = ['genre', 'mean_pages', 'count', 'std_pages']
+
+# Calcul de l'intervalle de confiance à 95%
+moyennePagesGenre['conf_int'] = 1.96 * (moyennePagesGenre['std_pages'] / np.sqrt(moyennePagesGenre['count']))
 
 # Compter le nombre de livres par genre
 nombreLivresParGenre = data['genre'].value_counts().reset_index()
@@ -46,15 +50,16 @@ colors_nombre_livres = plt.cm.get_cmap('tab20', num_genres_to_display).colors
 # Affichage des résultats dans le terminal
 print("Affichage trié par nombre de livres :")
 for index, row in resultat_par_nombre_livres.iterrows():
-    print(f"Genre: {row['genre']}, Moyenne de pages: {row['number_of_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
+    print(f"Genre: {row['genre']}, Moyenne de pages: {row['mean_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
 
 # Graphique pour le nombre moyen de pages par genre (trié par nombre de livres)
 plt.figure(figsize=(12, 6))
-bars = plt.bar(top_genres_nombre_livres['genre'], top_genres_nombre_livres['number_of_pages'], color=colors_nombre_livres)
+bars = plt.bar(top_genres_nombre_livres['genre'], top_genres_nombre_livres['mean_pages'], 
+                yerr=top_genres_nombre_livres['conf_int'], color=colors_nombre_livres, capsize=5)
 
-# Annotation pour le nombre de livres sur chaque barre
-for bar, nombre in zip(bars, top_genres_nombre_livres['nombre_de_livres']):
-    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), 
+# Annotation pour le nombre de livres sur chaque barre, légèrement au-dessus de l'intervalle de confiance
+for bar, nombre, conf in zip(bars, top_genres_nombre_livres['nombre_de_livres'], top_genres_nombre_livres['conf_int']):
+    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + conf + 0.5, 
              str(nombre), ha='center', va='bottom', fontsize=10)
 
 plt.xlabel('Genre')
@@ -66,7 +71,7 @@ plt.tight_layout()
 plt.show()
 
 # Trier les genres par moyenne du nombre de pages en ordre décroissant
-resultat_par_moyenne_pages = resultat.sort_values(by='number_of_pages', ascending=False)
+resultat_par_moyenne_pages = resultat.sort_values(by='mean_pages', ascending=False)
 
 # Limite l'affichage à 40 genres pour éviter un graphique trop chargé
 top_genres_moyenne_pages = resultat_par_moyenne_pages.head(num_genres_to_display)
@@ -77,15 +82,16 @@ colors_moyenne_pages = plt.cm.get_cmap('tab20', num_genres_to_display).colors
 # Affichage des résultats dans le terminal
 print("\nAffichage trié par moyenne de pages :")
 for index, row in resultat_par_moyenne_pages.iterrows():
-    print(f"Genre: {row['genre']}, Moyenne de pages: {row['number_of_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
+    print(f"Genre: {row['genre']}, Moyenne de pages: {row['mean_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
 
 # Graphique pour le nombre moyen de pages par genre (trié par moyenne de pages)
 plt.figure(figsize=(12, 6))
-bars_moyenne = plt.bar(top_genres_moyenne_pages['genre'], top_genres_moyenne_pages['number_of_pages'], color=colors_moyenne_pages)
+bars_moyenne = plt.bar(top_genres_moyenne_pages['genre'], top_genres_moyenne_pages['mean_pages'], 
+                        yerr=top_genres_moyenne_pages['conf_int'], color=colors_moyenne_pages, capsize=5)
 
-# Annotation pour le nombre de livres sur chaque barre
-for bar, nombre in zip(bars_moyenne, top_genres_moyenne_pages['nombre_de_livres']):
-    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), 
+# Annotation pour le nombre de livres sur chaque barre, légèrement au-dessus de l'intervalle de confiance
+for bar, nombre, conf in zip(bars_moyenne, top_genres_moyenne_pages['nombre_de_livres'], top_genres_moyenne_pages['conf_int']):
+    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + conf + 0.5, 
              str(nombre), ha='center', va='bottom', fontsize=10)
 
 plt.xlabel('Genre')
