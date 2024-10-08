@@ -68,7 +68,7 @@ for bar, nombre, conf in zip(bars, top_genres_nombre_livres['nombre_de_livres'],
 
 plt.xlabel('Genre')
 plt.ylabel('Average Number of Pages')
-plt.title('Average Number of Pages per Genre (Sorted by Number of Books)')
+plt.title('Average Number of Pages per Genre (Sorted by Number of Books and Top 50)')
 plt.xticks(rotation=45, ha="right", fontsize=10)
 plt.subplots_adjust(bottom=0.3)
 plt.tight_layout()
@@ -104,7 +104,7 @@ for bar, nombre, conf in zip(bars_moyenne, top_genres_moyenne_pages['nombre_de_l
 
 plt.xlabel('Genre')
 plt.ylabel('Average Number of Pages')
-plt.title('Average Number of Pages per Genre (Sorted by Average Pages)')
+plt.title('Average Number of Pages per Genre (Sorted by Average Pages and Top 50)')
 plt.xticks(rotation=45, ha="right", fontsize=10)
 plt.subplots_adjust(bottom=0.3)
 plt.tight_layout()
