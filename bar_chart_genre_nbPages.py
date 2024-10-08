@@ -59,8 +59,12 @@ bars = plt.bar(top_genres_nombre_livres['genre'], top_genres_nombre_livres['mean
 
 # Annotation pour le nombre de livres sur chaque barre, légèrement au-dessus de l'intervalle de confiance
 for bar, nombre, conf in zip(bars, top_genres_nombre_livres['nombre_de_livres'], top_genres_nombre_livres['conf_int']):
-    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + conf + 0.5, 
-             str(nombre), ha='center', va='bottom', fontsize=10)
+    pos_x = bar.get_x() + bar.get_width() / 2
+    pos_y = bar.get_height() + conf + 0.5  # Positionne au-dessus de l'intervalle de confiance
+    
+    # Vérifiez si pos_y et pos_x sont des valeurs finies
+    if np.isfinite(pos_y) and np.isfinite(pos_x):
+        plt.text(pos_x, pos_y, str(nombre), ha='center', va='bottom', fontsize=10)
 
 plt.xlabel('Genre')
 plt.ylabel('Nombre moyen de pages')
@@ -91,8 +95,12 @@ bars_moyenne = plt.bar(top_genres_moyenne_pages['genre'], top_genres_moyenne_pag
 
 # Annotation pour le nombre de livres sur chaque barre, légèrement au-dessus de l'intervalle de confiance
 for bar, nombre, conf in zip(bars_moyenne, top_genres_moyenne_pages['nombre_de_livres'], top_genres_moyenne_pages['conf_int']):
-    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + conf + 0.5, 
-             str(nombre), ha='center', va='bottom', fontsize=10)
+    pos_x = bar.get_x() + bar.get_width() / 2
+    pos_y = bar.get_height() + conf + 0.5  # Positionne au-dessus de l'intervalle de confiance
+
+    # Vérifiez si pos_y et pos_x sont des valeurs finies
+    if np.isfinite(pos_y) and np.isfinite(pos_x):
+        plt.text(pos_x, pos_y, str(nombre), ha='center', va='bottom', fontsize=10)
 
 plt.xlabel('Genre')
 plt.ylabel('Nombre moyen de pages')
