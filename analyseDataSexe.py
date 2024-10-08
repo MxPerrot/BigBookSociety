@@ -132,45 +132,22 @@ genres = {
     ]
 }
 
+auteurDejaVu = []
 
-
-Male=0
-Female=0
-Other=0
 for index, row in data.iterrows():
-    if row['author_gender']=='male':
-        Male+=1
-    elif(row['author_gender']=='female'): 
-        Female+=1
-    else:
-        Other+=1
-    for i in row['author_genres'].split(','):
-        if(i not in dico):
-            dico[i] = [['Male',0],['Female',0]]
-        if row['author_gender']=='male':
-            dico[i][0][1] = dico[i][0][1]+1
-        else:
-            dico[i][1][1] = dico[i][1][1]+1
+    if(row['author_name'] not in auteurDejaVu):
+        for i in row['author_genres'].split(','):
+            if(i not in dico):
+                dico[i] = [['Male',0],['Female',0]]
+            if row['author_gender']=='male':
+                dico[i][0][1] = dico[i][0][1]+1
+            else:
+                dico[i][1][1] = dico[i][1][1]+1
+            auteurDejaVu.append(row['author_name'])
 
 
 # for i in listeAsupr:
 #     dico.pop(i)
-
-a=0
-for i in dico:
-    if ((dico[i][0][1]+dico[i][1][1])>=10):
-        for y in genres:
-            if i in genres[y]:
-                a=+1
-        if(a>1):
-            print(i)
-        a=0
-
-lengenre=0
-for i in genres:
-    lengenre=lengenre+len(genres[i])
-
-print(lengenre, len(dico))
 
 for i in genres:
     listeTot = [['Male',0],['Female',0]]
