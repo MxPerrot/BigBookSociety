@@ -30,38 +30,6 @@ from libs.biplot import biplot
 
 CSV_FILE = 'data/Cleaned_books.csv'
 
-COLUMNS_TYPES_BOOKS = {
-    "id":int,
-    "title":str,
-    "series":str,
-    "author":str,
-    "rating_count":int,
-    "review_count":int,
-    "average_rating":float,
-    "five_star_ratings":int,
-    "four_star_ratings":int,
-    "three_star_ratings":int,
-    "two_star_ratings":int,
-    "one_star_ratings":int,
-    "number_of_pages":int,
-    "date_published":str,
-    "publisher":str,
-    "original_title":str,
-    "genre_and_votes":str,
-    "isbn":str,
-    "isbn13":int,
-    "settings":str,
-    "characters":str,
-    "awards":str,
-    "books_in_series":str,
-    "description":str,
-}
-
-#######################################
-#              FUNCTIONS              #
-#######################################
-
-
 
 #######################################
 #                 MAIN                #
@@ -81,7 +49,7 @@ def main():
 
     df = df[df["number_of_pages"] > 0] # Remove books with 0 pages
 
-    # Standardize the dat
+    # Standardize the data
     temp = df.sub(df.mean())
     df_scaled = temp.div(df.std())
 
