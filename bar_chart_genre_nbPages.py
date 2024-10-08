@@ -19,24 +19,32 @@ data = pd.read_csv('./data/Cleaned_books.csv')
 # Définir le genre pour chaque livre
 data = definir_genre(data)
 
+# Enlever livres avec nb pages inférieur à zéro
+data = data[data['number_of_pages'] > 0]
+
 # Moyenne du nombre de pages par genre
 moyennePagesGenre = data.groupby('genre')['number_of_pages'].mean().reset_index()
 
-# Trier ordre décroissant genres en fonction de la moyenne du nb de pages
-moyennePagesGenre = moyennePagesGenre.sort_values(by='number_of_pages', ascending=False)
+# Compter le nombre de livres par genre
+nombreLivresParGenre = data['genre'].value_counts().reset_index()
+nombreLivresParGenre.columns = ['genre', 'nombre_de_livres']
 
-# Limite l'affichage à 40 genres pour éviter d'avoir un graphique trop chargé
-num_genres_to_display = 40  
-top_genres = moyennePagesGenre.head(num_genres_to_display)
+# Fusionner les deux DataFrames sur le genre
+resultat = pd.merge(moyennePagesGenre, nombreLivresParGenre, on='genre')
 
-# ajout de couleurs
+# Trier les genres en fonction de la moyenne du nombre de pages en ordre décroissant
+resultat = resultat.sort_values(by='number_of_pages', ascending=False)
+
+# Limite l'affichage à 40 genres pour éviter un graphique trop chargé
+num_genres_to_display = 400  
+top_genres = resultat.head(num_genres_to_display)
+
+# Ajout de couleurs
 colors = plt.cm.get_cmap('tab20', num_genres_to_display).colors  
 
-"""
 # Affichage des résultats dans le terminal
-for index, row in moyennePagesGenre.iterrows():
-    print(f"Genre: {row['genre']}, Moyenne de pages: {row['number_of_pages']:.2f}")
-"""
+for index, row in resultat.iterrows():
+    print(f"Genre: {row['genre']}, Moyenne de pages: {row['number_of_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
 
 # Bar chart
 plt.figure(figsize=(12, 6))
