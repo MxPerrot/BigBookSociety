@@ -72,7 +72,7 @@ resultat_par_moyenne_pages = resultat.sort_values(by='number_of_pages', ascendin
 top_genres_moyenne_pages = resultat_par_moyenne_pages.head(num_genres_to_display)
 
 # Ajout de couleurs variées pour le second graphique
-colors_moyenne_pages = plt.cm.get_cmap('tab10', num_genres_to_display).colors
+colors_moyenne_pages = plt.cm.get_cmap('tab20', num_genres_to_display).colors
 
 # Affichage des résultats dans le terminal
 print("\nAffichage trié par moyenne de pages :")
