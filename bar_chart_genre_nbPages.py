@@ -48,9 +48,9 @@ top_genres_nombre_livres = resultat_par_nombre_livres.head(num_genres_to_display
 colors_nombre_livres = plt.cm.get_cmap('tab20', num_genres_to_display).colors
 
 # Affichage des résultats dans le terminal
-print("Affichage trié par nombre de livres :")
+print("Display sorted by the number of books:")
 for index, row in resultat_par_nombre_livres.iterrows():
-    print(f"Genre: {row['genre']}, Moyenne de pages: {row['mean_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
+    print(f"Genre: {row['genre']}, Average pages: {row['mean_pages']:.2f}, Number of books: {row['nombre_de_livres']}")
 
 # Graphique pour le nombre moyen de pages par genre (trié par nombre de livres)
 plt.figure(figsize=(12, 6))
@@ -67,8 +67,8 @@ for bar, nombre, conf in zip(bars, top_genres_nombre_livres['nombre_de_livres'],
         plt.text(pos_x, pos_y, str(nombre), ha='center', va='bottom', fontsize=10)
 
 plt.xlabel('Genre')
-plt.ylabel('Nombre moyen de pages')
-plt.title('Nombre moyen de pages par genre (trié par nombre de livres)')
+plt.ylabel('Average Number of Pages')
+plt.title('Average Number of Pages per Genre (Sorted by Number of Books)')
 plt.xticks(rotation=45, ha="right", fontsize=10)
 plt.subplots_adjust(bottom=0.3)
 plt.tight_layout()
@@ -84,9 +84,9 @@ top_genres_moyenne_pages = resultat_par_moyenne_pages.head(num_genres_to_display
 colors_moyenne_pages = plt.cm.get_cmap('tab20', num_genres_to_display).colors
 
 # Affichage des résultats dans le terminal
-print("\nAffichage trié par moyenne de pages :")
+print("\nDisplay sorted by average number of pages:")
 for index, row in resultat_par_moyenne_pages.iterrows():
-    print(f"Genre: {row['genre']}, Moyenne de pages: {row['mean_pages']:.2f}, Nombre de livres: {row['nombre_de_livres']}")
+    print(f"Genre: {row['genre']}, Average pages: {row['mean_pages']:.2f}, Number of books: {row['nombre_de_livres']}")
 
 # Graphique pour le nombre moyen de pages par genre (trié par moyenne de pages)
 plt.figure(figsize=(12, 6))
@@ -103,8 +103,8 @@ for bar, nombre, conf in zip(bars_moyenne, top_genres_moyenne_pages['nombre_de_l
         plt.text(pos_x, pos_y, str(nombre), ha='center', va='bottom', fontsize=10)
 
 plt.xlabel('Genre')
-plt.ylabel('Nombre moyen de pages')
-plt.title('Nombre moyen de pages par genre (trié par moyenne de pages)')
+plt.ylabel('Average Number of Pages')
+plt.title('Average Number of Pages per Genre (Sorted by Average Pages)')
 plt.xticks(rotation=45, ha="right", fontsize=10)
 plt.subplots_adjust(bottom=0.3)
 plt.tight_layout()
