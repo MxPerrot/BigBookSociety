@@ -95,7 +95,7 @@ UTF8_CORRESPONDANCY = {
 #              FUNCTIONS              #
 #######################################
 
-def UTF8Cleaner(fileName):
+def encodeInUTF8(fileName):
     """
     Remplace les caratères mal encodés d'un fichier CSV et les renvoie sous forme de dataframe
     """
@@ -106,7 +106,6 @@ def UTF8Cleaner(fileName):
 
         # Remplace les caractères mal encodés par le caractère original
         for key,value in UTF8_CORRESPONDANCY.items() :
-            #print(key + " -> " + value)
             document = document.replace(key, value)
 
     # Convertit la chaîne de caractères en dataframe
@@ -115,7 +114,7 @@ def UTF8Cleaner(fileName):
     df = pd.DataFrame(data)
     return df
 
-def columnDeleter(data):
+def pruneEmptyColumns(data):
     """
     Supprime les colonnes vides et les lignes possédant des valeurs dedant
     """
@@ -134,7 +133,7 @@ def columnDeleter(data):
     print(f"\n--- Purge colonnes unnamed OK ---\n")
     return data
 
-def converterStrFloat(data,id):
+def convertStrToFloat(data,id):
     """"
     Convertie les virgules en point puis les string en float
     """
@@ -144,7 +143,7 @@ def converterStrFloat(data,id):
     print(f"\n--- Nettoyage {id} OK ---\n")
     return data
 
-def columnTypeFormater(data,Format):
+def convertColumnsToRightType(data,Format):
     """
     Adapte toute les colonnes aux formats demandés et supprime les lignes problématiques
     """
@@ -177,8 +176,13 @@ def columnTypeFormater(data,Format):
     return data
 
 
-# Fonction pour extraire l'année, gérer les cas où la date est au format BC, et gérer les valeurs manquantes
-def extract_year_no_nan(date_str):
+def yearStrToInt(date_str):
+    """
+    Fonction pour extraire l'année, gérer les cas où la date
+    est au format BC, et gérer les valeurs manquantes
+
+    returns year as an int
+    """
     if isinstance(date_str, str):
         date_str = date_str.strip()
         
@@ -195,9 +199,9 @@ def extract_year_no_nan(date_str):
         
         return 0
 
-def dateCleaner(data):
+def formatDate(data):
 # Appliquer la fonction à la colonne 'date_published' et stocker le résultat dans une colonne temporaire
-    data['date_published_formated'] = data['date_published'].apply(extract_year_no_nan)
+    data['date_published_formated'] = data['date_published'].apply(yearStrToInt)
 
     # Replacer la colonne 'date_published' par la nouvelle colonne formattée
     data['date_published'] = data['date_published_formated']
@@ -206,6 +210,8 @@ def dateCleaner(data):
     data = data.drop(columns=['date_published_formated'])
 
     return data
+
+# TODO: keep going on renaming and adding comments to functions
 
 def addDescriptionLength(df):
     df['description_length'] = df["description"].str.count(' ')+1
@@ -219,31 +225,55 @@ def addSeriesLength(df):
     df['series_length'] = df["books_in_series"].str.count(',')+1
     return df
 
+def removeLeadingTrailingSpaces(df,format):
+    """
+    for every column of the dataframe supposed to be a string,
+    apply the strip function to its content
+    
+    df : pandas DataFrame
+    format : type of column dict for the dataframe 
+    """
+
+    for column in df.columns:
+        if format.get(column) == str:
+            df[column] = df[column].str.strip()
+    return df
+
+
+
+
 
 #######################################
 #                MAIN                 #
 #######################################
 
 def main():
+
     """
     Main function
     """
     
-    books_data = UTF8Cleaner(BOOKS_CSV)
-    books_data = columnDeleter(books_data)
-    books_data = converterStrFloat(books_data,"average_rating")
-    books_data = columnTypeFormater(books_data,COLUMNS_TYPES_BOOKS)
-    books_data = dateCleaner(books_data)
+    # Cleaning
+    books_data = encodeInUTF8(BOOKS_CSV)
+    books_data = pruneEmptyColumns(books_data)
+    books_data = convertStrToFloat(books_data,"average_rating")
+    books_data = convertColumnsToRightType(books_data,COLUMNS_TYPES_BOOKS)
+    books_data = removeLeadingTrailingSpaces(books_data,COLUMNS_TYPES_BOOKS)
+    books_data = formatDate(books_data)
+
+    # Adding rows for additional analysis
     books_data = addDescriptionLength(books_data)
     books_data = addTitleLength(books_data)
     books_data = addSeriesLength(books_data)
     books_data.to_csv('./data/Cleaned_books.csv', index=False)
 
 
-    authors_data = UTF8Cleaner(AUTHORS_CSV)
-    authors_data = converterStrFloat(authors_data,"book_average_rating")
-    authors_data = converterStrFloat(authors_data,"author_average_rating")
-    authors_data = columnTypeFormater(authors_data,COLUMNS_TYPES_AUTHORS)
+    # Cleaning
+    authors_data = encodeInUTF8(AUTHORS_CSV)
+    authors_data = convertStrToFloat(authors_data,"book_average_rating")
+    authors_data = convertStrToFloat(authors_data,"author_average_rating")
+    authors_data = convertColumnsToRightType(authors_data,COLUMNS_TYPES_AUTHORS)
+    authors_data = removeLeadingTrailingSpaces(authors_data,COLUMNS_TYPES_AUTHORS)
     authors_data.to_csv('./data/Cleaned_authors.csv', index=False)
 
 
