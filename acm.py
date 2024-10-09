@@ -104,7 +104,10 @@ def main(show_graph=False, show_popular_genre=False):
     ])
 
     # Affichage du graphique
-    plt.savefig("./graphs/ACM", bbox_inches="tight")
+    if(show_popular_genre):
+        plt.savefig("./graphs/ACMLessPopularGenre", bbox_inches="tight")
+    else:
+        plt.savefig("./graphs/ACMPopularGenre", bbox_inches="tight")
     if show_graph: plt.show()
 
 
