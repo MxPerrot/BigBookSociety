@@ -47,7 +47,7 @@ df2 = df2.value_counts()
 # Crée le pie chart
 plt.rcParams['axes.titley'] = 1.0 
 plt.rcParams['axes.titlepad'] = 25
-plt.title("Genres Plus Communs")
+plt.title("Most common genres")
 plt.pie(df2, labels=df2.index, rotatelabels=True)
 plt.show()
 
@@ -78,6 +78,6 @@ df2 = df2[df2.str.contains("To Remove") == False]
 df2 = df2.value_counts()
 
 # Crée le pie chart
-plt.title("Genres Moins Communs")
+plt.title("Less common genres")
 plt.pie(df2, labels=df2.index, rotatelabels=True)
 plt.show()
