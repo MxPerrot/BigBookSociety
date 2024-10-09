@@ -5,8 +5,6 @@ import matplotlib
 from pathlib import Path
 Path("./graphs").mkdir(parents=True, exist_ok=True)
 
-
-
 def getGenre(genres): 
     """
     Récupère le nom du genre simplifié à partir de la liste des genres avec leurs votes
@@ -48,7 +46,7 @@ def main(show_graph=False):
     dfFemmeFullFrame=df
 
     # Separate authors by gender in the dataframes
-    dfHommeFullFrame = dfHommeFullFrame.drop(dfHommeFullFrame[dfHommeFullFrame['author_gender']=='male'].index)
+    dfFemmeFullFrame = dfFemmeFullFrame.drop(dfFemmeFullFrame[dfFemmeFullFrame['author_gender']=='male'].index)
     dfHommeFullFrame = dfHommeFullFrame.drop(dfHommeFullFrame[dfHommeFullFrame['author_gender']=='female'].index)  
 
 
@@ -87,7 +85,7 @@ def main(show_graph=False):
     ind = np.arange(N)
     width = 0.35
 
-    fig, ax = plt.subplots(figsize =(10, 7))
+    fig, ax = plt.subplots(figsize =(10, 5))
     p1 = ax.bar(ind, dfHomme['pourcentageSexe'], width)
     p2 = ax.bar(ind, dfFemme['pourcentageSexe'], width, bottom = dfHomme['pourcentageSexe'])
 
@@ -128,7 +126,6 @@ def main(show_graph=False):
     # Calculate the number of male authors for genres that are not in the top 15
     tot=0
     for i in dfHommeFullFrame["genre"].value_counts().index:
-        print(i)
         if (i not in listeGenrePlusPopHomme):
             tot = tot + nbrValueCount[i]
 
@@ -175,7 +172,6 @@ def main(show_graph=False):
     # Calculate the number of female authors for genres that are not in the top 15
     tot=0
     for i in dfFemmeFullFrame["genre"].value_counts().index:
-        print(i)
         if (i not in listeGenrePlusPopFemme):
             tot = tot + nbrValueCount[i]
 
