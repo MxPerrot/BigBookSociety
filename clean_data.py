@@ -1,6 +1,21 @@
 # -*- coding:utf-8 -*-
 
 """
+
+IUT de Lannion
+BUT Informatique 3
+SAE 5.C.01
+
+Wizards of the West Coast
+
+Maxime Perrot
+Nathan Bracquart
+Florian Normand
+Damien Goupil
+Ewan Lansonneur
+
+Created on 2024-10-08
+
 This module cleans the DataFrame generated from books.csv
 """
 
