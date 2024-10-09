@@ -26,16 +26,19 @@ Propose an optimised solution based on internal and external data
 ## How to use
 
 ### 1. Install requirements
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 2. Clean data (not necessary)
+
 ```bash
 python3 clean_data.py
 ```
 
 ### 3. Run analysis
+
 ```bash
 python3 main.py
 ```
