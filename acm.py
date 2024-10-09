@@ -2,6 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from mca import MCA
+from pathlib import Path
+Path("./graphs").mkdir(parents=True, exist_ok=True)
+
+
+# Programme limiter par la puissance du pc, ne marche pas sur tout les ordinateurs
+
 
 def getHistoricEra(date):
     """
@@ -46,50 +52,56 @@ def ajoutGenre(df):
     df["genre"] = df.genre_and_votes.apply(getGenre)
     return df
 
-# Chargement des données
-data = pd.read_csv("data/Cleaned_books.csv")
-df = pd.DataFrame(data)
+def main(show_graph=False):
 
-# Ajout des périodes d'histoire et des genres
-df = ajoutEpoque(df)
-df = ajoutGenre(df)
+    # Chargement des données
+    data = pd.read_csv("data/Cleaned_books.csv")
+    df = pd.DataFrame(data)
 
-# Suppression des entrées sans genre et des périodes inconnues du dataframe
-df = df[~df['genre'].isin(["None"])]
-df = df[~df['epoque'].isin(["Inconnu"])]
+    # Ajout des périodes d'histoire et des genres
+    df = ajoutEpoque(df)
+    df = ajoutGenre(df)
 
-# Suppression des genres les moins représentés
-ComptesGenres = df['genre'].value_counts()
-i=0
-genresARetirer=[]
-for genre in ComptesGenres.index:
-    if i>7:
-        genresARetirer.append(genre)
-    i+=1
-df = df[~df['genre'].isin(genresARetirer)]
+    # Suppression des entrées sans genre et des périodes inconnues du dataframe
+    df = df[~df['genre'].isin(["None"])]
+    df = df[~df['epoque'].isin(["Inconnu"])]
 
-# Paramétres de la génération du graphique
-plotColorPeriods = "blue"
-plotColorGenre = "orange"
-label_offset = 0.1
+    # Suppression des genres les moins représentés
+    ComptesGenres = df['genre'].value_counts()
+    i=0
+    genresARetirer=[]
+    for genre in ComptesGenres.index:
+        if i>7:
+            genresARetirer.append(genre)
+        i+=1
+    df = df[~df['genre'].isin(genresARetirer)]
 
-# Analyse à Correspondances Multiples (MCA) sur les genres et les périodes d'histoire
-dc = pd.DataFrame(pd.get_dummies(df[["genre", "epoque"]]))
-mcaFic = MCA(dc, benzecri=False)
-for i, j, nom in zip(mcaFic.fs_c()[:, 0], mcaFic.fs_c()[:, 1], dc.columns):
-    # Séparation des genres et des périodes d'histoire par couleur
-    if nom.split("_")[0] == "epoque":
-        plt.scatter(i, j, c=plotColorPeriods)
-    else:
-        plt.scatter(i, j, c=plotColorGenre)
-    plt.text(i+label_offset, j+label_offset, nom.split("_")[1])
+    # Paramétres de la génération du graphique
+    plotColorPeriods = "blue"
+    plotColorGenre = "orange"
+    label_offset = 0.1
 
-# Ajout du titre et des légendes
-plt.title("Multiple Correspondence Analysis")
-plt.legend(handles=[ 
-    plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorPeriods, markersize=10, label='Periods'),
-    plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorGenre, markersize=10, label='Genre')
-])
+    # Analyse à Correspondances Multiples (MCA) sur les genres et les périodes d'histoire
+    dc = pd.DataFrame(pd.get_dummies(df[["genre", "epoque"]]))
+    mcaFic = MCA(dc, benzecri=False)
+    for i, j, nom in zip(mcaFic.fs_c()[:, 0], mcaFic.fs_c()[:, 1], dc.columns):
+        # Séparation des genres et des périodes d'histoire par couleur
+        if nom.split("_")[0] == "epoque":
+            plt.scatter(i, j, c=plotColorPeriods)
+        else:
+            plt.scatter(i, j, c=plotColorGenre)
+        plt.text(i+label_offset, j+label_offset, nom.split("_")[1])
 
-# Affichage du graphique
-plt.show()
+    # Ajout du titre et des légendes
+    plt.title("Multiple Correspondence Analysis")
+    plt.legend(handles=[ 
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorPeriods, markersize=10, label='Periods'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorGenre, markersize=10, label='Genre')
+    ])
+
+    # Affichage du graphique
+    plt.savefig("./graphs/ACM", bbox_inches="tight")
+    if show_graph: plt.show()
+
+if __name__ == "__main__":
+    main()

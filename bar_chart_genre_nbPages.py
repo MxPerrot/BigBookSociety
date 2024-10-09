@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
+Path("./graphs").mkdir(parents=True, exist_ok=True)
 
 def definir_genre(df):
     def getGenre(genresWithVotes): 
