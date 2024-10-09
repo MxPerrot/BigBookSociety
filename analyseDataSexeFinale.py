@@ -99,8 +99,8 @@ def main(show_graph=False):
 
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right", rotation_mode="anchor")
     plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre", bbox_inches="tight")
-    plt.clf()
     if show_graph: plt.show()
+    plt.clf()
 
 
     # First pie chart for male authors
@@ -141,9 +141,8 @@ def main(show_graph=False):
     plt.rcParams['axes.titlepad'] = 25
     plt.title('The 12 Main genres of Male authors')
     plt.savefig("./graphs/PieChart_MenAuthorGenreInterest", bbox_inches="tight")
-    plt.clf()
     if show_graph: plt.show()
-
+    plt.clf()
 
 
 
@@ -187,12 +186,12 @@ def main(show_graph=False):
     plt.rcParams['axes.titlepad'] = 25
     plt.title('The 12 Main genres of Female authors')
     plt.savefig("./graphs/PieChart_WomenAuthorGenreInterest", bbox_inches="tight")
-    plt.clf()
     if show_graph: plt.show()
+    plt.clf()
 
 
 if __name__ == "__main__":
-    main(show_graph=False)
+    main(show_graph=True)
 
 
 
