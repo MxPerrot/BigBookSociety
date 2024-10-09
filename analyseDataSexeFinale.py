@@ -25,41 +25,45 @@ def ajoutGenre(df):
 
 def main(show_graph=False):
 
+    # Get the data from the CSV files
     data = pd.read_csv("data/Cleaned_authors.csv")
     df = pd.DataFrame(data)
 
-
+    # Simplify the genres
     df = ajoutGenre(df)
 
+    # Drop duplicate authors
     df = df.drop_duplicates(subset=['author_name'])
 
+    # Count the number of authors for each genre
     nbrValueCount = df["genre"].value_counts()
 
+    # Get the top 15 genres with the most authors
     listeGenrePlusPop = []
     for i in range(0,15):
         listeGenrePlusPop.append(nbrValueCount.index[i])
 
-    dfTestHomme=df
-    dfTestFemme=df
+    # Seperate authors by gender in variable for later, actual separation done later
+    dfHommeFullFrame=df
+    dfFemmeFullFrame=df
 
-    dfTestHomme = dfTestHomme.drop(dfTestHomme[dfTestHomme['author_gender']=='female'].index)  
-
-    dfTestFemme = dfTestFemme.drop(dfTestFemme[dfTestFemme['author_gender']=='male'].index)  
-
-
-
+    # Separate authors by gender in the dataframes
+    dfHommeFullFrame = dfHommeFullFrame.drop(dfHommeFullFrame[dfHommeFullFrame['author_gender']=='male'].index)
+    dfHommeFullFrame = dfHommeFullFrame.drop(dfHommeFullFrame[dfHommeFullFrame['author_gender']=='female'].index)  
 
 
+    # Create dataframes for the percentage of authors by genre for each gender
     dfHomme = pd.DataFrame(columns=['genre', 'pourcentageSexe'])
-
     dfFemme = pd.DataFrame(columns=['genre', 'pourcentageSexe'])
 
 
 
-
+    # Calculate the percentage of authors by genre for each gender
     for i in listeGenrePlusPop:
-        i_value_homme = dfTestHomme["genre"].value_counts()
-        i_value_femme = dfTestFemme["genre"].value_counts()
+        # Get the number of authors by genre for each gender
+        i_value_homme = dfHommeFullFrame["genre"].value_counts()
+        i_value_femme = dfFemmeFullFrame["genre"].value_counts()
+        # Try to calculate the percentages of authors by genre for each gender
         try:
             if(i_value_femme[i]!=0):
                 dfHomme.loc[len(dfHomme.index)] = [i, i_value_homme[i]/(i_value_homme[i] + i_value_femme[i])*100] 
@@ -67,24 +71,18 @@ def main(show_graph=False):
             else:
                 dfHomme.loc[len(dfHomme.index)] = [i, 100] 
                 dfFemme.loc[len(dfFemme.index)] = [i, 0]
+        # Catch exceptions when a genre doesn't exist in one gender's data
         except:
             if(i not in i_value_femme):
+                # If the genre doesn't exist in the female's data, assume 0% of the female's authors are in the genre and 100% of male are
                 dfHomme.loc[len(dfHomme.index)] = [i, 100] 
                 dfFemme.loc[len(dfFemme.index)] = [i, 0]
             else:
+                # If the genre doesn't exist in the male's data, assume 0% of the male's authors are in the genre and 100% of female are
                 dfHomme.loc[len(dfHomme.index)] = [i, 0] 
                 dfFemme.loc[len(dfFemme.index)] = [i, 100]
 
-    # fig = plt.figure(figsize = (10, 5))
-
-    # # creating the bar plot
-    # plt.bar(dfHomme['genre'], dfHomme['pourcentageSexe'], color ='maroon', width = 0.4)
-
-    # plt.xlabel("Genre Littéraire")
-    # plt.ylabel("Pourcentage d'Homme/Femme")
-    # plt.title("Genre littéraire en fonction du pourcentage d'homme et de femmes écrivant dans celui-ci")
-    # plt.show()
-
+    # Plot the bar chart
     N = len(dfHomme)
     ind = np.arange(N)
     width = 0.35
@@ -106,38 +104,41 @@ def main(show_graph=False):
     plt.clf()
     if show_graph: plt.show()
 
-    # https://www.geeksforgeeks.org/bar-plot-in-matplotlib/
 
+    # First pie chart for male authors
 
+    # Change the font size and style for the labels later on
     font = {'family' : 'normal',
             'size'   : 15}
     matplotlib.rc('font', **font)
 
-
+    # Creates a variable to store the number of male authors for each genre
     dfNbrHomme = pd.DataFrame(columns=['genre', 'nbr'])
 
-    nbrValueCount = dfTestHomme["genre"].value_counts()
-
+    # Get the top 15 genres with the most male authors
+    nbrValueCount = dfHommeFullFrame["genre"].value_counts()
     listeGenrePlusPopHomme = []
     for i in range(0,15):
         listeGenrePlusPopHomme.append(nbrValueCount.index[i])
 
-    #Nbr Homme
-
+    # Calculate the number of male authors for each of the popular genre
     for i in listeGenrePlusPopHomme:
         dfNbrHomme.loc[len(dfNbrHomme.index)] = [i, nbrValueCount[i]] 
 
+    # Calculate the number of male authors for genres that are not in the top 15
     tot=0
-    for i in dfTestHomme["genre"].value_counts().index:
+    for i in dfHommeFullFrame["genre"].value_counts().index:
         print(i)
         if (i not in listeGenrePlusPopHomme):
             tot = tot + nbrValueCount[i]
 
+    # Sort the dataframe by the number of male authors in descending order
     dfNbrHomme = dfNbrHomme.sort_values("nbr", ascending=False)
 
+    # Add a new row to the dataframe for the other genres that are not in the top 15
     dfNbrHomme.loc[len(dfNbrHomme.index)] = ["others", tot] 
 
-
+    # Create a pie chart for male authors
     plt.pie(dfNbrHomme['nbr'], labels=dfNbrHomme['genre'], rotatelabels=True)
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
@@ -154,29 +155,37 @@ def main(show_graph=False):
 
 
 
+    # Second pie chart for female authors
 
-
+    # Create a variable to store the number of female authors for each genre
     dfNbrFemme = pd.DataFrame(columns=['genre', 'nbr'])
 
-    nbrValueCount = dfTestFemme["genre"].value_counts()
+    # Calculate the number of female authors for each genre
+    nbrValueCount = dfFemmeFullFrame["genre"].value_counts()
 
+    # Get the top 15 genres with the most female authors
     listeGenrePlusPopFemme = []
     for i in range(0,15):
         listeGenrePlusPopFemme.append(nbrValueCount.index[i])
 
-    #Nbr Femme
+    # Calculate the number of female authors for each of the popular genre
     for i in listeGenrePlusPopFemme:
         dfNbrFemme.loc[len(dfNbrFemme.index)] = [i, nbrValueCount[i]] 
+
+    # Calculate the number of female authors for genres that are not in the top 15
     tot=0
-    for i in dfTestFemme["genre"].value_counts().index:
+    for i in dfFemmeFullFrame["genre"].value_counts().index:
         print(i)
         if (i not in listeGenrePlusPopFemme):
             tot = tot + nbrValueCount[i]
 
+    # Sort the dataframe by the number of female authors in descending order
     dfNbrFemme = dfNbrFemme.sort_values("nbr", ascending=False)
 
+    # Add a new row to the dataframe for the other genres that are not in the top 15
     dfNbrFemme.loc[len(dfNbrFemme.index)] = ["others", tot] 
 
+    # Create a pie chart for female authors
     plt.pie(dfNbrFemme['nbr'], labels=dfNbrFemme['genre'], rotatelabels=True)
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
