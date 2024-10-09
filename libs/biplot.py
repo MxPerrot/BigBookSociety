@@ -171,6 +171,7 @@ def biplot(pca=[], x=None, y=None, components=[0,1], score=None, coeff=None, coe
     
     # Save the figure
     plt.savefig(save_path,bbox_inches='tight')
+    plt.clf()
     
     # Show the plot if requested
     if show_graph: plt.show()

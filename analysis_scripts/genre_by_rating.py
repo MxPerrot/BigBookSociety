@@ -85,6 +85,7 @@ def main(data, show_graph=False):
         # Show the plot
         plt.savefig("./graphs/BarChart_GenreByRating", bbox_inches="tight")
         if show_graph: plt.show()
+        plt.clf()
 
     else:
         # Print an error message if the required columns are not in the DataFrame

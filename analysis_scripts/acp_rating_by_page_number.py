@@ -68,7 +68,8 @@ def main(data, show_graphs=False):
     plt.xticks(ticks=range(1, len(eig["Dimension"]) + 1), labels=range(1, len(eig["Dimension"]) + 1))
     plt.savefig("./graphs/BarChart_PCA_Explained_Variance.png", bbox_inches="tight")
     if show_graphs: plt.show()
-
+    plt.clf()
+    
     # Plot the biplot
     biplot(
         score = df_pca[:,0:2],

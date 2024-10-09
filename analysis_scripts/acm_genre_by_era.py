@@ -104,6 +104,7 @@ def main(data, show_graph=False, show_popular_genre=False):
     else:
         plt.savefig("./graphs/ACMPopularGenre", bbox_inches="tight")
     if show_graph: plt.show()
+    plt.clf()
 
 
 

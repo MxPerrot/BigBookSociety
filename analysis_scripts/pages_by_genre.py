@@ -68,6 +68,7 @@ def main(data, show_graph=False):
     plt.tight_layout()
     plt.savefig("./graphs/BarChart_NumberOfPagesByGenreTop50", bbox_inches="tight")
     if show_graph: plt.show()
+    plt.clf()
 
     # Trier les genres par moyenne du nb de pages en ordre décroissant
     resultat_par_moyenne_pages = resultat.sort_values(by='mean_pages', ascending=False)
@@ -107,6 +108,7 @@ def main(data, show_graph=False):
     plt.tight_layout()
     plt.savefig("./graphs/BarChart_NumberOfPagesByGenreTop50GreaterAverage", bbox_inches="tight")
     if show_graph: plt.show()
+    plt.clf()
 
 
 if __name__ == "__main__":

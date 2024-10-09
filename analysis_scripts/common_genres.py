@@ -50,6 +50,7 @@ def main(data, show_graph=False):
     plt.pie(df2, labels=df2.index, rotatelabels=True)
     plt.savefig("./graphs/PieChart_MostCommonGenre", bbox_inches="tight")
     if show_graph:  plt.show()
+    plt.clf()
 
     # ----------------------------------------------
     # Création du second graphe camembert des genres
@@ -82,7 +83,8 @@ def main(data, show_graph=False):
     plt.pie(df2, labels=df2.index, rotatelabels=True)
     plt.savefig("./graphs/PieChart_LessCommonGenre", bbox_inches="tight")
     if show_graph:  plt.show()
-
+    plt.clf()
+    
 if __name__ == "__main__":
 
     CSV_FILE = 'data/Cleaned_books.csv'
