@@ -79,7 +79,7 @@ def biplot(pca=[], x=None, y=None, components=[0,1], score=None, coeff=None, coe
     
     # Create a DataFrame with centered data
     data = pd.DataFrame({"x_c":x_c,"y_c":y_c})
-    print("Attention : pour des facilités d'affichage, les données sont centrées-réduites")
+    #print("Attention : pour des facilités d'affichage, les données sont centrées-réduites")
     
     # Handle categories for coloring
     if cat is None : cat = [0]*len(xs)
@@ -107,7 +107,7 @@ def biplot(pca=[], x=None, y=None, components=[0,1], score=None, coeff=None, coe
             sns.set_style("white")
             sns.kdeplot(x="x_c",y="y_c",data=data)
             if len(np.unique(cat)) <= 1 :
-                sns.kdeplot(x="x_c",y="y_c",data=data, cmap="Blues", shade=True, thresh= 0)
+                sns.kdeplot(x="x_c", y="y_c", data=data, cmap="Blues", fill=True, thresh=0)
             else :
                 for i in np.unique(cat) :
                     color_temp = m.to_rgba(i)
