@@ -52,7 +52,7 @@ def ajoutGenre(df):
     df["genre"] = df.genre_and_votes.apply(getGenre)
     return df
 
-def main(show_graph=False):
+def main(show_graph=False, show_popular_genre=False):
 
     # Chargement des données
     data = pd.read_csv("data/Cleaned_books.csv")
@@ -64,22 +64,26 @@ def main(show_graph=False):
 
     # Suppression des entrées sans genre et des périodes inconnues du dataframe
     df = df[~df['genre'].isin(["None"])]
-    df = df[~df['epoque'].isin(["Inconnu"])]
+    df = df[~df['epoque'].isin(["Unknown"])]
 
     # Suppression des genres les moins représentés
     ComptesGenres = df['genre'].value_counts()
     i=0
     genresARetirer=[]
     for genre in ComptesGenres.index:
-        if i>7:
-            genresARetirer.append(genre)
+        if (show_popular_genre):
+            if i<7:
+                genresARetirer.append(genre)
+        else:
+            if i>7:
+                genresARetirer.append(genre)         
         i+=1
     df = df[~df['genre'].isin(genresARetirer)]
 
     # Paramétres de la génération du graphique
     plotColorPeriods = "blue"
     plotColorGenre = "orange"
-    label_offset = 0.1
+    label_offset = 0
 
     # Analyse à Correspondances Multiples (MCA) sur les genres et les périodes d'histoire
     dc = pd.DataFrame(pd.get_dummies(df[["genre", "epoque"]]))
@@ -95,7 +99,7 @@ def main(show_graph=False):
     # Ajout du titre et des légendes
     plt.title("Multiple Correspondence Analysis")
     plt.legend(handles=[ 
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorPeriods, markersize=10, label='Periods'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorPeriods, markersize=10, label='Time Period'),
         plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=plotColorGenre, markersize=10, label='Genre')
     ])
 
@@ -103,5 +107,8 @@ def main(show_graph=False):
     plt.savefig("./graphs/ACM", bbox_inches="tight")
     if show_graph: plt.show()
 
+
+
 if __name__ == "__main__":
-    main()
+    # To get the graph with the 7 most popular genre, put False, to get the graph with the rest appart from the 7 most popular, put True 
+    main(True,True)
