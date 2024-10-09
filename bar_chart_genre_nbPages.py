@@ -69,6 +69,7 @@ def main():
     plt.xticks(rotation=45, ha="right", fontsize=10)
     plt.subplots_adjust(bottom=0.3)
     plt.tight_layout()
+    plt.savefig("./graphs/BarChart_NumberOfPagesByGenreTop50")
     plt.show()
 
     # Trier les genres par moyenne du nb de pages en ordre décroissant
@@ -107,6 +108,7 @@ def main():
     plt.xticks(rotation=45, ha="right", fontsize=10)
     plt.subplots_adjust(bottom=0.3)
     plt.tight_layout()
+    plt.savefig("./graphs/BarChart_NumberOfPagesByGenreTop50GreaterAverage")
     plt.show()
 
 

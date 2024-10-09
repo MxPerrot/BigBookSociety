@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+from pathlib import Path
+Path("./graphs").mkdir(parents=True, exist_ok=True)
 
 
 
@@ -100,7 +102,7 @@ def main():
     ax.legend((p1[0], p2[0]), ('Men', 'Women'))
 
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right", rotation_mode="anchor")
-
+    plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre")
     plt.show()
 
     # https://www.geeksforgeeks.org/bar-plot-in-matplotlib/
@@ -139,6 +141,7 @@ def main():
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
     plt.title('The 12 Main genre of Male authors')
+    plt.savefig("./graphs/PieChart_MenAuthorGenreInterest")
     plt.show()
 
 
@@ -176,6 +179,7 @@ def main():
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
     plt.title('The 12 Main genre of Female authors')
+    plt.savefig("./graphs/PieChart_WomenAuthorGenreInterest")
     plt.show()
 
 

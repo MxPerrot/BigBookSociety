@@ -51,6 +51,7 @@ def main():
     plt.rcParams['axes.titlepad'] = 25
     plt.title("Most common genres")
     plt.pie(df2, labels=df2.index, rotatelabels=True)
+    plt.savefig("./graphs/PieChart_MostCommonGenre")
     plt.show()
 
     # ----------------------------------------------
@@ -82,6 +83,7 @@ def main():
     # Crée le pie chart
     plt.title("Less common genres")
     plt.pie(df2, labels=df2.index, rotatelabels=True)
+    plt.savefig("./graphs/PieChart_LessCommonGenre")
     plt.show()
 
 if __name__ == "__main__":

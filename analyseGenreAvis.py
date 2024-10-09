@@ -86,6 +86,7 @@ def main():
         plt.tight_layout()
 
         # Show the plot
+        plt.savefig("./graphs/BarChart_GenreByRating")
         plt.show()
 
     else:
