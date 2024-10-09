@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
-from pathlib import Path
-Path("./graphs").mkdir(parents=True, exist_ok=True)
 
 def getGenre(genres): 
     """
@@ -21,14 +19,10 @@ def ajoutGenre(df):
     df["genre"] = df.author_genres.apply(getGenre)
     return df
 
-def main(show_graph=False):
-
-    # Get the data from the CSV files
-    data = pd.read_csv("data/Cleaned_authors.csv")
-    df = pd.DataFrame(data)
+def main(data, show_graph=False):
 
     # Simplify the genres
-    df = ajoutGenre(df)
+    df = ajoutGenre(data)
 
     # Drop duplicate authors
     df = df.drop_duplicates(subset=['author_name'])
@@ -89,8 +83,9 @@ def main(show_graph=False):
     p1 = ax.bar(ind, dfHomme['pourcentageSexe'], width)
     p2 = ax.bar(ind, dfFemme['pourcentageSexe'], width, bottom = dfHomme['pourcentageSexe'])
 
+    ax.set_xlabel('Genre')
     ax.set_ylabel('Percentage of authors which are men or women')
-    ax.set_title('The 12 most popular genres of authors divided by the ratio of each sex writing them')
+    ax.set_title('male/female author ratio for the 12 most popular genres sorted by popularity')
     ax.set_xticks(ind)
     ax.set_xticklabels(dfHomme['genre'])
     ax.set_yticks(np.arange(0, 81, 10))
@@ -106,7 +101,7 @@ def main(show_graph=False):
     # First pie chart for male authors
 
     # Change the font size and style for the labels later on
-    font = {'family' : 'normal',
+    font = {'family' : 'sans-serif',
             'size'   : 15}
     matplotlib.rc('font', **font)
 
@@ -191,7 +186,11 @@ def main(show_graph=False):
 
 
 if __name__ == "__main__":
-    main(show_graph=True)
+
+    CSV_FILE = 'data/Cleaned_authors.csv'
+
+    data = pd.read_csv(CSV_FILE)
+    main(data=data, show_graph=True)
 
 
 

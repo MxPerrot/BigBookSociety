@@ -1,8 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-Path("./graphs").mkdir(parents=True, exist_ok=True)
 
 def definir_genre(df):
     def getGenre(genresWithVotes): 
@@ -16,10 +14,7 @@ def definir_genre(df):
     df['genre'] = df.genre_and_votes.apply(getGenre)
     return df
 
-def main(show_graph=False):
-
-    # Lecture CSV
-    data = pd.read_csv('./data/Cleaned_books.csv')
+def main(data, show_graph=False):
 
     # Définir le genre pour chaque livre
     data = definir_genre(data)
@@ -115,7 +110,8 @@ def main(show_graph=False):
 
 
 if __name__ == "__main__":
-    main()
+    data = pd.read_csv('./data/Cleaned_books.csv')
+    main(data, show_graph=True)
 
 
 

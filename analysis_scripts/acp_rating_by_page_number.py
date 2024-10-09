@@ -87,11 +87,6 @@ if __name__ == "__main__":
 
     CSV_FILE = 'data/Cleaned_books.csv'
 
-    # Load the CSV file into a DataFrame 
     data = pd.read_csv(CSV_FILE)
-
-    main(
-        data        = data,
-        show_graphs = False
-        )
+    main(data=data, show_graphs=False)
 

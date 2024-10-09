@@ -2,9 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from mca import MCA
-from pathlib import Path
-Path("./graphs").mkdir(parents=True, exist_ok=True)
-
 
 # Programme limiter par la puissance du pc, ne marche pas sur tout les ordinateurs
 
@@ -52,11 +49,9 @@ def ajoutGenre(df):
     df["genre"] = df.genre_and_votes.apply(getGenre)
     return df
 
-def main(show_graph=False, show_popular_genre=False):
+def main(data, show_graph=False, show_popular_genre=False):
 
-    # Chargement des données
-    data = pd.read_csv("data/Cleaned_books.csv")
-    df = pd.DataFrame(data)
+    df = data
 
     # Ajout des périodes d'histoire et des genres
     df = ajoutEpoque(df)
@@ -113,5 +108,9 @@ def main(show_graph=False, show_popular_genre=False):
 
 
 if __name__ == "__main__":
-    # To get the graph with the 7 most popular genre, put False, to get the graph with the rest appart from the 7 most popular, put True 
-    main(True,True)
+
+    CSV_FILE = 'data/Cleaned_books.csv'
+
+    data = pd.read_csv(CSV_FILE)
+    main(data=data, show_graphs=True, show_popular_genre=True)
+    main(data=data, show_graphs=True, show_popular_genre=False)

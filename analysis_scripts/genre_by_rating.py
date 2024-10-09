@@ -1,14 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-Path("./graphs").mkdir(parents=True, exist_ok=True)
+def main(data, show_graph=False):
 
-def main(show_graph=False):
-
-    # Load the CSV file into a DataFrame
-    file_path = './data/Cleaned_books.csv'
-    df = pd.read_csv(file_path)
+    df = data
 
     # Function to define the genre based on the 'genre_and_votes' column
     def definir_genre(df):
@@ -96,4 +91,8 @@ def main(show_graph=False):
         print("The 'average_rating' and 'genre' columns are not present in the file.")
 
 if __name__ == "__main__":
-    main()
+
+    CSV_FILE = 'data/Cleaned_books.csv'
+
+    data = pd.read_csv(CSV_FILE)
+    main(data=data, show_graph=True)

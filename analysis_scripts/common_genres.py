@@ -1,8 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-Path("./graphs").mkdir(parents=True, exist_ok=True)
 
 def getGenre(genresWithVotes): 
     """
@@ -21,12 +19,9 @@ def ajoutGenre(df):
     df["genre"] = df.genre_and_votes.apply(getGenre)
     return df
 
-def main(show_graph=False):
+def main(data, show_graph=False):
 
-    data = pd.read_csv("data/Cleaned_books.csv")
-    df = pd.DataFrame(data)
-
-    df = ajoutGenre(df)
+    df = ajoutGenre(data)
 
     # -----------------------------------------------
     # Création du premier graphe camembert des genres
@@ -89,4 +84,8 @@ def main(show_graph=False):
     if show_graph:  plt.show()
 
 if __name__ == "__main__":
-    main()
+
+    CSV_FILE = 'data/Cleaned_books.csv'
+
+    data = pd.read_csv(CSV_FILE)
+    main(data=data, show_graph=True)
