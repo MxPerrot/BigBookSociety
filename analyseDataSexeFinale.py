@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+from pathlib import Path
+Path("./graphs").mkdir(parents=True, exist_ok=True)
 
 
 
@@ -21,7 +23,7 @@ def ajoutGenre(df):
     df["genre"] = df.author_genres.apply(getGenre)
     return df
 
-def main():
+def main(show_graph=False):
 
     data = pd.read_csv("data/Cleaned_authors.csv")
     df = pd.DataFrame(data)
@@ -92,7 +94,7 @@ def main():
     p2 = ax.bar(ind, dfFemme['pourcentageSexe'], width, bottom = dfHomme['pourcentageSexe'])
 
     ax.set_ylabel('Percentage of authors which are men or women')
-    ax.set_title('The 12 most popular genre of authors divided by the percentage of each sex writing them')
+    ax.set_title('The 12 most popular genres of authors divided by the ratio of each sex writing them')
     ax.set_xticks(ind)
     ax.set_xticklabels(dfHomme['genre'])
     ax.set_yticks(np.arange(0, 81, 10))
@@ -100,8 +102,9 @@ def main():
     ax.legend((p1[0], p2[0]), ('Men', 'Women'))
 
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right", rotation_mode="anchor")
-
-    plt.show()
+    plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre", bbox_inches="tight")
+    plt.clf()
+    if show_graph: plt.show()
 
     # https://www.geeksforgeeks.org/bar-plot-in-matplotlib/
 
@@ -138,8 +141,10 @@ def main():
     plt.pie(dfNbrHomme['nbr'], labels=dfNbrHomme['genre'], rotatelabels=True)
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
-    plt.title('The 12 Main genre of Male authors')
-    plt.show()
+    plt.title('The 12 Main genres of Male authors')
+    plt.savefig("./graphs/PieChart_MenAuthorGenreInterest", bbox_inches="tight")
+    plt.clf()
+    if show_graph: plt.show()
 
 
 
@@ -175,12 +180,14 @@ def main():
     plt.pie(dfNbrFemme['nbr'], labels=dfNbrFemme['genre'], rotatelabels=True)
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
-    plt.title('The 12 Main genre of Female authors')
-    plt.show()
+    plt.title('The 12 Main genres of Female authors')
+    plt.savefig("./graphs/PieChart_WomenAuthorGenreInterest", bbox_inches="tight")
+    plt.clf()
+    if show_graph: plt.show()
 
 
 if __name__ == "__main__":
-    main()
+    main(show_graph=False)
 
 
 

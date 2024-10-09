@@ -2,9 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data = pd.read_csv("data/Cleaned_books.csv")
-df = pd.DataFrame(data)
-
 def getGenre(genresWithVotes): 
     """
     Récupère le nom du genre simplifié à partir de la liste des genres avec leurs votes
@@ -22,62 +19,72 @@ def ajoutGenre(df):
     df["genre"] = df.genre_and_votes.apply(getGenre)
     return df
 
-df = ajoutGenre(df)
+def main(show_graph=False):
 
-# -----------------------------------------------
-# Création du premier graphe camembert des genres
-# -----------------------------------------------
+    data = pd.read_csv("data/Cleaned_books.csv")
+    df = pd.DataFrame(data)
 
-df["Genres Plus Communs"] = df["genre"]
+    df = ajoutGenre(df)
 
-# Récupère le nombre de chaque genre
-frequencies = df["Genres Plus Communs"].value_counts()
+    # -----------------------------------------------
+    # Création du premier graphe camembert des genres
+    # -----------------------------------------------
 
-# Remplace les noms de genre avec moins de 800 occurences par 'Other'
-condition = frequencies<=800
-mask_obs = frequencies[condition].index
-mask_dict = dict.fromkeys(mask_obs, "Other")
-df2 = df["Genres Plus Communs"].replace(mask_dict)
+    df["Genres Plus Communs"] = df["genre"]
 
-# Retire les entrées sans genre
-df2 = df2[df2.str.contains("None") == False]
+    # Récupère le nombre de chaque genre
+    frequencies = df["Genres Plus Communs"].value_counts()
 
-df2 = df2.value_counts()
+    # Remplace les noms de genre avec moins de 800 occurences par 'Other'
+    condition = frequencies<=800
+    mask_obs = frequencies[condition].index
+    mask_dict = dict.fromkeys(mask_obs, "Other")
+    df2 = df["Genres Plus Communs"].replace(mask_dict)
 
-# Crée le pie chart
-plt.rcParams['axes.titley'] = 1.0 
-plt.rcParams['axes.titlepad'] = 25
-plt.title("Genres Plus Communs")
-plt.pie(df2, labels=df2.index, rotatelabels=True)
-plt.show()
+    # Retire les entrées sans genre
+    df2 = df2[df2.str.contains("None") == False]
 
-# ----------------------------------------------
-# Création du second graphe camembert des genres
-# ----------------------------------------------
+    df2 = df2.value_counts()
 
-plt.clf()
-df["Genres Moins Communs"] = df["genre"]
+    # Crée le pie chart
+    plt.rcParams['axes.titley'] = 1.0 
+    plt.rcParams['axes.titlepad'] = 25
+    plt.title("Most common genres")
+    plt.pie(df2, labels=df2.index, rotatelabels=True)
+    plt.savefig("./graphs/PieChart_MostCommonGenre", bbox_inches="tight")
+    if show_graph:  plt.show()
 
-# Récupère le nombre de chaque genre
-frequencies = df["Genres Moins Communs"].value_counts()
+    # ----------------------------------------------
+    # Création du second graphe camembert des genres
+    # ----------------------------------------------
 
-# Remplace les noms de genre avec plus de 800 occurences par 'To remove' pour qu'il puissent être aisément supprimés (celles déja présentes dans le premier graphe)
-conditionSup = 800 <= frequencies
-mask_obsSup = frequencies[conditionSup].index
-mask_dictSup = dict.fromkeys(mask_obsSup, "To Remove")
-df2 = df["Genres Moins Communs"].replace(mask_dictSup)
+    plt.clf()
+    df["Genres Moins Communs"] = df["genre"]
 
-# Remplace les noms de genre avec moins de 180 occurences par 'Other'
-conditionInf = frequencies <= 180
-mask_obsInf = frequencies[conditionInf].index
-mask_dictInf = dict.fromkeys(mask_obsInf, "Other")
-df2 = df2.replace(mask_dictInf)
+    # Récupère le nombre de chaque genre
+    frequencies = df["Genres Moins Communs"].value_counts()
 
-# Retire les entrées déja présentes dans le premier graphe
-df2 = df2[df2.str.contains("To Remove") == False]
-df2 = df2.value_counts()
+    # Remplace les noms de genre avec plus de 800 occurences par 'To remove' pour qu'il puissent être aisément supprimés (celles déja présentes dans le premier graphe)
+    conditionSup = 800 <= frequencies
+    mask_obsSup = frequencies[conditionSup].index
+    mask_dictSup = dict.fromkeys(mask_obsSup, "To Remove")
+    df2 = df["Genres Moins Communs"].replace(mask_dictSup)
 
-# Crée le pie chart
-plt.title("Genres Moins Communs")
-plt.pie(df2, labels=df2.index, rotatelabels=True)
-plt.show()
+    # Remplace les noms de genre avec moins de 180 occurences par 'Other'
+    conditionInf = frequencies <= 180
+    mask_obsInf = frequencies[conditionInf].index
+    mask_dictInf = dict.fromkeys(mask_obsInf, "Other")
+    df2 = df2.replace(mask_dictInf)
+
+    # Retire les entrées déja présentes dans le premier graphe
+    df2 = df2[df2.str.contains("To Remove") == False]
+    df2 = df2.value_counts()
+
+    # Crée le pie chart
+    plt.title("Less common genres")
+    plt.pie(df2, labels=df2.index, rotatelabels=True)
+    plt.savefig("./graphs/PieChart_LessCommonGenre", bbox_inches="tight")
+    if show_graph:  plt.show()
+
+if __name__ == "__main__":
+    main()

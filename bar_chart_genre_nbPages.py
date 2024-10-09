@@ -14,7 +14,7 @@ def definir_genre(df):
     df['genre'] = df.genre_and_votes.apply(getGenre)
     return df
 
-def main():
+def main(show_graph=False):
 
     # Lecture CSV
     data = pd.read_csv('./data/Cleaned_books.csv')
@@ -69,7 +69,8 @@ def main():
     plt.xticks(rotation=45, ha="right", fontsize=10)
     plt.subplots_adjust(bottom=0.3)
     plt.tight_layout()
-    plt.show()
+    plt.savefig("./graphs/BarChart_NumberOfPagesByGenreTop50", bbox_inches="tight")
+    if show_graph: plt.show()
 
     # Trier les genres par moyenne du nb de pages en ordre décroissant
     resultat_par_moyenne_pages = resultat.sort_values(by='mean_pages', ascending=False)
@@ -107,7 +108,8 @@ def main():
     plt.xticks(rotation=45, ha="right", fontsize=10)
     plt.subplots_adjust(bottom=0.3)
     plt.tight_layout()
-    plt.show()
+    plt.savefig("./graphs/BarChart_NumberOfPagesByGenreTop50GreaterAverage", bbox_inches="tight")
+    if show_graph: plt.show()
 
 
 if __name__ == "__main__":
