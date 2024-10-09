@@ -12,6 +12,7 @@ Maxime Perrot 3C2
 Created on 2024-10-08
 """
 
+
 #######################################
 #               IMPORTS               #
 #######################################
@@ -24,19 +25,12 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from libs.biplot import biplot
 
-#######################################
-#              CONSTANTS              #
-#######################################
-
-CSV_FILE = 'data/Cleaned_books.csv'
-
 
 #######################################
 #                 MAIN                #
 #######################################
 
-def main():
-    data = pd.read_csv(CSV_FILE)
+def main(data, show_graphs=False):
 
     df = data[
         [
@@ -56,19 +50,24 @@ def main():
     pca = PCA()
     df_pca = pca.fit_transform(df_scaled)
 
-    # Turn explained variance ratio into a dataframe
-    pca_evr_array = pca.explained_variance_ratio_ # = [0.3741862  0.32909465 0.29671915]
+    # Number of components to keep
+    eig = pd.DataFrame({
+        "Dimension" : range(1,len(df_scaled.columns) + 1),
+        "Eigenvalue" : pca.explained_variance_,
+        "Eigenvalue (%)": pca.explained_variance_ratio_*100,
+        "Cumulative (%)": np.round(np.cumsum(pca.explained_variance_ratio_)*100)
+    })
 
-    # 
-
-    # Plot the explained variance ratio
-    plt.bar(range(len(pca_evr_array)), pca_evr_array)
-    plt.title("Explained variance ratio")
-    plt.xlabel("Principal component index")
-    plt.ylabel("Explained variance ratio")
-    plt.ylim(0,1)
-    plt.legend(loc='best')
-    plt.show()
+    # Plot the eigenvalues
+    plt.bar(eig["Dimension"], eig["Eigenvalue (%)"], color = "blue")
+    plt.plot(eig["Dimension"], eig["Cumulative (%)"], color = "red", marker = "o")
+    plt.xlabel("Dimensions")
+    plt.ylabel("Eigenvalues (%)")
+    plt.title("PCA Explained Variance")
+    plt.legend(["Cumulative (%)", "Eigenvalue (%)"])
+    plt.xticks(ticks=range(1, len(eig["Dimension"]) + 1), labels=range(1, len(eig["Dimension"]) + 1))
+    plt.savefig("./graphs/BarChart_PCA_Explained_Variance.png", bbox_inches="tight")
+    if show_graphs: plt.show()
 
     # Plot the biplot
     biplot(
@@ -79,9 +78,20 @@ def main():
         cat          = pca.explained_variance_ratio_[0:1],
         density      = True,
         coeff_labels = list(df.columns),
-        title        = 'Correlation circle of the rating count, average rating and number of pages of the books'
+        title        = 'Correlation circle of the rating count,\naverage rating and number of pages of the books',
+        show_graph   = show_graphs,
+        save_path    = "./graphs/Biplot_PCA_Correlation_Circle.png"
     )
 
-
 if __name__ == "__main__":
-    main()
+
+    CSV_FILE = 'data/Cleaned_books.csv'
+
+    # Load the CSV file into a DataFrame 
+    data = pd.read_csv(CSV_FILE)
+
+    main(
+        data        = data,
+        show_graphs = False
+        )
+
