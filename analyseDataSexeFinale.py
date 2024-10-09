@@ -94,7 +94,7 @@ def main(show_graph=False):
     p2 = ax.bar(ind, dfFemme['pourcentageSexe'], width, bottom = dfHomme['pourcentageSexe'])
 
     ax.set_ylabel('Percentage of authors which are men or women')
-    ax.set_title('The 12 most popular genre of authors divided by the percentage of each sex writing them')
+    ax.set_title('The 12 most popular genres of authors divided by the ratio of each sex writing them')
     ax.set_xticks(ind)
     ax.set_xticklabels(dfHomme['genre'])
     ax.set_yticks(np.arange(0, 81, 10))
@@ -103,6 +103,7 @@ def main(show_graph=False):
 
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right", rotation_mode="anchor")
     plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre", bbox_inches="tight")
+    plt.clf()
     if show_graph: plt.show()
 
     # https://www.geeksforgeeks.org/bar-plot-in-matplotlib/
@@ -140,8 +141,9 @@ def main(show_graph=False):
     plt.pie(dfNbrHomme['nbr'], labels=dfNbrHomme['genre'], rotatelabels=True)
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
-    plt.title('The 12 Main genre of Male authors')
+    plt.title('The 12 Main genres of Male authors')
     plt.savefig("./graphs/PieChart_MenAuthorGenreInterest", bbox_inches="tight")
+    plt.clf()
     if show_graph: plt.show()
 
 
@@ -178,8 +180,9 @@ def main(show_graph=False):
     plt.pie(dfNbrFemme['nbr'], labels=dfNbrFemme['genre'], rotatelabels=True)
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
-    plt.title('The 12 Main genre of Female authors')
+    plt.title('The 12 Main genres of Female authors')
     plt.savefig("./graphs/PieChart_WomenAuthorGenreInterest", bbox_inches="tight")
+    plt.clf()
     if show_graph: plt.show()
 
 
