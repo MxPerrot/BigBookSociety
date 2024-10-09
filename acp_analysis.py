@@ -41,7 +41,6 @@ def main():
     df = data[
         [
         "rating_count",
-        "review_count",
         "average_rating",
         "number_of_pages"
         ]
@@ -57,8 +56,18 @@ def main():
     pca = PCA()
     df_pca = pca.fit_transform(df_scaled)
 
+    # Turn explained variance ratio into a dataframe
+    pca_evr_array = pca.explained_variance_ratio_ # = [0.3741862  0.32909465 0.29671915]
+
+    # 
+
     # Plot the explained variance ratio
-    plt.bar(range(len(pca.explained_variance_ratio_)), pca.explained_variance_ratio_)
+    plt.bar(range(len(pca_evr_array)), pca_evr_array)
+    plt.title("Explained variance ratio")
+    plt.xlabel("Principal component index")
+    plt.ylabel("Explained variance ratio")
+    plt.ylim(0,1)
+    plt.legend(loc='best')
     plt.show()
 
     # Plot the biplot
@@ -69,7 +78,8 @@ def main():
         ),
         cat          = pca.explained_variance_ratio_[0:1],
         density      = True,
-        coeff_labels = list(df.columns)
+        coeff_labels = list(df.columns),
+        title        = 'Correlation circle of the rating count, average rating and number of pages of the books'
     )
 
 
