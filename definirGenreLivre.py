@@ -19,7 +19,7 @@ def ajoutGenre(df):
     df["genre"] = df.genre_and_votes.apply(getGenre)
     return df
 
-def main():
+def main(show_graph=False):
 
     data = pd.read_csv("data/Cleaned_books.csv")
     df = pd.DataFrame(data)
@@ -51,8 +51,8 @@ def main():
     plt.rcParams['axes.titlepad'] = 25
     plt.title("Most common genres")
     plt.pie(df2, labels=df2.index, rotatelabels=True)
-    plt.savefig("./graphs/PieChart_MostCommonGenre")
-    plt.show()
+    plt.savefig("./graphs/PieChart_MostCommonGenre", bbox_inches="tight")
+    if show_graph:  plt.show()
 
     # ----------------------------------------------
     # Création du second graphe camembert des genres
@@ -83,8 +83,8 @@ def main():
     # Crée le pie chart
     plt.title("Less common genres")
     plt.pie(df2, labels=df2.index, rotatelabels=True)
-    plt.savefig("./graphs/PieChart_LessCommonGenre")
-    plt.show()
+    plt.savefig("./graphs/PieChart_LessCommonGenre", bbox_inches="tight")
+    if show_graph:  plt.show()
 
 if __name__ == "__main__":
     main()

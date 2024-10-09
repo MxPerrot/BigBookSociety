@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-def main():
+def main(show_graph=False):
 
     # Load the CSV file into a DataFrame
     file_path = './data/Cleaned_books.csv'
@@ -86,8 +86,8 @@ def main():
         plt.tight_layout()
 
         # Show the plot
-        plt.savefig("./graphs/BarChart_GenreByRating")
-        plt.show()
+        plt.savefig("./graphs/BarChart_GenreByRating", bbox_inches="tight")
+        if show_graph: plt.show()
 
     else:
         # Print an error message if the required columns are not in the DataFrame

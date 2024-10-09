@@ -23,7 +23,7 @@ def ajoutGenre(df):
     df["genre"] = df.author_genres.apply(getGenre)
     return df
 
-def main():
+def main(show_graph=False):
 
     data = pd.read_csv("data/Cleaned_authors.csv")
     df = pd.DataFrame(data)
@@ -102,8 +102,8 @@ def main():
     ax.legend((p1[0], p2[0]), ('Men', 'Women'))
 
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right", rotation_mode="anchor")
-    plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre")
-    plt.show()
+    plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre", bbox_inches="tight")
+    if show_graph: plt.show()
 
     # https://www.geeksforgeeks.org/bar-plot-in-matplotlib/
 
@@ -141,8 +141,8 @@ def main():
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
     plt.title('The 12 Main genre of Male authors')
-    plt.savefig("./graphs/PieChart_MenAuthorGenreInterest")
-    plt.show()
+    plt.savefig("./graphs/PieChart_MenAuthorGenreInterest", bbox_inches="tight")
+    if show_graph: plt.show()
 
 
 
@@ -179,12 +179,12 @@ def main():
     plt.rcParams['axes.titley'] = 1.0 
     plt.rcParams['axes.titlepad'] = 25
     plt.title('The 12 Main genre of Female authors')
-    plt.savefig("./graphs/PieChart_WomenAuthorGenreInterest")
-    plt.show()
+    plt.savefig("./graphs/PieChart_WomenAuthorGenreInterest", bbox_inches="tight")
+    if show_graph: plt.show()
 
 
 if __name__ == "__main__":
-    main()
+    main(show_graph=False)
 
 
 
