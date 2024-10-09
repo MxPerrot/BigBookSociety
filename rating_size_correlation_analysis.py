@@ -19,10 +19,7 @@ Created on 2024-10-08
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-from libs.biplot import biplot
+from scipy.stats import gaussian_kde
 
 #######################################
 #              CONSTANTS              #
@@ -40,37 +37,30 @@ def main():
 
     df = data[
         [
-        "rating_count",
-        "review_count",
         "average_rating",
         "number_of_pages"
         ]
     ]
 
     df = df[df["number_of_pages"] > 0] # Remove books with 0 pages
+    df = df[df["number_of_pages"] < 2000]
 
-    # Standardize the data
-    temp = df.sub(df.mean())
-    df_scaled = temp.div(df.std())
+    df = df.sort_values('average_rating')
 
-    # Apply PCA
-    pca = PCA()
-    df_pca = pca.fit_transform(df_scaled)
+    x = df['number_of_pages'].to_numpy()
+    y = df['average_rating'].to_numpy()
 
-    # Plot the explained variance ratio
-    plt.bar(range(len(pca.explained_variance_ratio_)), pca.explained_variance_ratio_)
+#    xy = np.vstack([x,y])
+#    z = gaussian_kde(xy)(xy)
+
+    ymin = [min(y[:i]) for i in range(1,len(x)+1)]
+
+
+    plt.scatter(x,y,s=1)
+    plt.plot(x,ymin)
+    plt.xlabel('Number of pages')
+    plt.ylabel('Average rating')
     plt.show()
-
-    # Plot the biplot
-    biplot(
-        score = df_pca[:,0:2],
-        coeff = np.transpose(
-            pca.components_[0:2,:]
-        ),
-        cat          = pca.explained_variance_ratio_[0:1],
-        density      = True,
-        coeff_labels = list(df.columns)
-    )
 
 
 if __name__ == "__main__":
