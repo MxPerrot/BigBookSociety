@@ -98,7 +98,7 @@ def main(show_graph=False):
     ax.legend((p1[0], p2[0]), ('Men', 'Women'))
 
     plt.setp(ax.get_xticklabels(), rotation=20, ha="right", rotation_mode="anchor")
-    plt.savefig("./graphs/BarChart_PopularGenreByAuthorGenre", bbox_inches="tight")
+    plt.savefig("./graphs/BarChart_PopularGenreByAuthorGender", bbox_inches="tight")
     if show_graph: plt.show()
     plt.clf()
 
