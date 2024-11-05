@@ -87,8 +87,7 @@ CREATE TABLE IF NOT EXISTS _utilisateur (
     frequence_lecture VARCHAR,
     vitesse_lecture INTEGER,
     nbr_livre_lue INTEGER,
-    id_code_postal VARCHAR REFERENCES _code_postal(id_code_postal),
-    id_format INTEGER REFERENCES _format(id_format)
+    id_code_postal INTEGER REFERENCES _code_postal(id_code_postal)
 );
 
 
@@ -99,6 +98,14 @@ CREATE TABLE IF NOT EXISTS _auteur_genre (
     id_genre INTEGER REFERENCES _genre(id_genre) ON DELETE CASCADE,
     PRIMARY KEY (id_auteur, id_genre)
 );
+
+-- Table de liaison _format_utilisateur pour la relation "préférence" entre Utilisateur et Format
+CREATE TABLE IF NOT EXISTS _format_utilisateur (
+    id_format INTEGER  REFERENCES _format(id_format) ON DELETE CASCADE,
+    id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+    PRIMARY KEY (id_format, id_utilisateur)
+);
+
 
 
 -- Table de liaison _utilisateur_genre pour la relation "préférence" entre Utilisateur et Genre
@@ -150,5 +157,6 @@ CREATE TABLE _genre_livre (
   nb_votes INTEGER,
   PRIMARY KEY(id_genre,id_livre)
 );
+
 
 
