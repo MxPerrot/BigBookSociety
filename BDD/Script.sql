@@ -19,7 +19,7 @@ CREATE TABLE _prix (
 
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
-    annee INTEGER,
+    annee INTEGER, 
     pays VARCHAR,
     localisation VARCHAR
 );
@@ -27,10 +27,10 @@ CREATE TABLE _cadre (
 
 CREATE TABLE _livre (
     id_livre SERIAL PRIMARY KEY,
-    titre VARCHAR(255) UNIQUE NOT NULL,
+    titre VARCHAR NOT NULL,
     nb_notes INTEGER,
     nb_critiques INTEGER,
-    note_moyenne FLOAT,
+    note_moyenne DECIMAL,
     nb_note_1_etoile INTEGER,
     nb_note_2_etoile INTEGER,
     nb_note_3_etoile INTEGER,
@@ -44,6 +44,7 @@ CREATE TABLE _livre (
     description VARCHAR,
     id_serie INTEGER REFERENCES _serie(id_serie),
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
+    -- TODO: éventuellement créer une colonne "format", afin que les nouveaux livres ajoutés puissent avoir un format afin d'enrichir la base.  
 );
 
 
@@ -51,15 +52,15 @@ CREATE TABLE _livre (
 
 CREATE TABLE IF NOT EXISTS _genre (
     id_genre SERIAL PRIMARY KEY,
-    libelle_genre VARCHAR(100)
+    libelle_genre VARCHAR
 );
 
 
 CREATE TABLE IF NOT EXISTS _auteur (
     id_auteur SERIAL PRIMARY KEY,
-    note_moyenne FLOAT,
-    nom VARCHAR(100) UNIQUE,
-    origine VARCHAR(100),
+    note_moyenne DECIMAL,
+    nom VARCHAR UNIQUE,
+    origine VARCHAR,
     nb_reviews INTEGER,
     nb_critiques INTEGER,
     sexe VARCHAR,
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS _format (
 CREATE TABLE IF NOT EXISTS _utilisateur (
     id_utilisateur SERIAL PRIMARY KEY,
     mail_utilisateur VARCHAR UNIQUE NOT NULL,
+    gender VARCHAR NOT NULL,
     age INTEGER,
     profession VARCHAR,
     situation_familiale VARCHAR,
