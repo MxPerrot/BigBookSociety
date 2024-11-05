@@ -1,6 +1,6 @@
-DROP SCHEMA IF EXISTS tp1 CASCADE;
-create schema tp1;
-set schema 'tp1';
+DROP SCHEMA IF EXISTS sae CASCADE;
+create schema sae;
+set schema 'sae';
 
 CREATE TABLE _serie (
     id_serie SERIAL PRIMARY KEY,
@@ -19,7 +19,9 @@ CREATE TABLE _prix (
 
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
-    libelle_cadre VARCHAR NOT NULL
+    annee INTEGER,
+    pays VARCHAR,
+    localisation VARCHAR
 );
 
 
@@ -58,13 +60,17 @@ CREATE TABLE IF NOT EXISTS _auteur (
     note_moyenne FLOAT,
     nom VARCHAR(100) UNIQUE,
     origine VARCHAR(100),
+    nb_reviews INTEGER,
+    nb_critiques INTEGER,
+    sexe VARCHAR,
     id_genre INTEGER,  -- Clé étrangère pour la relation "écrit" avec Genre
     FOREIGN KEY (id_genre) REFERENCES _genre(id_genre)  -- Relation avec Genre
 );
 
 
 CREATE TABLE IF NOT EXISTS _code_postal (
-    code_postal VARCHAR PRIMARY KEY
+    id_code_postal SERIAL PRIMARY KEY,
+    code_postal VARCHAR UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS _format (
@@ -74,14 +80,14 @@ CREATE TABLE IF NOT EXISTS _format (
 
 CREATE TABLE IF NOT EXISTS _utilisateur (
     id_utilisateur SERIAL PRIMARY KEY,
-    mail_utilisateur VARCHAR NOT NULL,
+    mail_utilisateur VARCHAR UNIQUE NOT NULL,
     age INTEGER,
     profession VARCHAR,
-    situation_familial VARCHAR,
+    situation_familiale VARCHAR,
     frequence_lecture VARCHAR,
-    vitesse_lecture VARCHAR,
+    vitesse_lecture INTEGER,
     nbr_livre_lue INTEGER,
-    code_postal VARCHAR REFERENCES _code_postal(code_postal),
+    id_code_postal VARCHAR REFERENCES _code_postal(id_code_postal),
     id_format INTEGER REFERENCES _format(id_format)
 );
 
@@ -144,4 +150,5 @@ CREATE TABLE _genre_livre (
   nb_votes INTEGER,
   PRIMARY KEY(id_genre,id_livre)
 );
+
 
