@@ -2,3 +2,4 @@ env
 .~lock*
 __pycache__
 graphs
+*IGNOREME*
