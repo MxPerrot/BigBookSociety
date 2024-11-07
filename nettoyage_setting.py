@@ -38,13 +38,38 @@ countries = [
     "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
 ]
 
-# Récupère les informations propres au différents settings du livre
-# pattern = r'([A-Za-z\.]+(, |\s)?)+(,\d+)?(\([a-zA-Z\s]+\))?'
-# 
-# ([A-Za-z\s,]+(?:\([A-Za-z\s]+\))?)
-pattern = r'(?:[A-Za-z\.]+(?:, |\s)?)+(?:,\d+)?(?:\([a-zA-Z\s]+\))?'
+# Récupère les informations propres au différents settings du livre et les sépares
+patternGlobal = r'(?:[A-Za-z\.]+(?:, |\s)?)+(?:,\d+)?(?:\([a-zA-Z\s]+\))?'
 
-df['settingsClean'] = df['settings'].str.findall(pattern)
-print(df['settingsClean'])
+df['settingsClean'] = df['settings'].str.findall(patternGlobal)
+# Crée une ligne pour chaque setting
+df = df.explode('settingsClean', ignore_index=True)
 
-df.to_csv('./data/Cleaned_books2.csv', index=False)
+def extract(x):
+    if isinstance(x, list) and len(x) >= 1:
+        return x[0]
+    else :
+        return None
+
+def extractCountry(x):
+    if isinstance(x, list) and len(x) >= 1:
+        return x[0].replace('(','').replace(')','')
+    else :
+        return None
+        
+patternPays = r'\([a-zA-Z\s]+\)'
+df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractCountry)
+print(df['settingCountry'].to_string())
+
+patternDate = r'\d+'
+df['settingDate'] = df['settingsClean'].str.findall(patternDate).apply(extract)
+print(df['settingDate'])
+
+patternLoc = r'^(?:[A-Za-z\.]+(?:, |\s)?)+'
+df['settingLoc'] = df['settingsClean'].str.findall(patternLoc).apply(extract)
+print(df['settingLoc'])
+
+"""
+print(re.findall(patternPays,df['settingsClean'][3][1])[0])
+
+#df.to_csv('./data/Cleaned_books2.csv', index=False)"""
