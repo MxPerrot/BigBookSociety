@@ -19,6 +19,20 @@ authors.loc[(authors["author_id"] == 5393357) & (authors["author_name"] == "A. K
 unique_authors_count = count_unique_authors(authors)
 unique_author_names_count = count_unique_author_names(authors)
 
-# Affichage des résultats
+# Affichage des résultats après correction
 print("Nombre d'auteurs uniques :", unique_authors_count)
 print("Nombre de noms d'auteurs uniques :", unique_author_names_count)
+
+# Fonction pour détecter les homonymes : noms associés à plusieurs identifiants
+def find_homonyms(df):
+    name_id_counts = df.groupby("author_name")["author_id"].nunique()
+    homonyms = name_id_counts[name_id_counts > 1]
+    return homonyms
+
+# Exécuter la vérification des homonymes
+homonyms = find_homonyms(authors)
+
+# Affichage des résultats de la vérification des homonymes
+print("\nNoms d'auteurs associés à plusieurs identifiants :")
+print(homonyms)
+print("\nNombre total de noms d'auteurs ayant plusieurs identifiants :", len(homonyms))
