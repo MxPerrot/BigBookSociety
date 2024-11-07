@@ -4,35 +4,53 @@ import pandas as pd
 books = pd.read_csv("data/Cleaned_books.csv")
 authors = pd.read_csv("data/Cleaned_authors.csv")
 
-# Fonction pour compter le nombre d'author_id uniques
-def count_unique_authors(df):
-    return df["author_id"].nunique()
+# Fonction pour normaliser les noms (enlever les espaces superflus et uniformiser la casse)
+def normalize_name(name):
+    return " ".join(name.strip().lower().split())
 
-# Fonction pour compter le nombre d'author_name uniques
-def count_unique_author_names(df):
-    return df["author_name"].nunique()
+# Appliquer la normalisation sur les colonnes 'author' de books et 'author_name' de authors
+books["normalized_author"] = books["author"].apply(normalize_name)
+authors["normalized_author_name"] = authors["author_name"].apply(normalize_name)
 
-# Correction : remplacer "A. Kirk" par "A.E. Kirk" pour l'author_id 5393357
-authors.loc[(authors["author_id"] == 5393357) & (authors["author_name"] == "A. Kirk"), "author_name"] = "A.E. Kirk"
+# 1. Vérifier les doublons dans 'author_id' de authors
+duplicates_in_author_id = authors[authors.duplicated(subset=['author_id'], keep=False)]
 
-# Comptage après la correction
-unique_authors_count = count_unique_authors(authors)
-unique_author_names_count = count_unique_author_names(authors)
+# 2. Vérifier s'il y a des noms associés à plusieurs 'author_id'
+duplicate_names = authors[authors.duplicated(subset=['normalized_author_name'], keep=False)]
 
-# Affichage des résultats après correction
-print("Nombre d'auteurs uniques :", unique_authors_count)
-print("Nombre de noms d'auteurs uniques :", unique_author_names_count)
+# 3. Résoudre les problèmes de doublons dans 'author_name'
+# Exemple de résolution : Si deux noms ont le même 'author_id', garder l'un des deux (ou remplacer)
+# On choisit ici de remplacer les noms multiples par le nom le plus complet (par exemple "A.E. Kirk" remplaçant "A. Kirk")
+for author_id in duplicates_in_author_id['author_id'].unique():
+    authors.loc[authors['author_id'] == author_id, 'normalized_author_name'] = \
+        authors.loc[authors['author_id'] == author_id, 'normalized_author_name'].mode()[0]
 
-# Fonction pour détecter les homonymes : noms associés à plusieurs identifiants
-def find_homonyms(df):
-    name_id_counts = df.groupby("author_name")["author_id"].nunique()
-    homonyms = name_id_counts[name_id_counts > 1]
-    return homonyms
+# 4. Vérifier les auteurs présents dans 'books' mais absents de 'authors'
+missing_authors = set(books["normalized_author"]) - set(authors["normalized_author_name"])
 
-# Exécuter la vérification des homonymes
-homonyms = find_homonyms(authors)
+# Afficher les résultats
 
-# Affichage des résultats de la vérification des homonymes
-print("\nNoms d'auteurs associés à plusieurs identifiants :")
-print(homonyms)
-print("\nNombre total de noms d'auteurs ayant plusieurs identifiants :", len(homonyms))
+# Auteurs manquants
+print("\nAuteurs présents dans 'books' mais absents de 'authors' :")
+for author in missing_authors:
+    print(author)
+
+# Nombre d'auteurs manquants
+print("\nNombre d'auteurs manquants :", len(missing_authors))
+
+# Auteurs associés à plusieurs identifiants
+print("\nAuteurs associés à plusieurs identifiants (doublons dans 'author_name') :")
+print(duplicate_names[['author_id', 'author_name']])
+
+# Doublons dans 'author_id'
+print("\nDoublons dans 'author_id' de authors :")
+print(duplicates_in_author_id[['author_id', 'author_name']])
+
+# Nombre d'auteurs uniques
+print("\nNombre d'auteurs uniques dans 'authors' :", authors['normalized_author_name'].nunique())
+print("Nombre d'auteurs uniques dans 'books' :", books['normalized_author'].nunique())
+
+# Auteurs ayant plusieurs noms associés (homonymes)
+authors_with_multiple_names = authors[authors.duplicated(subset=['author_id'], keep=False)]
+print("\nAuteurs avec plusieurs noms associés (homonymes) :")
+print(authors_with_multiple_names[['author_id', 'author_name']])
