@@ -43,11 +43,14 @@ def main():
 
     common_books_id = np.intersect1d(books_in_authors, books_in_books)
     
+    rows_authors_books = authors.loc[authors['book_id'].isin(common_books_id)]
 
-    #TODO: Print both of the titles of books in common_books to ensure that the books that share the same id have indeed the same title.
-    # Once that is checked manually with head(), automatise it perhaps with assert
-    #rows_authors_books = authors.loc[authors['book_id'].isin(common_books_id)]
-    #rows_books_books = books.loc[books['id'].isin(common_books_id)]
+    col_list = ['book_id', 'author_id']
+
+    link_dataframe = rows_authors_books[col_list]
+
+    link_dataframe = link_dataframe.drop_duplicates(subset = ['book_id','author_id'], keep=False)
+    
 
     #rows_authors_books = rows_authors_books.drop_duplicates(subset=['book_id'])
 
@@ -68,10 +71,15 @@ def main():
 
 
     ###### Analysis of books with different IDs yet a similar TITLE
-    # rows_authors_books = authors.loc[authors['book_title'].isin(books['title'])]
-    # rows_books_books = books.loc[books['title'].isin(authors['book_title'])]
+    rows_authors_books = authors.loc[authors['book_title'].isin(books['title'])]
+    rows_books_books = books.loc[books['title'].isin(authors['book_title'])]
 
-    # common_books_titles_but_not_ID = rows_authors_books.loc[~rows_authors_books['book_id'].isin(common_books_id) & (rows_authors_books['book_title'].isin(rows_books_books['title']))]
+    common_books_titles_but_not_ID = rows_authors_books.loc[~rows_authors_books['book_id'].isin(common_books_id) & (rows_authors_books['book_title'].isin(rows_books_books['title']))]
+
+    common_books_titles_but_not_ID = common_books_titles_but_not_ID[col_list]
+
+    link_dataframe = pd.concat([link_dataframe,common_books_titles_but_not_ID])
+    
 
     # print(f"Number of common books titles but not ID: {len(common_books_titles_but_not_ID)}")
     # print(f"Common books titles but not ID by title: {common_books_titles_but_not_ID['book_title']}")
@@ -95,8 +103,31 @@ def main():
 
     # TODO Search books with multiple authors and print their titles
     g = rows_authors_books_big.groupby('book_id')['author_id'].unique()
-    g = g.where(g.str.len()>1)
-    print(g)    
+    g = g.where(g.str.len()>1).dropna()
+
+    rows_authors_books_big = rows_authors_books_big.loc[~rows_authors_books_big['book_id'].isin(g.index.tolist())]
+
+    link_dataframe = pd.concat([link_dataframe,rows_authors_books_big[col_list]])
+
+    rows_authors_books_big = rows_authors_books_big.drop(columns=['author_average_rating', 'num_reviews', 'num_ratings', 'author_gender','author_genres','author_id','author_rating_count','author_review_count','birthplace'])
+
+    rows_authors_books_big = rows_authors_books_big.rename(columns={"book_id": "id","author_name": "author","book_average_rating": "average_rating","book_title": "title","pages": "number_of_pages","publish_date": "date_published"})
+
+    bigBook = pd.concat([books,rows_authors_books_big])
+
+    bigBook.to_csv("Big_book.csv")
+    link_dataframe.to_csv("link.csv")
+
+    #Remaining Values
+    #genre_1,genre_2,publish_date
+
+    #Books Values
+    #series,rating_count,review_count,average_rating,five_star_ratings,four_star_ratings,three_star_ratings,two_star_ratings,one_star_ratings,number_of_pages,date_published,publisher,original_title,genre_and_votes,isbn,isbn13,settings,characters,awards,books_in_series,description,description_length,title_length,series_length
+
+
+    #TWO BOOKS WITH MULTIPLE AUTHORS
+
+
 
 if __name__ == "__main__":
     main()
