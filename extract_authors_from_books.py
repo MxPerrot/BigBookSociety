@@ -59,6 +59,8 @@ def main():
     bigAuthor['author_genres'] = bigAuthor['author_genres'].str.split(',')
     bigAuthor = bigAuthor.explode('author_genres', ignore_index=True)
 
+    #TODO réglér problème .O
+
     #Supprimer les colonnes non souhaitées de BigAuthor
     bigAuthor = bigAuthor.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
 
@@ -144,7 +146,7 @@ def main():
     #                 # Si l'auteur n'existe pas, ajouter un nouvel ID et l'inclure dans BigAuthor
     #                 max_author_id += 1
     #                 authors = pd.concat([authors, pd.DataFrame({
-    #                     "author_id": [max_author_id],
+    #                     "author_id": [max_author_id],author_rating_count
     #                     "author_name": [author_name],
     #                     "author_average_rating": [np.nan],
     #                     "author_gender": [np.nan],
