@@ -1,71 +1,199 @@
-# -*- coding:utf-8 -*-
+# -*- coding:utf-8 -*- 
 
 import pandas as pd
 import numpy as np
+import os
 
 def main():
     """
     Main function
     """
-    
-    # Charger authors.csv
-    authors = pd.read_csv("data/Cleaned_authors.csv")
 
-    # Charger books.csv
-    books = pd.read_csv("data/Cleaned_books.csv")
+    # Charger les fichiers CSV
+    authors_path = "BigAuthor.csv"
+    clean_authors_path = "data/Cleaned_authors.csv"
+    books_path = "data/Cleaned_books.csv"
+    link_path = "link.csv"
 
-    # Charger link.csv existant sans colonne de `link_id`
-    link_dataframe = pd.read_csv("link.csv")
+    authors = pd.read_csv(clean_authors_path)  # Charger le fichier existant
+    books = pd.read_csv(books_path)  # Charger le fichier existant
 
-    # Récupérer l'ID maximum d'auteur déjà présent
-    max_author_id = authors['author_id'].max()
+    books['author'] = books['author'].str.split(',')
+    books = books.explode('author', ignore_index=True)
 
-    # Extraire les auteurs uniques de books.csv qui ne sont pas dans authors
-    books_authors = books[['author', 'id']].drop_duplicates()
-    existing_authors = authors['author_name'].unique()
-    new_authors = books_authors[~books_authors['author'].isin(existing_authors)]
+    # Get a list of books in the authors ("book_title" column)
+    authors_in_authors = authors["author_name"].unique()
 
-    # Créer une copie explicite de new_authors
-    new_authors = new_authors.copy()
+    # Check for all ids in books_in_authors that are also in books["id"]
+    authors_in_books = books["author"].unique()
 
-    # Assigner de nouveaux ID aux auteurs manquants
-    new_authors['author_id'] = range(max_author_id + 1, max_author_id + 1 + len(new_authors))
+    common_author_name = np.intersect1d(authors_in_authors, authors_in_books)
 
-    # Créer un DataFrame temporaire pour stocker les nouveaux liens
-    new_link_dataframe = pd.DataFrame(columns=['book_id', 'author_id'])
+    rows_books_author_big = books.loc[~books['author'].isin(authors['author_name'])]
 
-    # Associer chaque auteur dans books avec son ID et générer les nouveaux liens
-    for _, row in books.iterrows():
-        book_id = row['id']
-        author_name = row['author']
-        
-        # Vérifier si l'auteur est déjà dans authors
-        if author_name in existing_authors:
-            # Récupérer l'ID de l'auteur existant
-            author_id = authors.loc[authors['author_name'] == author_name, 'author_id'].values[0]
-        else:
-            # Sinon, récupérer l'ID nouvellement assigné dans new_authors
-            author_id = new_authors.loc[new_authors['author'] == author_name, 'author_id'].values[0]
-        
-        # Vérifier si ce lien existe déjà dans link_dataframe
-        if not ((link_dataframe['book_id'] == book_id) & (link_dataframe['author_id'] == author_id)).any():
-            # Ajouter la paire (book_id, author_id) sans `link_id`
-            new_link_dataframe = pd.concat([
-                new_link_dataframe,
-                pd.DataFrame([[book_id, author_id]], columns=['book_id', 'author_id'])
-            ], ignore_index=True)
+    max_author_id = authors["author_id"].max() if not authors.empty else 0
 
-    # Créer le DataFrame Big_author en combinant authors et new_authors
-    big_author_df = pd.concat([authors, new_authors[['author_id', 'author']]], ignore_index=True)
-    big_author_df = big_author_df.rename(columns={'author': 'author_name'})
+    author_a_implemente = rows_books_author_big['author'].drop_duplicates().to_frame()
 
-    # Ajouter les nouveaux liens au fichier link.csv existant
-    link_dataframe = pd.concat([link_dataframe, new_link_dataframe], ignore_index=True)
+    author_a_implemente.index = author_a_implemente.index + max_author_id
 
-    # Sauvegarder les fichiers mis à jour
-    big_author_df.to_csv("Big_author.csv", index=False)
-    link_dataframe.to_csv("link.csv", index=False)
-    print("Fichiers 'Big_author.csv' et 'link.csv' mis à jour avec succès.")
+    author_a_implemente = author_a_implemente.reset_index()
+
+    rows_books_author_big = pd.merge(rows_books_author_big, author_a_implemente, on='author', how='inner')
+
+    rows_books_author_big = rows_books_author_big.rename(columns={"index": "author_id","id": "book_id"})
+    link_dataframe = pd.read_csv(link_path)
+
+    col_list = ['book_id', 'author_id']
+
+    link_dataframe = pd.concat([link_dataframe,rows_books_author_big[col_list]])
+
+    author_a_implemente = author_a_implemente.rename(columns={"index": "author_id","author": "author_name"})
+
+    author_a_implemente = author_a_implemente.reset_index(drop=True)
+
+    # FAIRE EN SORTE D'ENLEVER L'ESPACE AU DEBUT DU NOM DES AUTEURS
+    # TODO DROP LES COLONNES BOOKS DU CSV BIGAUTHOR
+
+    bigAuthor = pd.concat([authors,author_a_implemente])
+
+    bigAuthor['author_genres'] = bigAuthor['author_genres'].str.split(',')
+    bigAuthor = bigAuthor.explode('author_genres', ignore_index=True)
+
+
+    bigAuthor.to_csv(authors_path, index=False)
+    link_dataframe.to_csv(link_path, index=False)
+
+    # # Vérifier si BigAuthor.csv existe déjà
+    # if os.path.exists(authors_path):
+    #     authors = pd.read_csv(authors_path)  # Charger le fichier existant
+    # else:
+    #     authors = pd.DataFrame(columns=["author_average_rating", "author_gender", "author_genres", "author_id", 
+    #                                     "author_name", "author_rating_count", "author_review_count", 
+    #                                     "birthplace", "book_average_rating", "book_id", "book_title", 
+    #                                     "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", 
+    #                                     "publish_date"])  # Si le fichier n'existe pas, on en crée un vide
+
+    # # Charger Cleaned_authors.csv pour récupérer les auteurs qui ne sont pas dans BigAuthor
+    # clean_authors = pd.read_csv(clean_authors_path)
+
+    # # Ajouter les auteurs de Cleaned_authors à BigAuthor si ce n'est pas déjà fait
+    # max_author_id = authors["author_id"].max() if not authors.empty else 0
+    # existing_authors = set(authors["author_name"])
+
+    # # Ajouter les auteurs de Cleaned_authors à BigAuthor si ils n'existent pas déjà
+    # new_authors = []
+    # for _, row in clean_authors.iterrows():
+    #     author_name = row["author_name"]
+    #     if author_name not in existing_authors:
+    #         max_author_id += 1
+    #         new_authors.append({
+    #             "author_id": max_author_id,
+    #             "author_name": author_name,
+    #             "author_average_rating": row.get("author_average_rating", np.nan),
+    #             "author_gender": row.get("author_gender", np.nan),
+    #             "author_genres": row.get("author_genres", np.nan),
+    #             "author_rating_count": row.get("author_rating_count", np.nan),
+    #             "author_review_count": row.get("author_review_count", np.nan),
+    #             "birthplace": row.get("birthplace", np.nan),
+    #             "book_average_rating": np.nan,  # Pas encore disponible dans BigAuthor
+    #             "book_id": np.nan,              # Pas encore disponible dans BigAuthor
+    #             "book_title": np.nan,           # Pas encore disponible dans BigAuthor
+    #             "genre_1": np.nan,              # Pas encore disponible dans BigAuthor
+    #             "genre_2": np.nan,              # Pas encore disponible dans BigAuthor
+    #             "num_ratings": np.nan,          # Pas encore disponible dans BigAuthor
+    #             "num_reviews": np.nan,          # Pas encore disponible dans BigAuthor
+    #             "pages": np.nan,                # Pas encore disponible dans BigAuthor
+    #             "publish_date": np.nan          # Pas encore disponible dans BigAuthor
+    #         })
+    #         existing_authors.add(author_name)
+
+    # # Ajouter les nouveaux auteurs à BigAuthor
+    # if new_authors:
+    #     authors = pd.concat([authors, pd.DataFrame(new_authors)], ignore_index=True)
+
+    # # Charger les livres
+    # books = pd.read_csv(books_path)
+    # link_df = pd.read_csv(link_path) if os.path.exists(link_path) else pd.DataFrame(columns=["book_id", "author_id"])
+
+    # # Liste pour stocker les nouveaux liens entre les livres et les auteurs
+    # new_links = []
+
+    # books['author'] = books['author'].str.split(',')
+    # books = books.explode('author', ignore_index=True)
+
+
+    # Traitement des livres et auteurs dans Cleaned_books.csv
+    # for _, row in books.iterrows():
+    #     book_id = row["id"]
+    #     authors_str = row["author"]  # Colonne contenant les noms des auteurs
+    #     os.system('cls' if os.name == 'nt' else 'clear')
+    #     print(f"Chargement auteur: {barre}/{len(books)}")
+    #     barre+=1
+
+    #     if pd.notna(authors_str):  # Vérifie que ce n'est pas une valeur NaN
+    #         author_name = authors_str
+
+    #         # Vérifier si l'auteur existe déjà dans BigAuthor
+    #         author_row = authors[authors["author_name"] == author_name]
+
+    #         if author_row.empty:
+    #                 # Si l'auteur n'existe pas, ajouter un nouvel ID et l'inclure dans BigAuthor
+    #                 max_author_id += 1
+    #                 authors = pd.concat([authors, pd.DataFrame({
+    #                     "author_id": [max_author_id],
+    #                     "author_name": [author_name],
+    #                     "author_average_rating": [np.nan],
+    #                     "author_gender": [np.nan],
+    #                     "author_genres": [np.nan],
+    #                     "author_rating_count": [np.nan],
+    #                     "author_review_count": [np.nan],
+    #                     "birthplace": [np.nan],
+    #                     "book_average_rating": [np.nan],
+    #                     "book_id": [book_id],
+    #                     "book_title": [row["title"]],
+    #                     "genre_1": [row.get("genre_1", np.nan)],
+    #                     "genre_2": [row.get("genre_2", np.nan)],
+    #                     "num_ratings": [row.get("num_ratings", np.nan)],
+    #                     "num_reviews": [row.get("num_reviews", np.nan)],
+    #                     "pages": [row.get("pages", np.nan)],
+    #                     "publish_date": [row.get("publish_date", np.nan)],
+    #                 })], ignore_index=True)
+    #                 author_id = max_author_id
+    #         else:
+    #                 # Sinon, utiliser l'ID existant
+    #                 author_id = author_row.iloc[0]["author_id"]
+
+    #         # Ajouter une nouvelle association dans new_links
+    #         new_links.append({
+    #             "book_id": book_id,
+    #             "author_id": author_id
+    #         })
+
+    # Créer un DataFrame pour les nouvelles associations
+    # new_links_df = pd.DataFrame(new_links)
+
+    # # Combiner link_df avec les nouvelles associations sans duplications
+    # link_df = pd.concat([link_df, new_links_df]).drop_duplicates(ignore_index=True)
+
+    # # Réorganiser les colonnes de BigAuthor pour qu'elles correspondent à l'ordre de Cleaned_authors
+    # authors = authors[[
+    #     "author_average_rating", "author_gender", "author_genres", "author_id", "author_name", 
+    #     "author_rating_count", "author_review_count", "birthplace", "book_average_rating", "book_id", 
+    #     "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"
+    # ]]
+
+    # # Supprimer les colonnes non souhaitées de BigAuthor
+    # authors = authors.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", 
+    #                                 "num_ratings", "num_reviews", "pages", "publish_date"])
+
+    # authors['author_genres'] = authors['author_genres'].str.split(',')
+    # authors = authors.explode('author_genres', ignore_index=True)
+
+    # # Enregistrer les nouveaux fichiers CSV
+    # authors.to_csv(authors_path, index=False)  # Mettre à jour BigAuthor.csv
+    # link_df.to_csv(link_path, index=False)  # Mettre à jour link.csv
+    # print("Les fichiers ont été mis à jour avec succès.")
 
 if __name__ == "__main__":
     main()
