@@ -29,7 +29,7 @@ def getHistoricEra(date):
         return "Unknown"
 
 def ajoutEpoque(df):
-    df["epoque"] = df.date_published.apply(getHistoricEra)
+    df["epoque"] = df.date_published_formated.apply(getHistoricEra)
     return df
 
 def getGenre(genresWithVotes): 

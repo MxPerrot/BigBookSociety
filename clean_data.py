@@ -103,7 +103,7 @@ UTF8_CORRESPONDANCY = {
         'Å±' : 'ű',
         'Ãº' : 'ú',
         'Ã¶' : 'ö',
-        'Ã¤' : 'ä'
+        'Ã¤' : 'ä',
         'Ã'  : 'à'
     }
 
@@ -218,12 +218,6 @@ def yearStrToInt(date_str):
 def formatDate(data):
 # Appliquer la fonction à la colonne 'date_published' et stocker le résultat dans une colonne temporaire
     data['date_published_formated'] = data['date_published'].apply(yearStrToInt)
-
-    # Replacer la colonne 'date_published' par la nouvelle colonne formattée
-    data['date_published'] = data['date_published_formated']
-
-    # Supprimer colonne temporaire
-    data = data.drop(columns=['date_published_formated'])
 
     return data
 
