@@ -117,6 +117,8 @@ def main():
 
     bigBook = bigBook.drop(columns=['author'])
 
+    bigBook = bigBook.drop_duplicates()
+
     bigBook.to_csv("Big_book.csv", index=False)
     link_dataframe.to_csv("link.csv", index=False)
 
