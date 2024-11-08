@@ -102,10 +102,10 @@ def main():
     # book_average_rating,book_id,book_title,genre_1,genre_2,num_ratings,num_reviews,pages,publish_date
 
     # TODO Search books with multiple authors and print their titles
-    g = rows_authors_books_big.groupby('book_id')['author_id'].unique()
-    g = g.where(g.str.len()>1).dropna()
+    # g = rows_authors_books_big.groupby('book_id')['author_id'].unique()
+    # g = g.where(g.str.len()>1).dropna()
 
-    rows_authors_books_big = rows_authors_books_big.loc[~rows_authors_books_big['book_id'].isin(g.index.tolist())]
+    # rows_authors_books_big = rows_authors_books_big.loc[~rows_authors_books_big['book_id'].isin(g.index.tolist())]
 
     link_dataframe = pd.concat([link_dataframe,rows_authors_books_big[col_list]])
 
@@ -115,8 +115,8 @@ def main():
 
     bigBook = pd.concat([books,rows_authors_books_big])
 
-    bigBook.to_csv("Big_book.csv")
-    link_dataframe.to_csv("link.csv")
+    bigBook.to_csv("Big_book.csv", index=False)
+    link_dataframe.to_csv("link.csv", index=False)
 
     #Remaining Values
     #genre_1,genre_2,publish_date
