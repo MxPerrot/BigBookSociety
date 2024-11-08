@@ -115,6 +115,8 @@ def main():
 
     bigBook = pd.concat([books,rows_authors_books_big])
 
+    bigBook = bigBook.drop(columns=['author'])
+
     bigBook.to_csv("Big_book.csv", index=False)
     link_dataframe.to_csv("link.csv", index=False)
 
