@@ -228,7 +228,7 @@ def formatDate(data):
     return data
 
 # TODO: keep going on renaming and adding comments to functions
-
+"""
 def addDescriptionLength(df):
     df['description_length'] = df["description"].str.count(' ')+1
     return df
@@ -240,7 +240,7 @@ def addTitleLength(df):
 def addSeriesLength(df):
     df['series_length'] = df["books_in_series"].str.count(',')+1
     return df
-
+"""
 def removeLeadingTrailingSpaces(df,format):
     """
     for every column of the dataframe supposed to be a string,
@@ -278,9 +278,9 @@ def main():
     books_data = formatDate(books_data)
 
     # Adding rows for additional analysis
-    books_data = addDescriptionLength(books_data)
-    books_data = addTitleLength(books_data)
-    books_data = addSeriesLength(books_data)
+    #books_data = addDescriptionLength(books_data)
+    #books_data = addTitleLength(books_data)
+    #books_data = addSeriesLength(books_data)
     books_data.to_csv('./data/Cleaned_books.csv', index=False)
 
 

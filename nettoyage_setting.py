@@ -59,17 +59,37 @@ def extractCountry(x):
         
 patternPays = r'\([a-zA-Z\s]+\)'
 df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractCountry)
-print(df['settingCountry'].to_string())
+#print(df['settingCountry'].to_string())
 
 patternDate = r'\d+'
 df['settingDate'] = df['settingsClean'].str.findall(patternDate).apply(extract)
-print(df['settingDate'])
+#print(df['settingDate'])
 
-patternLoc = r'^(?:[A-Za-z\.]+(?:, |\s)?)+'
-df['settingLoc'] = df['settingsClean'].str.findall(patternLoc).apply(extract)
-print(df['settingLoc'])
+patternName = r'^(?:[A-Za-z\.]+(?:, |\s)?)+'
+df['settingLoc'] = df['settingsClean'].str.findall(patternName).apply(extract)
+#print(df['settingLoc'])
 
-"""
-print(re.findall(patternPays,df['settingsClean'][3][1])[0])
+# Extraire les awards
+df['awardsClean'] = df['awards'].str.split(',')
+df = df.explode('awardsClean', ignore_index=True)
 
-#df.to_csv('./data/Cleaned_books2.csv', index=False)"""
+#print(df['awardsClean'])
+
+df['awardDate'] = df['awardsClean'].str.findall(patternDate).apply(extract)
+#print(df['awardDate'])
+
+df['awardName'] = df['awardsClean'].str.findall(patternName).apply(extract)
+#print(df['awardName'])
+
+df = df.drop(columns = ['settings'])
+df = df.drop(columns = ['awards'])
+df = df.drop(columns = ['settingsClean'])
+df = df.drop(columns = ['awardsClean'])
+
+print(f"\n--- Purge colonnes unnamed    ---\n")
+
+str_column="Unnamed: "
+for i in range(27,65):
+    df = df.drop(columns=[str_column+str(i)])
+
+df.to_csv('./data/Cleaned_books2.csv', index=False)
