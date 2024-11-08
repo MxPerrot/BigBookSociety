@@ -20,6 +20,7 @@ def main():
 
     books['author'] = books['author'].str.split(',')
     books = books.explode('author', ignore_index=True)
+    books['author'] = books['author'].str.lstrip()
 
     # Get a list of books in the authors ("book_title" column)
     authors_in_authors = authors["author_name"].unique()
@@ -52,14 +53,14 @@ def main():
 
     author_a_implemente = author_a_implemente.reset_index(drop=True)
 
-    # FAIRE EN SORTE D'ENLEVER L'ESPACE AU DEBUT DU NOM DES AUTEURS
-    # TODO DROP LES COLONNES BOOKS DU CSV BIGAUTHOR
-
-    bigAuthor = pd.concat([authors,author_a_implemente])
+    # Mettre à jour BigAuthor
+    bigAuthor = pd.concat([authors, author_a_implemente])
 
     bigAuthor['author_genres'] = bigAuthor['author_genres'].str.split(',')
     bigAuthor = bigAuthor.explode('author_genres', ignore_index=True)
 
+    #Supprimer les colonnes non souhaitées de BigAuthor
+    bigAuthor = bigAuthor.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
 
     bigAuthor.to_csv(authors_path, index=False)
     link_dataframe.to_csv(link_path, index=False)
