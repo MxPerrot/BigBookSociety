@@ -14,7 +14,8 @@ CREATE TABLE _editeur (
 
 CREATE TABLE _prix (
     id_prix SERIAL PRIMARY KEY,
-    nom_prix VARCHAR NOT NULL
+    nom_prix VARCHAR NOT NULL,
+    annee_prix INT
 );
 
 CREATE TABLE _cadre (
@@ -42,12 +43,9 @@ CREATE TABLE _livre (
     isbn VARCHAR,
     isbn13 VARCHAR,
     description VARCHAR,
-    id_serie INTEGER REFERENCES _serie(id_serie),
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
     -- TODO: éventuellement créer une colonne "format", afin que les nouveaux livres ajoutés puissent avoir un format afin d'enrichir la base.  
 );
-
-
 
 
 CREATE TABLE IF NOT EXISTS _genre (
@@ -126,39 +124,45 @@ CREATE TABLE IF NOT EXISTS _utilisateur_auteur (
 
 -- Table _prix_livre pour la relation entre un prix et le livre attribué
 CREATE TABLE _prix_livre (
-  id_prix SERIAL REFERENCES _prix(id_prix) ON DELETE CASCADE,
-  id_livre SERIAL REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  id_prix INTEGER REFERENCES _prix(id_prix) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
   PRIMARY KEY(id_prix,id_livre)
 );
 
 -- Table _cadre_livre pour la relation entre un livre et ses cadres
 CREATE TABLE _cadre_livre (
-  id_cadre SERIAL REFERENCES _cadre(id_cadre) ON DELETE CASCADE,
-  id_livre SERIAL REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  id_cadre INTEGER REFERENCES _cadre(id_cadre) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
   PRIMARY KEY(id_cadre,id_livre)
 );
 
 -- Table _livre_prefere_utilisateur pour la relation de préférences d'un utilisateur avec ses livres préférés
 CREATE TABLE _livre_prefere_utilisateur (
-  id_utilisateur SERIAL REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
-  id_livre SERIAL REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
   PRIMARY KEY(id_utilisateur,id_livre)
 );
 
 -- Table _auteur_livre pour la relation entre des auteur et les livre qu'ils ont écrit
 CREATE TABLE _auteur_livre (
-  id_auteur SERIAL REFERENCES _auteur(id_auteur) ON DELETE CASCADE,
-  id_livre SERIAL REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  id_auteur INTEGER REFERENCES _auteur(id_auteur) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
   PRIMARY KEY(id_auteur,id_livre)
 );
 
 -- Table _genre_livre pour la relation entre les livres et leur genre, ainsi que le nombre de vote pour ce genre dans cas particuliers
 CREATE TABLE _genre_livre (
-  id_genre SERIAL REFERENCES _genre(id_genre) ON DELETE CASCADE,
-  id_livre SERIAL REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  id_genre INTEGER REFERENCES _genre(id_genre) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
   nb_votes INTEGER,
   PRIMARY KEY(id_genre,id_livre)
 );
 
-
+-- Table _episode_serie pour la relation entre les livres et les séries 
+CREATE TABLE _episode_serie (
+    id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
+    id_serie INTEGER REFERENCES _serie(id_serie) ON DELETE CASCADE,
+    numero_episode INTEGER,
+    PRIMARY KEY(id_livre, id_serie)
+);
 
