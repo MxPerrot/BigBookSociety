@@ -1,4 +1,4 @@
--- Créer une table temporaire pour stocker les données du fichier CSV
+-- Table temporaire pour stocker les données du fichier CSV
 CREATE TEMP TABLE temp_livre (
     id_livre SERIAL PRIMARY KEY,
     titre VARCHAR,
