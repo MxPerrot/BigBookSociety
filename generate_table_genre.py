@@ -30,6 +30,7 @@ import pandas as pd
 
 AUTHORS_CSV = "data/Cleaned_authors.csv"
 BOOKS_CSV = "data/Cleaned_books.csv"
+GENRES_FROM_AUTHORS_CSV = "SQL/genre.csv"
 
 #######################################
 #              FUNCTIONS              #
@@ -109,16 +110,46 @@ def main():
     #print(f"\n-*- NON-NUMERIC VOTES AFTER CLEANING -*-\n{df_clean_books[~df_clean_books['votes'].str.isdigit()].to_string()}")
 
 
-    # convert the votes column to integer
     df_clean_books['votes'] = df_clean_books['votes'].astype(int)
+    df_clean_books['genre'] = df_clean_books['genre'].str.lower()
 
-    #print(f"\n-*- CLEAN BOOKS DF -*-\n{df_clean_books}")
+    print(f"\n-*- CLEAN BOOKS DF -*-\n{df_clean_books}")
 
-    #TODO create a "genres" dataframe with an id and a votes column
-    # currently, the df_clean_books contains multiple rows for the same book id.
-    # for each unique genre, we need to create a row in a new dataframe, and associate it with
+    df_genre = df_clean_books[['genre']].drop_duplicates().sort_values('genre').reset_index(drop=True)
+    # make an id_genre column from the index + 1
+    df_genre['id_genre'] = df_genre.index + 1
+    
+    # rename 'genre' to 'libelle_genre'
+    df_genre.rename(columns={'genre': 'libelle_genre'}, inplace=True)
+
+    # make id_genre the first column
+    df_genre = df_genre[['id_genre', 'libelle_genre']]
+
+
+    # get the genre table extracted from authors
+    df_genre_from_authors = pd.read_csv(GENRES_FROM_AUTHORS_CSV)
+
+    print(df_genre.head())
+    print(df_genre.shape)
+    print(df_genre_from_authors.head())
+    print(df_genre_from_authors.shape)
+
+    # TOTAL 1762 genres
+
+    # try merging the two
+    INTERSECTION = pd.merge(df_genre,df_genre_from_authors, how='inner', on=['user_id'])
+    print(INTERSECTION.shape)
+    print(INTERSECTION.shape())
+    df_genre = pd.concat([df_genre,df_genre_from_authors]).drop_duplicates()
+
+    print(df_genre.shape)
+
+    # we now need a table for the relationship between books and their genres.
+    # each book can have 0..* genres. This is represented by the table
 
     
+    # print(f"\n-*- DF GENRE -*-\n{df_genre.to_string()}")
+
 
 if __name__ == "__main__":
     main()
