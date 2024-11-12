@@ -46,7 +46,6 @@ CREATE TABLE _livre (
     isbn VARCHAR,
     isbn13 VARCHAR,
     description VARCHAR,
-    id_serie INTEGER REFERENCES _serie(id_serie),
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
     -- TODO: éventuellement créer une colonne "format", afin que les nouveaux livres ajoutés puissent avoir un format afin d'enrichir la base.  
 );
@@ -162,6 +161,13 @@ CREATE TABLE _genre_livre (
   PRIMARY KEY(id_genre,id_livre)
 );
 
+-- Table _genre_livre pour la relation entre les livres et leur genre
+CREATE TABLE _episode_serie (
+  id_serie INTEGER REFERENCES _serie(id_genre) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  numero_episode INTEGER,
+  PRIMARY KEY(id_serie,id_livre)
+);
 
 Wbimport
 -usepgcopy
