@@ -20,10 +20,14 @@ CREATE TABLE _prix (
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
     annee INTEGER, 
-    pays VARCHAR,
+    id_pays INTEGER,
     localisation VARCHAR
 );
 
+CREATE TABLE _pays (
+    id_pays SERIAL PRIMARY KEY,
+    nom VARCHAR
+);
 
 CREATE TABLE _livre (
     id_livre SERIAL PRIMARY KEY,
@@ -31,18 +35,17 @@ CREATE TABLE _livre (
     nb_notes INTEGER,
     nb_critiques INTEGER,
     note_moyenne DECIMAL,
-    nb_note_1_etoile INTEGER,
-    nb_note_2_etoile INTEGER,
-    nb_note_3_etoile INTEGER,
-    nb_note_4_etoile INTEGER,
-    nb_note_5_etoile INTEGER,
+    nb_notes_1_etoile INTEGER,
+    nb_notes_2_etoile INTEGER,
+    nb_notes_3_etoile INTEGER,
+    nb_notes_4_etoile INTEGER,
+    nb_notes_5_etoile INTEGER,
     nombre_pages INTEGER,
     date_publication DATE,
     titre_original VARCHAR,
     isbn VARCHAR,
     isbn13 VARCHAR,
     description VARCHAR,
-    id_serie INTEGER REFERENCES _serie(id_serie),
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
     -- TODO: éventuellement créer une colonne "format", afin que les nouveaux livres ajoutés puissent avoir un format afin d'enrichir la base.  
 );
@@ -158,6 +161,13 @@ CREATE TABLE _genre_livre (
   PRIMARY KEY(id_genre,id_livre)
 );
 
+-- Table _genre_livre pour la relation entre les livres et leur genre
+CREATE TABLE _episode_serie (
+  id_serie INTEGER REFERENCES _serie(id_genre) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  numero_episode INTEGER,
+  PRIMARY KEY(id_serie,id_livre)
+);
 
 Wbimport
 -usepgcopy

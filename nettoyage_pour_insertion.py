@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-CHEMIN_FICHIER_LIVRES = "data/Cleaned_books.csv"
+CHEMIN_FICHIER_LIVRES = "Big_book.csv"
 
 # extrait le résultat d'une recherche findall
 def extract(x):
@@ -118,4 +118,4 @@ df = df.drop(columns = ['settingsClean'])
 df = df.drop(columns = ['awardsClean'])
 df = df.drop(columns = ['series'])
 
-df.to_csv('./data/Cleaned_books2.csv', index=False)
+df.to_csv('./data/IGNOREME_Cleaned_books2.csv', index=False)
