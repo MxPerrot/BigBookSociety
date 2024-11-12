@@ -118,4 +118,4 @@ df = df.drop(columns = ['settingsClean'])
 df = df.drop(columns = ['awardsClean'])
 df = df.drop(columns = ['series'])
 
-df.to_csv('./data/Cleaned_books2.csv', index=False)
+df.to_csv('./data/IGNOREME_Cleaned_books2.csv', index=False)
