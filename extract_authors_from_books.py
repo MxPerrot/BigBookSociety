@@ -64,7 +64,14 @@ def main():
     #Supprimer les colonnes non souhaitées de BigAuthor
     bigAuthor = bigAuthor.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
 
+    print(type(bigAuthor["author_genres"][1]))
+
+    
+    bigAuthor = bigAuthor.loc[bigAuthor["author_genres"] != "" ]
+
     bigAuthor = bigAuthor.drop_duplicates()
+
+
 
     bigAuthor.to_csv(authors_path, index=False)
     link_dataframe.to_csv(link_path, index=False)
