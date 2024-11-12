@@ -20,10 +20,14 @@ CREATE TABLE _prix (
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
     annee INTEGER, 
-    pays VARCHAR,
+    id_pays INTEGER,
     localisation VARCHAR
 );
 
+CREATE TABLE _pays (
+    id_pays SERIAL PRIMARY KEY,
+    nom VARCHAR
+);
 
 CREATE TABLE _livre (
     id_livre SERIAL PRIMARY KEY,
