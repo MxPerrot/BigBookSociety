@@ -2,6 +2,7 @@
 
 import pandas as pd
 import numpy as np
+from clean_data import COLUMNS_TYPES_AUTHORS,convertColumnsToRightType
 import os
 
 def main():
@@ -64,14 +65,16 @@ def main():
     #Supprimer les colonnes non souhaitées de BigAuthor
     bigAuthor = bigAuthor.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
 
+
     print(type(bigAuthor["author_genres"][1]))
+
 
     
     bigAuthor = bigAuthor.loc[bigAuthor["author_genres"] != "" ]
 
     bigAuthor = bigAuthor.drop_duplicates()
 
-
+    bigAuthor = convertColumnsToRightType(bigAuthor,COLUMNS_TYPES_AUTHORS)
 
     bigAuthor.to_csv(authors_path, index=False)
     link_dataframe.to_csv(link_path, index=False)
