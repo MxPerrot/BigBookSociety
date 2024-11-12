@@ -3,7 +3,7 @@ CREATE TEMP TABLE temp_livre (
     id_livre SERIAL PRIMARY KEY,
     titre VARCHAR,
     nb_notes INTEGER,
-    nb_critiques INTEGER, -- commentaire
+    nb_critiques INTEGER,
     note_moyenne DECIMAL,
     nb_note_1_etoile INTEGER,
     nb_note_2_etoile INTEGER,
