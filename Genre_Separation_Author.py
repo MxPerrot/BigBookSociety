@@ -7,6 +7,11 @@ genre = authors['author_genres'].unique()
 
 author_without_genre = authors.drop(columns=['author_genres'])
 
+author_without_genre = author_without_genre.drop_duplicates()
+
+author_without_genre = author_without_genre.drop_duplicates(subset=["author_id"], keep='first')
+
+
 # Création dataframe pour la table genre
 dataset = pd.DataFrame({'author_genres': genre})
 
@@ -22,7 +27,7 @@ auteur_genre = auteur_genre.drop(columns=['author_average_rating','author_gender
 auteur_genre = auteur_genre.drop_duplicates()
 
 #Format CSV
-auteur_genre = auteur_genre.rename(columns={"author_id": "id_author"})
+auteur_genre = auteur_genre.rename(columns={"author_id": "id_auteur"})
 auteur_genre.to_csv("./SQL/auteur_genre.csv", index=False)
 
 dataset = dataset.rename(columns={"author_genres": "libelle_genre"})
