@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-CHEMIN_FICHIER_LIVRES = "data/Cleaned_books.csv"
+CHEMIN_FICHIER_LIVRES = "Big_book.csv"
 
 # extrait le résultat d'une recherche findall
 def extract(x):
