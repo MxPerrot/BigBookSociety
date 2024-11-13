@@ -28,8 +28,8 @@ import pandas as pd
 #              CONSTANTS              #
 #######################################
 
-AUTHORS_CSV = "data/Cleaned_authors.csv"
-BOOKS_CSV = "data/Cleaned_books.csv"
+AUTHORS_CSV = "BigAuthor.csv"
+BOOKS_CSV = "Big_book.csv"
 GENRES_FROM_AUTHORS_CSV = "SQL/genre.csv"
 
 #######################################
@@ -47,108 +47,73 @@ def main():
     Main function
     """
 
+    # 1. Import the csv files
     df_authors = pd.read_csv(AUTHORS_CSV)
     df_books = pd.read_csv(BOOKS_CSV)
+    df_genre_from_authors = pd.read_csv(GENRES_FROM_AUTHORS_CSV) # get the genre table extracted from authors
 
-    df_clean_books = df_books[['id','genre_and_votes']] 
-
-    # turn the str into a list of genre/vote
-    df_clean_books['genre_and_votes'] = df_clean_books['genre_and_votes'].str.split(',')
-
-    # for each genre/vote group for a book, add a line. The result is that many lines have the same book id.
-    df_clean_books = df_clean_books.explode('genre_and_votes', ignore_index=True)
-
-    # drop nan values
-    df_clean_books.dropna(inplace=True)
-
-    print(df_clean_books)
-
-    # extract vote from genre_and_votes column 
-    # e.g.: 
-    #              id              genre_and_votes
-    # 0        630104              Young Adult 161
-    # 1        630104                   Mystery 45
-    # 2        630104                   Romance 32
-    # 
-    # returns
-    # 
-    #              id              genre            votes
-    # 0        630104              Young Adult      161
-    # 1        630104                   Mystery     45
-    # 2        630104                   Romance     32
-    # 
-
-
-    # split the genre and vote into genre and votes columns
-    df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', 1, expand=True)
-
-    # drop the genre_and_votes column
-    df_clean_books.drop('genre_and_votes', axis=1, inplace=True)
-
-    #print(f"\n-*- CLEAN BOOKS DF -*-\n{df_clean_books}")
-
-    # print all the lines where vote is nan or null
-    #print(f"\n-*- ALL NULL LINES -*-\n{df_clean_books[df_clean_books['votes'].isnull()]}")
-
-    # print all the lines where vote is not numeric
-    #print(f"\n-*- NON-NUMERIC VOTES -*-\n{df_clean_books[~df_clean_books['votes'].str.isdigit()].to_string()}")
-
-    # clean up the invalid data:
-
-    # if votes value is '1user', change it to 1
-    df_clean_books['votes'] = df_clean_books['votes'].replace('1user', '1')
-
-    # for all values equal to '0' or any other negative value in a string, remove the row
-    # convert to int and remove negative values
-    df_clean_books = df_clean_books[df_clean_books['votes'].str.isdigit()]
-    df_clean_books = df_clean_books[df_clean_books['votes'] >= '0']
-
-    #print(f"\n-*- CLEAN BOOKS DF -*-\n{df_clean_books}")
-
-
-    # print all the lines where vote is not numeric after cleaning up the invalid data
-    #print(f"\n-*- NON-NUMERIC VOTES AFTER CLEANING -*-\n{df_clean_books[~df_clean_books['votes'].str.isdigit()].to_string()}")
-
-
-    df_clean_books['votes'] = df_clean_books['votes'].astype(int)
-    df_clean_books['genre'] = df_clean_books['genre'].str.lower()
-
-    print(f"\n-*- CLEAN BOOKS DF -*-\n{df_clean_books}")
-
-    df_genre = df_clean_books[['genre']].drop_duplicates().sort_values('genre').reset_index(drop=True)
-    # make an id_genre column from the index + 1
-    df_genre['id_genre'] = df_genre.index + 1
+    # 2. Clean the books dataframe:
+    # reshape the data
+    df_clean_books = df_books[['id','genre_and_votes']] # keep only id & genre_and_votes
+    df_clean_books['genre_and_votes'] = df_clean_books['genre_and_votes'].str.split(',') # turn the str into a list of genre/vote
+    df_clean_books = df_clean_books.explode('genre_and_votes', ignore_index=True) # for each genre/vote group for a book, add a line. The result is that many lines have the same book id.
+    df_clean_books = df_clean_books.dropna() # drop nan values
+    # split genre_and_votes
+    df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', 1, expand=True) # split the genre and vote into two separate genre and votes columns
+    df_clean_books = df_clean_books.drop('genre_and_votes', axis=1) # drop the genre_and_votes column
+    # clean up the invalid data
+    df_clean_books['votes'] = df_clean_books['votes'].replace('1user', '1') # if votes value is '1user', change it to 1
+    df_clean_books = df_clean_books[df_clean_books['votes'].str.isdigit()] # keep only numerical values
+    df_clean_books = df_clean_books[df_clean_books['votes'] >= '0'] # remove negative values
+    df_clean_books['votes'] = df_clean_books['votes'].astype(int) # force convert numerical values to int
+    df_clean_books['genre'] = df_clean_books['genre'].str.lower() # lowercase the genres
+    df_clean_books['genre'] = df_clean_books['genre'].str.strip() # remove trailing spaces
     
-    # rename 'genre' to 'libelle_genre'
+    # 3. Join the books dataframe with the genre table
+    df_genre_from_authors_libelle_only = df_genre_from_authors['libelle_genre'] 
+    df_genre = df_clean_books[['genre']].drop_duplicates().sort_values('genre')
     df_genre.rename(columns={'genre': 'libelle_genre'}, inplace=True)
 
-    # make id_genre the first column
-    df_genre = df_genre[['id_genre', 'libelle_genre']]
+    df_genre['libelle_genre'] = df_genre['libelle_genre'].str.strip()
 
+    df_genre_global = pd.merge(df_genre_from_authors_libelle_only, df_genre, on='libelle_genre', how='outer')
+    df_genre_global = df_genre_global.drop_duplicates()
 
-    # get the genre table extracted from authors
-    df_genre_from_authors = pd.read_csv(GENRES_FROM_AUTHORS_CSV)
+    df_genre_global = pd.merge(df_genre_global, df_genre_from_authors, on='libelle_genre', how='outer')
 
-    print(df_genre.head())
-    print(df_genre.shape)
-    print(df_genre_from_authors.head())
-    print(df_genre_from_authors.shape)
+    df_genre_global = df_genre_global.sort_values(by=['id_genre'])
+    df_genre_global['id_genre'] = df_genre_global.index + 1
 
-    # TOTAL 1762 genres
+    df_clean_books.rename(columns={'genre': 'libelle_genre', 'id' : 'id_livre', 'votes' : 'nb_votes'}, inplace=True)
+    df_clean_books = pd.merge(df_clean_books, df_genre_global, on='libelle_genre', how='inner')
+    df_clean_books = df_clean_books.drop(columns=['libelle_genre'])
+    df_clean_books = df_clean_books.drop_duplicates()
 
-    # try merging the two
-    INTERSECTION = pd.merge(df_genre,df_genre_from_authors, how='inner', on=['user_id'])
-    print(INTERSECTION.shape)
-    print(INTERSECTION.shape())
-    df_genre = pd.concat([df_genre,df_genre_from_authors]).drop_duplicates()
+    df_clean_books_author = df_books[['id','genre_1', 'genre_2']] 
+    df_clean_books_author = df_clean_books_author.dropna(subset=['genre_1'])
 
-    print(df_genre.shape)
+    df_clean_books_author = df_clean_books_author.melt(id_vars=['id'], value_vars=['genre_1','genre_2'])
+    df_clean_books_author = df_clean_books_author.drop(columns=['variable'])
+    df_clean_books_author.rename(columns={'value': 'libelle_genre', 'id' : 'id_livre'}, inplace=True)
+    df_clean_books_author['libelle_genre'] = df_clean_books_author['libelle_genre'].str.lower()
+    df_clean_books_author['libelle_genre'] = df_clean_books_author['libelle_genre'].str.strip()
 
-    # we now need a table for the relationship between books and their genres.
-    # each book can have 0..* genres. This is represented by the table
+    df_books_author_genre = df_clean_books_author['libelle_genre'].drop_duplicates()
 
-    
-    # print(f"\n-*- DF GENRE -*-\n{df_genre.to_string()}")
+    df_genre_glob2 = pd.merge(df_books_author_genre, df_genre_global, on='libelle_genre', how='outer')
+    df_genre_glob2 = df_genre_glob2.reset_index(drop=True)
+    df_genre_glob2['id_genre'] = df_genre_glob2.index + 1
+    df_clean_books_author = pd.merge(df_genre_glob2, df_clean_books_author, on='libelle_genre', how='inner')
+    df_clean_books_temp = df_clean_books_author.drop(columns=['libelle_genre'])
+
+    df_clean_books = pd.concat([df_clean_books,df_clean_books_temp])
+
+    df_clean_books = df_clean_books.fillna(1)
+    df_clean_books['nb_votes'] = df_clean_books['nb_votes'].astype(int)
+
+    df_clean_books.to_csv('SQL/livre_genre.csv',index=False)
+    df_genre_glob2.to_csv('SQL/genre.csv',index=False)
+
 
 
 if __name__ == "__main__":
