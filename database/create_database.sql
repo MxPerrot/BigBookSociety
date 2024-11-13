@@ -162,7 +162,7 @@ CREATE TABLE _genre_livre (
 CREATE TABLE _episode_serie (
     id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
     id_serie INTEGER REFERENCES _serie(id_serie) ON DELETE CASCADE,
-    numero_episode INTEGER,
+    numero_episode VARCHAR,
     PRIMARY KEY(id_livre, id_serie)
 );
 

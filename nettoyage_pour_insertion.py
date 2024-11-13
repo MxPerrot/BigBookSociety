@@ -11,7 +11,7 @@ def extract(x):
         return None
 
 # extrait le résultat d'une recherche findall pour le pays (retire les parenthèses)
-def extractCountry(x):
+def extractWP(x):
     if isinstance(x, list) and len(x) >= 1:
         return x[0].replace('(','').replace(')','')
     else :
@@ -75,7 +75,11 @@ patternPays = r'\([a-zA-Z\s]+\)'
 # Pattern regex pour extraire un nombre d'une chaîne de caratères 
 patternChiffre = r'\d+'
 # Pattern regex pour extraire un nom d'une chaîne
-patternName = r'^(?:[A-Za-z\.]+(?:, |\s)?)+'
+patternName = r'^(?:[\w\.\/\-\'\:éèïôçêùæœëüâ€©¤ãűúöäà]+(?:, |\s)?)+[\w\.\/\-\'\:éèïôçêùæœëüâ€©¤ãűúöäà]+'
+# Pattern regex pour extraire une date entourée de parenthèses 
+patternDate = r'\(\d+\)'
+# Pattern regex pour extraire un numéro d'épisode 
+patternEpNum = r'#[\d.-]+'
 
 # Crée une liste contenant les différents settings séparés
 df['settingsClean'] = df['settings'].str.findall(patternSetting)
@@ -83,7 +87,7 @@ df['settingsClean'] = df['settings'].str.findall(patternSetting)
 df = df.explode('settingsClean', ignore_index=True)
 
 # Crée une colonne contenant le nom du pays du setting
-df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractCountry)
+df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractWP)
 
 # Crée une colonne contenant la date du setting
 df['settingDate'] = df['settingsClean'].str.findall(patternChiffre).apply(extract)
@@ -92,18 +96,19 @@ df['settingDate'] = df['settingsClean'].str.findall(patternChiffre).apply(extrac
 df['settingLoc'] = df['settingsClean'].str.findall(patternName).apply(extract)
 
 # Crée une liste contenant les différents awards séparés
-df['awardsClean'] = df['awards'].str.split(',')
+df['awardsClean'] = df['awards'].str.split(', ')
+
 # Duplique les lignes pour n'avoir qu'un award par ligne
 df = df.explode('awardsClean', ignore_index=True)
 
 # Crée une colonne contenant la date d'obtention de l'award
-df['awardDate'] = df['awardsClean'].str.findall(patternChiffre).apply(extract)
+df['awardDate'] = df['awardsClean'].str.findall(patternDate).apply(extractWP)
 
 # Crée une colonne contenant le nom de l'award
 df['awardName'] = df['awardsClean'].str.findall(patternName).apply(extract)
 
 # Crée une colonne contenant le nombre de l'épisode d'une série de livres
-df['episodeNumber'] = df['series'].str.findall(patternChiffre).apply(extract)
+df['episodeNumber'] = df['series'].str.findall(patternEpNum).apply(extract)
 
 # Crée une colonne contenant le nom de la série
 df['seriesName'] = df['series'].str.replace('(','').str.findall(patternName).apply(extract)
@@ -118,4 +123,4 @@ df = df.drop(columns = ['settingsClean'])
 df = df.drop(columns = ['awardsClean'])
 df = df.drop(columns = ['series'])
 
-df.to_csv('./data/IGNOREME_Cleaned_books2.csv', index=False)
+df.to_csv('./data/Cleaned_books2.csv', index=False)
