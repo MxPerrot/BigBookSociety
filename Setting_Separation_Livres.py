@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-books = pd.read_csv("data/IGNOREME_Cleaned_books2.csv", dtype={
+books = pd.read_csv("data/Cleaned_books2.csv", dtype={
     'rating_count': 'Int32', 
     'review_count': 'Int32', 
     'five_star_ratings': 'Int32', 

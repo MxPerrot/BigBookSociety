@@ -1,12 +1,17 @@
 import pandas as pd
 
 # Charger le fichier CSV et récupérer uniquement les colonnes souhaitées
-df = pd.read_csv('data/IGNOREME_Cleaned_books2.csv', usecols=['awardDate', 'awardName', 'id'], dtype={
+df = pd.read_csv('data/Cleaned_books2.csv', usecols=['awardDate', 'awardName'], dtype={
     'awardDate': 'Int32'
-})
+    })
+
+df = df.drop_duplicates()
+
+# Ajouter une colonne 'id_prix' unique pour chaque ligne
+df['id_prix'] = range(1, len(df) + 1)
 
 # Supprimer les lignes où 'awardDate' ou 'awardName' est manquant
-df = df.dropna(subset=['awardDate', 'awardName'])
+df = df.dropna(subset=['awardName'])
 
 # Supprimer les doublons en conservant uniquement les lignes uniques de 'awardDate' et 'awardName'
 df = df.drop_duplicates(subset=['awardDate', 'awardName'])

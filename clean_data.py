@@ -105,6 +105,8 @@ UTF8_CORRESPONDANCY = {
         'Ã¶' : 'ö',
         'Ã¤' : 'ä',
         'Ã'  : 'à'
+        # Caractères invisibles impossibles à remplacer cachés dans la chaine si dessous
+        #,'â'  : "'"
     }
 
 #######################################
