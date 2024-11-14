@@ -166,13 +166,9 @@ def main():
     rows_authors_books_big = rows_authors_books_big.drop(columns=['author_average_rating', 'num_reviews', 'num_ratings', 'author_gender','author_genres','author_id','author_rating_count','author_review_count','birthplace'])
     rows_authors_books_big = rows_authors_books_big.rename(columns={"book_id": "id","author_name": "author","book_average_rating": "average_rating","book_title": "title","pages": "number_of_pages","publish_date": "date_published"})
 
-    bigBook = pd.concat([books,rows_authors_books_big])
-    bigBook = bigBook.drop(columns=['author'])
-    bigBook = bigBook.drop_duplicates()
-
-    bigBook.to_csv(CHEMIN_FICHIER_LIVRES_COMPLET, index=False)
-    link_dataframe.to_csv(CHEMIN_LIEN_AUTEURS_LIVRES, index=False)
-
+    complete_book = pd.concat([books,rows_authors_books_big])
+    complete_book = complete_book.drop(columns=['author'])
+    complete_book = complete_book.drop_duplicates()
 
     ##################################################################
     #
@@ -209,7 +205,6 @@ def main():
     # Merge Complete_author with the new datagrame and create the links
     rows_books_author_big = pd.merge(rows_books_author_big, author_a_implemente, on='author', how='inner')
     rows_books_author_big = rows_books_author_big.rename(columns={"index": "author_id","id": "book_id"})
-    link_dataframe = pd.read_csv(CHEMIN_LIEN_AUTEURS_LIVRES)
 
     col_list = ['book_id', 'author_id']
     link_dataframe = pd.concat([link_dataframe,rows_books_author_big[col_list]])
@@ -218,19 +213,18 @@ def main():
     author_a_implemente = author_a_implemente.reset_index(drop=True)
 
     # Mettre à jour Complete_author
-    bigAuthor = pd.concat([authors, author_a_implemente])
+    complete_author = pd.concat([authors, author_a_implemente])
 
-    bigAuthor['author_genres'] = bigAuthor['author_genres'].str.split(',')
-    bigAuthor = bigAuthor.explode('author_genres', ignore_index=True)
+    complete_author['author_genres'] = complete_author['author_genres'].str.split(',')
+    complete_author = complete_author.explode('author_genres', ignore_index=True)
     
     #Supprimer les colonnes non souhaitées de Complete_author
-    bigAuthor = bigAuthor.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
-    bigAuthor = bigAuthor.loc[bigAuthor["author_genres"] != "" ]
-    bigAuthor = bigAuthor.drop_duplicates()
-    bigAuthor = convertColumnsToRightType(bigAuthor,COLUMNS_TYPES_AUTHORS)
+    complete_author = complete_author.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
+    complete_author = complete_author.loc[complete_author["author_genres"] != "" ]
+    complete_author = complete_author.drop_duplicates()
+    complete_author = convertColumnsToRightType(complete_author,COLUMNS_TYPES_AUTHORS)
 
-    bigAuthor.to_csv(CHEMIN_FICHIER_AUTEURS_COMPLET, index=False)
-    link_dataframe.to_csv(CHEMIN_LIEN_AUTEURS_LIVRES, index=False)
+
 
     ##################################################################
     #
@@ -238,9 +232,6 @@ def main():
     #
     ##################################################################
 
-    # TODO: Update csv import
-    # Lit le fichier CSV avec les données brutes
-    df = pd.read_csv(CHEMIN_FICHIER_LIVRES)
 
     # Pattern regex pour séparer les différents settings
     patternSetting = r'(?:[A-Za-z\.]+(?:, |\s)?)+(?:,\d+)?(?:\([a-zA-Z\s]+\))?'
@@ -256,49 +247,50 @@ def main():
     patternEpNum = r'#[\d.-]+'
 
     # Crée une liste contenant les différents settings séparés
-    df['settingsClean'] = df['settings'].str.findall(patternSetting)
+    complete_book['settingsClean'] = complete_book['settings'].str.findall(patternSetting)
     # Duplique les lignes pour n'avoir qu'un setting par ligne
-    df = df.explode('settingsClean', ignore_index=True)
+    complete_book = complete_book.explode('settingsClean', ignore_index=True)
 
     # Crée une colonne contenant le nom du pays du setting
-    df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractWP)
+    complete_book['settingCountry'] = complete_book['settingsClean'].str.findall(patternPays).apply(extractWP)
 
     # Crée une colonne contenant la date du setting
-    df['settingDate'] = df['settingsClean'].str.findall(patternChiffre).apply(extract)
+    complete_book['settingDate'] = complete_book['settingsClean'].str.findall(patternChiffre).apply(extract)
 
     # Crée une colonne contenant le lieu du setting
-    df['settingLoc'] = df['settingsClean'].str.findall(patternName).apply(extract)
+    complete_book['settingLoc'] = complete_book['settingsClean'].str.findall(patternName).apply(extract)
 
     # Crée une liste contenant les différents awards séparés
-    df['awardsClean'] = df['awards'].str.split(', ')
+    complete_book['awardsClean'] = complete_book['awards'].str.split(', ')
 
     # Duplique les lignes pour n'avoir qu'un award par ligne
-    df = df.explode('awardsClean', ignore_index=True)
+    complete_book = complete_book.explode('awardsClean', ignore_index=True)
 
     # Crée une colonne contenant la date d'obtention de l'award
-    df['awardDate'] = df['awardsClean'].str.findall(patternDate).apply(extractWP)
+    complete_book['awardDate'] = complete_book['awardsClean'].str.findall(patternDate).apply(extractWP)
 
     # Crée une colonne contenant le nom de l'award
-    df['awardName'] = df['awardsClean'].str.findall(patternName).apply(extract)
+    complete_book['awardName'] = complete_book['awardsClean'].str.findall(patternName).apply(extract)
 
     # Crée une colonne contenant le nombre de l'épisode d'une série de livres
-    df['episodeNumber'] = df['series'].str.findall(patternEpNum).apply(extract)
+    complete_book['episodeNumber'] = complete_book['series'].str.findall(patternEpNum).apply(extract)
 
     # Crée une colonne contenant le nom de la série
-    df['seriesName'] = df['series'].str.replace('(','').str.findall(patternName).apply(extract)
+    complete_book['seriesName'] = complete_book['series'].str.replace('(','').str.findall(patternName).apply(extract)
 
     # Crée une colonne contenant la date de publication du livre au bon format (Date SQL)
-    df['date_published'] = df['date_published'].apply(reformatDate)
+    complete_book['date_published'] = complete_book['date_published'].apply(reformatDate)
 
     # Supprime les colonnes non utilisées
-    df = df.drop(columns = ['settings'])
-    df = df.drop(columns = ['awards'])
-    df = df.drop(columns = ['settingsClean'])
-    df = df.drop(columns = ['awardsClean'])
-    df = df.drop(columns = ['series'])
+    complete_book = complete_book.drop(columns = ['settings'])
+    complete_book = complete_book.drop(columns = ['awards'])
+    complete_book = complete_book.drop(columns = ['settingsClean'])
+    complete_book = complete_book.drop(columns = ['awardsClean'])
+    complete_book = complete_book.drop(columns = ['series'])
 
-    # TODO: Update csv export
-    df.to_csv('./data/Cleaned_books2.csv', index=False)
+    # complete_author
+    # complete_book
+    # link_dataframe
 
     ##################################################################
     #
@@ -308,7 +300,7 @@ def main():
 
 
     # Storage of the cleaned csv contents
-    authors = pd.read_csv("Complete_author.csv")
+    authors = complete_author
 
     genre = authors['author_genres'].unique()
 
@@ -320,14 +312,14 @@ def main():
 
 
     # Création dataframe pour la table genre
-    dataset = pd.DataFrame({'author_genres': genre})
+    genre_from_author = pd.DataFrame({'author_genres': genre})
 
-    dataset.index = dataset.index+1
+    genre_from_author.index = genre_from_author.index+1
 
-    dataset = dataset.reset_index(names=['id_genre'])
+    genre_from_author = genre_from_author.reset_index(names=['id_genre'])
 
     #Création lien auteur-genre
-    auteur_genre = pd.merge(authors, dataset, on='author_genres', how='inner')
+    auteur_genre = pd.merge(authors, genre_from_author, on='author_genres', how='inner')
 
     auteur_genre = auteur_genre.drop(columns=['author_average_rating','author_gender','author_genres','author_name','author_rating_count','author_review_count','birthplace'])
 
@@ -337,24 +329,20 @@ def main():
     auteur_genre = auteur_genre.rename(columns={"author_id": "id_auteur"})
     auteur_genre.to_csv("./SQL/auteur_genre.csv", index=False)
 
-    dataset = dataset.rename(columns={"author_genres": "libelle_genre"})
-    dataset.to_csv("./SQL/genre.csv", index=False)
+    # LAISSER EN COMMENTAIRE, VUE PLUS TARD DANS PROGRAMME MAXIME
+    # genre_from_author = genre_from_author.rename(columns={"author_genres": "libelle_genre"})
+    # genre_from_author.to_csv("./SQL/genre.csv", index=False)
 
     author_without_genre = author_without_genre.rename(columns={"author_average_rating": "note_moyenne", "author_id": "id_auteur", "author_name": "nom" ,"birthplace": "origine", "author_review_count": "nb_reviews", "author_rating_count" : "nb_critiques", "author_gender" : "sexe"})
     author_without_genre.to_csv("./SQL/auteur_sql.csv", index=False)
 
+
+
+
+
+
     # TODO: Update csv import
-    books = pd.read_csv("data/Cleaned_books2.csv", dtype={
-        'rating_count': 'Int32', 
-        'review_count': 'Int32', 
-        'five_star_ratings': 'Int32', 
-        'four_star_ratings': 'Int32', 
-        'three_star_ratings': 'Int32', 
-        'two_star_ratings': 'Int32', 
-        'one_star_ratings': 'Int32', 
-        'nombre_pages': 'Int32', 
-        'one_star_ratings': 'Int32'
-    })
+    books = complete_book
 
     countries = books['settingCountry'].unique()
 
@@ -419,9 +407,9 @@ def main():
     booksData.to_csv("./SQL/livre.csv", index=False)
 
     # 1. Import the csv files
-    df_authors = pd.read_csv(AUTHORS_CSV)
-    df_books = pd.read_csv(BOOKS_CSV)
-    df_genre_from_authors = pd.read_csv(GENRES_FROM_AUTHORS_CSV) # get the genre table extracted from authors
+    df_authors = complete_author
+    df_books = complete_book
+    df_genre_from_authors = genre_from_author # get the genre table extracted from authors
 
     # 2. Clean the books dataframe:
     # reshape the data
@@ -430,6 +418,7 @@ def main():
     df_clean_books = df_clean_books.explode('genre_and_votes', ignore_index=True) # for each genre/vote group for a book, add a line. The result is that many lines have the same book id.
     df_clean_books = df_clean_books.dropna() # drop nan values
     # split genre_and_votes
+    #TODO: HANDLE ERROR STR SPLIT ON SPACE WHERE GENRE HAS MULTIPLE WORD LIKE: YOUNG ADULT 161
     df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', 1, expand=True) # split the genre and vote into two separate genre and votes columns
     df_clean_books = df_clean_books.drop('genre_and_votes', axis=1) # drop the genre_and_votes column
     # clean up the invalid data
