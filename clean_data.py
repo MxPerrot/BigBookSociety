@@ -59,8 +59,6 @@ COLUMNS_TYPES_BOOKS = {
     "description":str,
 }
 
-BOOKS_CSV = "data/books.csv"
-
 COLUMNS_TYPES_AUTHORS = {
     "author_average_rating":float,
     "author_gender":str,
@@ -80,8 +78,6 @@ COLUMNS_TYPES_AUTHORS = {
     "pages":int,
     "publish_date":str
 }
-
-AUTHORS_CSV = "data/authors.csv"
 
 UTF8_CORRESPONDANCY = {
         'Ã©': 'é',
@@ -104,10 +100,12 @@ UTF8_CORRESPONDANCY = {
         'Ãº' : 'ú',
         'Ã¶' : 'ö',
         'Ã¤' : 'ä',
-        'Ã'  : 'à'
+        'Ã'  : 'à',
         # Caractères invisibles impossibles à remplacer cachés dans la chaine si dessous
-        #,'â'  : "'"
+        'â'  : "'",
+        'â²' : "'"
     }
+    
 
 #######################################
 #              FUNCTIONS              #
@@ -223,20 +221,6 @@ def formatDate(data):
 
     return data
 
-# TODO: keep going on renaming and adding comments to functions
-"""
-def addDescriptionLength(df):
-    df['description_length'] = df["description"].str.count(' ')+1
-    return df
-
-def addTitleLength(df):
-    df['title_length'] = df["title"].str.len()
-    return df
-
-def addSeriesLength(df):
-    df['series_length'] = df["books_in_series"].str.count(',')+1
-    return df
-"""
 def removeLeadingTrailingSpaces(df,format):
     """
     for every column of the dataframe supposed to be a string,
@@ -252,21 +236,18 @@ def removeLeadingTrailingSpaces(df,format):
     return df
 
 
-
-
-
 #######################################
 #                MAIN                 #
 #######################################
 
-def main():
+def main(chemin_fichier_livres,chemin_fichier_auteurs):
 
     """
     Main function
     """
     
     # Cleaning
-    books_data = encodeInUTF8(BOOKS_CSV)
+    books_data = encodeInUTF8(chemin_fichier_livres)
     books_data = pruneEmptyColumns(books_data)
     books_data = convertStrToFloat(books_data,"average_rating")
     books_data = convertColumnsToRightType(books_data,COLUMNS_TYPES_BOOKS)
@@ -274,14 +255,11 @@ def main():
     books_data = formatDate(books_data)
 
     # Adding rows for additional analysis
-    #books_data = addDescriptionLength(books_data)
-    #books_data = addTitleLength(books_data)
-    #books_data = addSeriesLength(books_data)
     books_data.to_csv('./data/Cleaned_books.csv', index=False)
 
 
     # Cleaning
-    authors_data = encodeInUTF8(AUTHORS_CSV)
+    authors_data = encodeInUTF8(chemin_fichier_auteurs)
     authors_data = convertStrToFloat(authors_data,"book_average_rating")
     authors_data = convertStrToFloat(authors_data,"author_average_rating")
     authors_data = convertColumnsToRightType(authors_data,COLUMNS_TYPES_AUTHORS)
@@ -291,4 +269,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main("data/books.csv","data/authors.csv")
