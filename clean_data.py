@@ -105,7 +105,7 @@ UTF8_CORRESPONDANCY = {
         'â'  : "'",
         'â²' : "'"
     }
-    
+
 
 #######################################
 #              FUNCTIONS              #
@@ -216,7 +216,10 @@ def yearStrToInt(date_str):
         return 0
 
 def formatDate(data):
-# Appliquer la fonction à la colonne 'date_published' et stocker le résultat dans une colonne temporaire
+    """
+    Appliquer la fonction à la colonne 'date_published' et stocker le résultat dans une colonne temporaire
+    """
+    
     data['date_published_formated'] = data['date_published'].apply(yearStrToInt)
 
     return data
@@ -240,7 +243,12 @@ def removeLeadingTrailingSpaces(df,format):
 #                MAIN                 #
 #######################################
 
-def main(chemin_fichier_livres,chemin_fichier_auteurs):
+def main(
+        chemin_fichier_livres,
+        chemin_fichier_auteurs,
+        nouveau_chemin_livres,
+        nouveau_chemin_auteurs
+        ):
 
     """
     Main function
