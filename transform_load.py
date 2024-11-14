@@ -51,7 +51,7 @@ def main():
 
     # EXTRACT & TRANSFORM
     clean_data.main(
-        chemin_fichier_livres = CHEMIN_FICHIER_LIVRES
+        chemin_fichier_livres = CHEMIN_FICHIER_LIVRES,
         chemin_fichier_auteurs = CHEMIN_FICHIER_AUTEURS,
         nouveau_chemin_livres = CHEMIN_FICHIER_CLEAN_LIVRES,
         nouveau_chemin_auteurs = CHEMIN_FICHIER_CLEAN_AUTEURS
