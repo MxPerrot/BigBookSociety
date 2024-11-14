@@ -22,14 +22,23 @@ import re
 import os
 import pandas as pd
 import numpy as np
-from clean_data import COLUMNS_TYPES_AUTHORS,convertColumnsToRightType
+from clean_data import COLUMNS_TYPES_AUTHORS,convertColumnsToRightType,main
 
 
 #######################################
 #              CONSTANTS              #
 #######################################
 
-CHEMIN_FICHIER_LIVRES = "Big_book.csv"
+CHEMIN_FICHIER_LIVRES = "data/books.csv"
+CHEMIN_FICHIER_AUTEURS = "data/authors.csv"
+
+CHEMIN_FICHIER_CLEAN_LIVRES = "data/Cleaned_books.csv"
+CHEMIN_FICHIER_CLEAN_AUTEURS = "data/Cleaned_authors.csv"
+
+CHEMIN_FICHIER_LIVRES_COMPLET = "data/Complete_book.csv"
+CHEMIN_FICHIER_AUTEURS_COMPLET = "data/Complete_author.csv"
+
+CHEMIN_LIEN_AUTEURS_LIVRES = "SQL/link.csv"
 
 
 #######################################
@@ -106,6 +115,8 @@ def main():
     """
     Main function
     """
+
+    # clean_data()
     
 
     ##################################################################
@@ -115,56 +126,52 @@ def main():
     ##################################################################
 
 
-    # Load authors.csv
-    authors = pd.read_csv("data/Cleaned_authors.csv")
-
-    # Load books.csv
-    books = pd.read_csv("data/Cleaned_books.csv")
+    # Load Clean CSVs
+    authors = pd.read_csv(CHEMIN_FICHIER_CLEAN_AUTEURS)
+    books = pd.read_csv(CHEMIN_FICHIER_CLEAN_LIVRES)
 
     # Get a list of books in the authors ("book_title" column)
     books_in_authors = authors["book_id"].unique()
-
     # Check for all ids in books_in_authors that are also in books["id"]
     books_in_books = books["id"].unique()
 
-    # Get the common ids between books_in_authors and books_in_books
 
+    # Get the common ids between books_in_authors and books_in_books
     common_books_id = np.intersect1d(books_in_authors, books_in_books)
-    
     rows_authors_books = authors.loc[authors['book_id'].isin(common_books_id)]
 
     col_list = ['book_id', 'author_id']
-
     link_dataframe = rows_authors_books[col_list]
 
     link_dataframe = link_dataframe.drop_duplicates(subset = ['book_id','author_id'], keep=False)
 
-    ###### Analysis of books with different IDs yet a similar TITLE
+
+
+    # Linking of books with different IDs yet a similar TITLE
     rows_authors_books = authors.loc[authors['book_title'].isin(books['title'])]
     rows_books_books = books.loc[books['title'].isin(authors['book_title'])]
 
     common_books_titles_but_not_ID = rows_authors_books.loc[~rows_authors_books['book_id'].isin(common_books_id) & (rows_authors_books['book_title'].isin(rows_books_books['title']))]
-
     common_books_titles_but_not_ID = common_books_titles_but_not_ID[col_list]
 
     link_dataframe = pd.concat([link_dataframe,common_books_titles_but_not_ID])
 
+
+
+    #Create and link books present in author but not in books.csv
     rows_authors_books_big = authors.loc[(~authors['book_title'].isin(books['title']) & (~authors['book_id'].isin(common_books_id)))]
 
     link_dataframe = pd.concat([link_dataframe,rows_authors_books_big[col_list]])
 
     rows_authors_books_big = rows_authors_books_big.drop(columns=['author_average_rating', 'num_reviews', 'num_ratings', 'author_gender','author_genres','author_id','author_rating_count','author_review_count','birthplace'])
-
     rows_authors_books_big = rows_authors_books_big.rename(columns={"book_id": "id","author_name": "author","book_average_rating": "average_rating","book_title": "title","pages": "number_of_pages","publish_date": "date_published"})
 
     bigBook = pd.concat([books,rows_authors_books_big])
-
     bigBook = bigBook.drop(columns=['author'])
-
     bigBook = bigBook.drop_duplicates()
 
-    bigBook.to_csv("Big_book.csv", index=False)
-    link_dataframe.to_csv("link.csv", index=False)
+    bigBook.to_csv(CHEMIN_FICHIER_LIVRES_COMPLET, index=False)
+    link_dataframe.to_csv(CHEMIN_LIEN_AUTEURS_LIVRES, index=False)
 
 
     ##################################################################
@@ -175,14 +182,12 @@ def main():
 
 
     # Charger les fichiers CSV
-    authors_path = "BigAuthor.csv"
-    clean_authors_path = "data/Cleaned_authors.csv"
-    books_path = "data/Cleaned_books.csv"
     link_path = "link.csv"
 
-    authors = pd.read_csv(clean_authors_path)  # Charger le fichier existant
-    books = pd.read_csv(books_path)  # Charger le fichier existant
+    authors = pd.read_csv(CHEMIN_FICHIER_CLEAN_AUTEURS)  # Charger le fichier existant
+    books = pd.read_csv(CHEMIN_FICHIER_CLEAN_LIVRES)  # Charger le fichier existant
 
+    # Split the authors' names into a list of names and separate genres
     books['author'] = books['author'].str.split(',')
     books = books.explode('author', ignore_index=True)
     books['author'] = books['author'].str.lstrip()
@@ -193,48 +198,39 @@ def main():
     # Check for all ids in books_in_authors that are also in books["id"]
     authors_in_books = books["author"].unique()
 
+    # List all the authors to be implemented in the auteur.csv
     common_author_name = np.intersect1d(authors_in_authors, authors_in_books)
-
     rows_books_author_big = books.loc[~books['author'].isin(authors['author_name'])]
-
     max_author_id = authors["author_id"].max() if not authors.empty else 0
-
     author_a_implemente = rows_books_author_big['author'].drop_duplicates().to_frame()
-
     author_a_implemente.index = author_a_implemente.index + max_author_id
-
     author_a_implemente = author_a_implemente.reset_index()
 
+    # Merge Complete_author with the new datagrame and create the links
     rows_books_author_big = pd.merge(rows_books_author_big, author_a_implemente, on='author', how='inner')
-
     rows_books_author_big = rows_books_author_big.rename(columns={"index": "author_id","id": "book_id"})
-    link_dataframe = pd.read_csv(link_path)
+    link_dataframe = pd.read_csv(CHEMIN_LIEN_AUTEURS_LIVRES)
 
     col_list = ['book_id', 'author_id']
-
     link_dataframe = pd.concat([link_dataframe,rows_books_author_big[col_list]])
 
     author_a_implemente = author_a_implemente.rename(columns={"index": "author_id","author": "author_name"})
-
     author_a_implemente = author_a_implemente.reset_index(drop=True)
 
-    # Mettre à jour BigAuthor
+    # Mettre à jour Complete_author
     bigAuthor = pd.concat([authors, author_a_implemente])
 
     bigAuthor['author_genres'] = bigAuthor['author_genres'].str.split(',')
     bigAuthor = bigAuthor.explode('author_genres', ignore_index=True)
     
-    #Supprimer les colonnes non souhaitées de BigAuthor
+    #Supprimer les colonnes non souhaitées de Complete_author
     bigAuthor = bigAuthor.drop(columns=["book_average_rating", "book_id", "book_title", "genre_1", "genre_2", "num_ratings", "num_reviews", "pages", "publish_date"])
-    
     bigAuthor = bigAuthor.loc[bigAuthor["author_genres"] != "" ]
-
     bigAuthor = bigAuthor.drop_duplicates()
-
     bigAuthor = convertColumnsToRightType(bigAuthor,COLUMNS_TYPES_AUTHORS)
 
-    bigAuthor.to_csv(authors_path, index=False)
-    link_dataframe.to_csv(link_path, index=False)
+    bigAuthor.to_csv(CHEMIN_FICHIER_AUTEURS_COMPLET, index=False)
+    link_dataframe.to_csv(CHEMIN_LIEN_AUTEURS_LIVRES, index=False)
 
     ##################################################################
     #
@@ -310,7 +306,7 @@ def main():
 
 
     # Storage of the cleaned csv contents
-    authors = pd.read_csv("BigAuthor.csv")
+    authors = pd.read_csv("Complete_author.csv")
 
     genre = authors['author_genres'].unique()
 
