@@ -21,8 +21,13 @@ CREATE TABLE _prix (
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
     annee INTEGER, 
-    pays VARCHAR,
+    id_pays INTEGER REFERENCES _pays(id_pays),
     localisation VARCHAR
+);
+
+CREATE TABLE _pays (
+    id_pays SERIAL PRIMARY KEY,
+    nom VARCHAR
 );
 
 
