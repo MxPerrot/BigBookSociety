@@ -37,10 +37,12 @@ pip install -r requirements.txt
 python3 clean_data.py
 ```
 
+## How to run the data analysis
+
 ### 3. Run analysis
 
 ```bash
-python3 main.py
+python3 launch_analysis.py
 ```
 
 ### Run single analysis
@@ -55,4 +57,12 @@ e.g.
 
 ```bash
 python3 analysis_scripts/acm_genre_by_era.py
+```
+
+## How to run database creation and population
+
+### 4. Format the data for insertion
+
+```bash
+python3 unpack_data.py
 ```
