@@ -117,7 +117,7 @@ def encodeInUTF8(fileName):
     """
     
     # Ouvre le document et le met dans une chaine
-    with open(fileName, 'r') as file:
+    with open(fileName, 'r',encoding="utf8") as file:
         document = file.read()
 
         # Remplace les caractères mal encodés par le caractère original
@@ -277,4 +277,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main("data/books.csv","data/authors.csv")
+    main("data/books.csv","data/authors.csv","data/Cleaned_books.csv","data/Cleaned_authors.csv")
