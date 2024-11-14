@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-CHEMIN_FICHIER_LIVRES = "Big_book.csv"
+
 
 # extrait le résultat d'une recherche findall
 def extract(x):
@@ -65,62 +65,72 @@ def reformatDate(dateString):
 
     return year+'-'+month+'-'+day
 
-# Lit le fichier CSV avec les données brutes
-df = pd.read_csv(CHEMIN_FICHIER_LIVRES)
+def main(
+    chemin_fichier_clean_livres,
+    chemin_fichier_livres_complet
+):
+    # Lit le fichier CSV avec les données brutes
+    df = pd.read_csv(chemin_fichier_clean_livres)
+    print("\n\n----\n\n",df.columns)
+    # Pattern regex pour séparer les différents settings
+    patternSetting = r'(?:[A-Za-z\.]+(?:, |\s)?)+(?:,\d+)?(?:\([a-zA-Z\s]+\))?'
+    # Pattern regex pour extraire le nom du pays dans le setting
+    patternPays = r'\([a-zA-Z\s]+\)'
+    # Pattern regex pour extraire un nombre d'une chaîne de caratères 
+    patternChiffre = r'\d+'
+    # Pattern regex pour extraire un nom d'une chaîne
+    patternName = r'^(?:[\w\.\/\-\'\:éèïôçêùæœëüâ€©¤ãűúöäà]+(?:, |\s)?)+[\w\.\/\-\'\:éèïôçêùæœëüâ€©¤ãűúöäà]+'
+    # Pattern regex pour extraire une date entourée de parenthèses 
+    patternDate = r'\(\d+\)'
+    # Pattern regex pour extraire un numéro d'épisode 
+    patternEpNum = r'#[\d.-]+'
 
-# Pattern regex pour séparer les différents settings
-patternSetting = r'(?:[A-Za-z\.]+(?:, |\s)?)+(?:,\d+)?(?:\([a-zA-Z\s]+\))?'
-# Pattern regex pour extraire le nom du pays dans le setting
-patternPays = r'\([a-zA-Z\s]+\)'
-# Pattern regex pour extraire un nombre d'une chaîne de caratères 
-patternChiffre = r'\d+'
-# Pattern regex pour extraire un nom d'une chaîne
-patternName = r'^(?:[\w\.\/\-\'\:éèïôçêùæœëüâ€©¤ãűúöäà]+(?:, |\s)?)+[\w\.\/\-\'\:éèïôçêùæœëüâ€©¤ãűúöäà]+'
-# Pattern regex pour extraire une date entourée de parenthèses 
-patternDate = r'\(\d+\)'
-# Pattern regex pour extraire un numéro d'épisode 
-patternEpNum = r'#[\d.-]+'
+    # Crée une liste contenant les différents settings séparés
+    df['settingsClean'] = df['settings'].str.findall(patternSetting)
+    # Duplique les lignes pour n'avoir qu'un setting par ligne
+    df = df.explode('settingsClean', ignore_index=True)
 
-# Crée une liste contenant les différents settings séparés
-df['settingsClean'] = df['settings'].str.findall(patternSetting)
-# Duplique les lignes pour n'avoir qu'un setting par ligne
-df = df.explode('settingsClean', ignore_index=True)
+    # Crée une colonne contenant le nom du pays du setting
+    df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractWP)
 
-# Crée une colonne contenant le nom du pays du setting
-df['settingCountry'] = df['settingsClean'].str.findall(patternPays).apply(extractWP)
+    # Crée une colonne contenant la date du setting
+    df['settingDate'] = df['settingsClean'].str.findall(patternChiffre).apply(extract)
 
-# Crée une colonne contenant la date du setting
-df['settingDate'] = df['settingsClean'].str.findall(patternChiffre).apply(extract)
+    # Crée une colonne contenant le lieu du setting
+    df['settingLoc'] = df['settingsClean'].str.findall(patternName).apply(extract)
 
-# Crée une colonne contenant le lieu du setting
-df['settingLoc'] = df['settingsClean'].str.findall(patternName).apply(extract)
+    # Crée une liste contenant les différents awards séparés
+    df['awardsClean'] = df['awards'].str.split(', ')
 
-# Crée une liste contenant les différents awards séparés
-df['awardsClean'] = df['awards'].str.split(', ')
+    # Duplique les lignes pour n'avoir qu'un award par ligne
+    df = df.explode('awardsClean', ignore_index=True)
 
-# Duplique les lignes pour n'avoir qu'un award par ligne
-df = df.explode('awardsClean', ignore_index=True)
+    # Crée une colonne contenant la date d'obtention de l'award
+    df['awardDate'] = df['awardsClean'].str.findall(patternDate).apply(extractWP)
 
-# Crée une colonne contenant la date d'obtention de l'award
-df['awardDate'] = df['awardsClean'].str.findall(patternDate).apply(extractWP)
+    # Crée une colonne contenant le nom de l'award
+    df['awardName'] = df['awardsClean'].str.findall(patternName).apply(extract)
 
-# Crée une colonne contenant le nom de l'award
-df['awardName'] = df['awardsClean'].str.findall(patternName).apply(extract)
+    # Crée une colonne contenant le nombre de l'épisode d'une série de livres
+    df['episodeNumber'] = df['series'].str.findall(patternEpNum).apply(extract).str.replace('#','')
 
-# Crée une colonne contenant le nombre de l'épisode d'une série de livres
-df['episodeNumber'] = df['series'].str.findall(patternEpNum).apply(extract).str.replace('#','')
+    # Crée une colonne contenant le nom de la série
+    df['seriesName'] = df['series'].str.replace('(','').str.findall(patternName).apply(extract)
 
-# Crée une colonne contenant le nom de la série
-df['seriesName'] = df['series'].str.replace('(','').str.findall(patternName).apply(extract)
+    # Crée une colonne contenant la date de publication du livre au bon format (Date SQL)
+    df['date_published'] = df['date_published'].apply(reformatDate)
 
-# Crée une colonne contenant la date de publication du livre au bon format (Date SQL)
-df['date_published'] = df['date_published'].apply(reformatDate)
+    # Supprime les colonnes non utilisées
+    df = df.drop(columns = ['settings'])
+    df = df.drop(columns = ['awards'])
+    df = df.drop(columns = ['settingsClean'])
+    df = df.drop(columns = ['awardsClean'])
+    df = df.drop(columns = ['series'])
+    print("\n\n----\n\n",df.columns)
+    df.to_csv(chemin_fichier_livres_complet, index=False)
 
-# Supprime les colonnes non utilisées
-df = df.drop(columns = ['settings'])
-df = df.drop(columns = ['awards'])
-df = df.drop(columns = ['settingsClean'])
-df = df.drop(columns = ['awardsClean'])
-df = df.drop(columns = ['series'])
-
-df.to_csv('./data/Cleaned_books2.csv', index=False)
+if __name__ == "__main__":
+    main(
+        chemin_fichier_clean_livres = "data/Cleaned_books.csv",
+        chemin_fichier_livres_complet = "data/complete_book.csv"
+    )

@@ -2,8 +2,11 @@ import os
 import pandas as pd
 import numpy as np
 
+PATH_DATA = "data/"
+PATH_POPULATE = os.path.join(PATH_DATA, "populate")
+
 def main(books,authors):
-    os.mkdir("./data/populate")
+    os.makedirs(PATH_POPULATE, exist_ok=True)
 
     # Listage des pays
     countries = books['settingCountry'].unique()
@@ -16,7 +19,7 @@ def main(books,authors):
     dataset.index = dataset.index+1
 
     dataset = dataset.reset_index(names=['id_pays'])
-    dataset.to_csv("./data/populate/pays.csv", index=False)
+    dataset.to_csv(os.path.join(PATH_POPULATE,"pays.csv"), index=False)
 
     #Création d'un dataframe pour la table setting
     settingData = pd.merge(books, dataset, left_on='settingCountry', right_on="nom", how='inner')
@@ -32,10 +35,11 @@ def main(books,authors):
     # Création d'un dataframe pour le lien entre les livres et leur setting
     settingLinkData = settingData[['id_cadre','id_livre']]
     settingLinkData = settingLinkData.drop_duplicates()
-    settingLinkData.to_csv("./data/populate/cadre_livre.csv", index=False)
-
+    settingLinkData.to_csv(os.path.join(PATH_POPULATE,"cadre_livre.csv"), index=False)
+    
     settingData = settingData.drop(columns=['id_livre'])
-    settingData.to_csv("./data/populate/cadre.csv", index=False)
+    # settingData['annee'].astype(int) # FIXME: check if it works
+    settingData.to_csv(os.path.join(PATH_POPULATE,"cadre.csv"), index=False)
 
     #Création d'un dataframe pour la table editeur
     publishers = books['publisher'].unique()
@@ -43,7 +47,7 @@ def main(books,authors):
     dataset = pd.DataFrame({'nom_editeur': publishers})
     dataset.index = dataset.index+1
     dataset = dataset.reset_index(names=['id_editeur'])
-    dataset.to_csv("./data/populate/editeur.csv", index=False)
+    dataset.to_csv(os.path.join(PATH_POPULATE,"editeur.csv"), index=False)
 
 
     #Création d'un dataframe pour la table livres
@@ -66,7 +70,7 @@ def main(books,authors):
     booksData = booksData.rename(columns={"date_published": "date_publication"})
     booksData = booksData.rename(columns={"original_title": "titre_original"})
 
-    booksData.to_csv("./data/populate/livre.csv", index=False)
+    booksData.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
 
     # Listage des genres
     genre = authors['author_genres'].unique()
@@ -77,7 +81,7 @@ def main(books,authors):
     authorData = authorData.drop_duplicates(subset=["author_id"], keep='first')
 
     authorData = authorData.rename(columns={"author_average_rating": "note_moyenne", "author_id": "id_auteur", "author_name": "nom" ,"birthplace": "origine", "author_review_count": "nb_reviews", "author_rating_count" : "nb_critiques", "author_gender" : "sexe"})
-    authorData.to_csv("./data/populate/auteur_sql.csv", index=False)
+    authorData.to_csv(os.path.join(PATH_POPULATE,"auteur_sql.csv"), index=False)
 
     # Création dataframe pour la table genre
     genreData = pd.DataFrame({'author_genres': genre})
@@ -87,7 +91,7 @@ def main(books,authors):
     genreData = genreData.reset_index(names=['id_genre'])
     
     genreData = genreData.rename(columns={"author_genres": "libelle_genre"})
-    genreData.to_csv("./data/populate/genre.csv", index=False)
+    genreData.to_csv(os.path.join(PATH_POPULATE,"genre.csv"), index=False)
 
     # Création d'un dataframe pour le lien entre les auteurs et leur genre
     genreVoteData = pd.merge(authors, genreData, left_on='author_genres', right_on="libelle_genre", how='inner')
@@ -97,8 +101,7 @@ def main(books,authors):
     genreVoteData = genreVoteData.drop_duplicates()
 
     genreVoteData = genreVoteData.rename(columns={"author_id": "id_auteur"})
-    genreVoteData.to_csv("./data/populate/auteur_genre.csv", index=False)
-
+    genreVoteData.to_csv(os.path.join(PATH_POPULATE,"auteur_genre.csv"), index=False)
 
     # Listage
     series = books['seriesName'].dropna().unique()
@@ -112,7 +115,7 @@ def main(books,authors):
     seriesData = seriesData.rename(columns={"seriesName": "nom_serie"})
 
     # Exporter le DataFrame des séries en CSV
-    seriesData.to_csv("./data/populate/series.csv", index=False)
+    seriesData.to_csv(os.path.join(PATH_POPULATE,"series.csv"), index=False)
 
 
     episodeData = pd.merge(books, seriesData, left_on='seriesName', right_on="nom_serie", how='inner')
@@ -122,11 +125,11 @@ def main(books,authors):
     episodeData = episodeData.rename(columns={"id": "id_livre"})
     episodeData = episodeData.rename(columns={"episodeNumber": "numero_episode"})
 
-    episodeData.to_csv("./data/populate/episode_serie.csv", index=False)
+    episodeData.to_csv(os.path.join(PATH_POPULATE,"episode_serie.csv"), index=False)
 
 
 
-    df_books = books.copy()
+    df_books = pd.read_csv("data/complete_book_copy.csv")
     df_genre_from_authors = genreData.copy()
 
     # 2. Clean the books dataframe:
@@ -136,7 +139,7 @@ def main(books,authors):
     df_clean_books = df_clean_books.explode('genre_and_votes', ignore_index=True) # for each genre/vote group for a book, add a line. The result is that many lines have the same book id.
     df_clean_books = df_clean_books.dropna() # drop nan values
     # split genre_and_votes
-    df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', 1, expand=True) # split the genre and vote into two separate genre and votes columns
+    df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', n=1, expand=True) # split the genre and vote into two separate genre and votes columns
     df_clean_books = df_clean_books.drop('genre_and_votes', axis=1) # drop the genre_and_votes column
     # clean up the invalid data
     df_clean_books['votes'] = df_clean_books['votes'].replace('1user', '1') # if votes value is '1user', change it to 1
@@ -166,6 +169,7 @@ def main(books,authors):
     df_clean_books = df_clean_books.drop(columns=['libelle_genre'])
     df_clean_books = df_clean_books.drop_duplicates()
 
+    print("\n\n===---===\n\n",df_books.columns)
     df_clean_books_author = df_books[['id','genre_1', 'genre_2']] 
     df_clean_books_author = df_clean_books_author.dropna(subset=['genre_1'])
 
@@ -188,8 +192,8 @@ def main(books,authors):
     df_clean_books = df_clean_books.fillna(1)
     df_clean_books['nb_votes'] = df_clean_books['nb_votes'].astype(int)
 
-    df_clean_books.to_csv('data/populate/livre_genre.csv',index=False)
-    df_genre_glob2.to_csv('data/populate/genre.csv',index=False)
+    df_clean_books.to_csv(os.path.join(PATH_POPULATE,"livre_genre.csv"),index=False)
+    df_genre_glob2.to_csv(os.path.join(PATH_POPULATE,"genre.csv"),index=False)
 
     awardData = books[['awardDate', 'awardName']]
     awardData = awardData.drop_duplicates()
@@ -213,8 +217,8 @@ def main(books,authors):
     awardData = awardData[['id_prix', 'nom_prix', 'annee_prix']]
 
     # Enregistrer le DataFrame dans le fichier data/populate/prix.csv
-    awardData.to_csv('data/populate/prix.csv', index=False)
-
+    # awardData['annee_prix'].astype(int) # FIXME: check if it works
+    awardData.to_csv(os.path.join(PATH_POPULATE,"prix.csv"), index=False)
 
     # --- Suite du script pour générer prix_livre.csv ---
     bookData = books[['id', 'awardName', 'awardDate']]
@@ -236,11 +240,11 @@ def main(books,authors):
     awardData = awardData.drop_duplicates()
 
     # Enregistrer le DataFrame final dans un fichier CSV
-    awardData.to_csv('data/populate/prix_livre.csv', index=False)
+    awardData.to_csv(os.path.join(PATH_POPULATE,"prix_livre.csv"), index=False)
 
 
 if __name__ == "__main__":
-    books = pd.read_csv("data/Cleaned_books2.csv", dtype={
+    BOOKS_DTYPE = {
     'rating_count': 'Int32', 
     'review_count': 'Int32', 
     'five_star_ratings': 'Int32', 
@@ -249,6 +253,8 @@ if __name__ == "__main__":
     'two_star_ratings': 'Int32', 
     'one_star_ratings': 'Int32', 
     'nombre_pages': 'Int32', 
-    'one_star_ratings': 'Int32'})
+    'one_star_ratings': 'Int32'}
+    
+    books = pd.read_csv("data/Cleaned_books.csv", dtype=BOOKS_DTYPE)
     author = pd.read_csv("data/Cleaned_authors.csv")
     main(books,author)

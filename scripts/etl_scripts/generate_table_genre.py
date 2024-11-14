@@ -28,9 +28,9 @@ import pandas as pd
 #              CONSTANTS              #
 #######################################
 
-AUTHORS_CSV = "BigAuthor.csv"
-BOOKS_CSV = "Big_book.csv"
-GENRES_FROM_AUTHORS_CSV = "SQL/genre.csv"
+AUTHORS_CSV = "data/complete_author.csv"
+BOOKS_CSV = "data/complete_book.csv"
+GENRES_FROM_AUTHORS_CSV = "data/populate/genre.csv"
 
 #######################################
 #              FUNCTIONS              #
@@ -59,7 +59,7 @@ def main():
     df_clean_books = df_clean_books.explode('genre_and_votes', ignore_index=True) # for each genre/vote group for a book, add a line. The result is that many lines have the same book id.
     df_clean_books = df_clean_books.dropna() # drop nan values
     # split genre_and_votes
-    df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', 1, expand=True) # split the genre and vote into two separate genre and votes columns
+    df_clean_books[['genre', 'votes']] = df_clean_books['genre_and_votes'].str.rsplit(' ', n=1, expand=True) # split the genre and vote into two separate genre and votes columns
     df_clean_books = df_clean_books.drop('genre_and_votes', axis=1) # drop the genre_and_votes column
     # clean up the invalid data
     df_clean_books['votes'] = df_clean_books['votes'].replace('1user', '1') # if votes value is '1user', change it to 1

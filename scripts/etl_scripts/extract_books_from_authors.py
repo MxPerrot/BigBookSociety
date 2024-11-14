@@ -21,7 +21,7 @@ For now this program will only detect the books that are in authors but not in b
 import pandas as pd
 import numpy as np
 
-def main():
+def main(chemin_fichier_livres_complet):
 
     """
     Main function
@@ -119,8 +119,11 @@ def main():
 
     bigBook = bigBook.drop_duplicates()
 
-    bigBook.to_csv("Big_book.csv", index=False)
-    link_dataframe.to_csv("link.csv", index=False)
+    bigBook.to_csv(chemin_fichier_livres_complet, index=False)
+
+    bigBook.to_csv("data/complete_book_copy.csv", index=False)
+
+    link_dataframe.to_csv("data/populate/link.csv", index=False)
 
     #Remaining Values
     #genre_1,genre_2,publish_date
@@ -134,4 +137,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(
+        chemin_fichier_livres_complet = "data/complete_book.csv"
+    )

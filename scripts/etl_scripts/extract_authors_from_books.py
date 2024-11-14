@@ -11,10 +11,10 @@ def main():
     """
 
     # Charger les fichiers CSV
-    authors_path = "BigAuthor.csv"
+    authors_path = "data/complete_author.csv"
     clean_authors_path = "data/Cleaned_authors.csv"
     books_path = "data/Cleaned_books.csv"
-    link_path = "link.csv"
+    link_path = "data/populate/link.csv"
 
     authors = pd.read_csv(clean_authors_path)  # Charger le fichier existant
     books = pd.read_csv(books_path)  # Charger le fichier existant

@@ -15,12 +15,12 @@ CREATE TABLE _editeur (
 CREATE TABLE _prix (
     id_prix SERIAL PRIMARY KEY,
     nom_prix VARCHAR NOT NULL,
-    annee_prix INT
+    annee_prix NUMERIC
 );
 
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
-    annee INTEGER, 
+    annee NUMERIC, 
     id_pays INTEGER REFERENCES _pays(id_pays),
     localisation VARCHAR
 );
@@ -170,4 +170,132 @@ CREATE TABLE _episode_serie (
     numero_episode VARCHAR,
     PRIMARY KEY(id_livre, id_serie)
 );
+
+
+-- PEUPLEMENT
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/auteur_sql.csv'
+-table=_auteur
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/genre.csv'
+-table=_genre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/auteur_genre.csv'
+-table=_auteur_genre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/editeur.csv'
+-table=_editeur
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/livre.csv'
+-table=_livre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/livre_genre.csv'
+-table=_genre_livre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/prix.csv'
+-table=_prix
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/prix_livre.csv'
+-table=_prix_livre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/pays.csv'
+-table=_pays
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/cadre.csv'
+-table=_cadre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/cadre_livre.csv'
+-table=_cadre_livre
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/serie.csv'
+-table=_serie
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/episode_serie.csv'
+-table=_episode_serie
+-delimiter=','
+-header=true;
+
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/link.csv'
+-table=_auteur_livre
+-delimiter=','
+-header=true;
 
