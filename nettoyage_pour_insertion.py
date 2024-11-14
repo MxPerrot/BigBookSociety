@@ -108,7 +108,7 @@ df['awardDate'] = df['awardsClean'].str.findall(patternDate).apply(extractWP)
 df['awardName'] = df['awardsClean'].str.findall(patternName).apply(extract)
 
 # Crée une colonne contenant le nombre de l'épisode d'une série de livres
-df['episodeNumber'] = df['series'].str.findall(patternEpNum).apply(extract)
+df['episodeNumber'] = df['series'].str.findall(patternEpNum).apply(extract).str.replace('#','')
 
 # Crée une colonne contenant le nom de la série
 df['seriesName'] = df['series'].str.replace('(','').str.findall(patternName).apply(extract)

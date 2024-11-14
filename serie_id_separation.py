@@ -1,8 +1,7 @@
 import pandas as pd
 
 # Charger le fichier CSV
-books = pd.read_csv("data/IGNOREME_Cleaned_books2.csv", dtype={
-    'episodeNumber': 'Int32'})
+books = pd.read_csv("data/Cleaned_books2.csv")
 
 series = books['seriesName'].dropna().unique()
 
@@ -22,4 +21,7 @@ episodeData = pd.merge(books, series_table, left_on='seriesName', right_on="nom_
 
 episodeData = episodeData[['id_serie','id','episodeNumber']]
 
-print(episodeData)
+episodeData = episodeData.rename(columns={"id": "id_livre"})
+episodeData = episodeData.rename(columns={"episodeNumber": "numero_episode"})
+
+episodeData.to_csv("./SQL/episode_serie.csv", index=False)
