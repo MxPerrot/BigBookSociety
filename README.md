@@ -61,15 +61,19 @@ python3 analysis_scripts/acm_genre_by_era.py
 
 ## How to run database creation and population
 
-Place your original data file in `./data/` and name them
+1. Place your original data files in `./data/` and name them:
 - `authors.csv` for the authors data
 - `books.csv` for the books data
 
+2. Run this script to generate the tables that will be populated in the Database
 ```bash
 python3 transform_load.py
 ```
 
 The resulting population csv are in `./data/populate/`
-You now need to open your SGBD and run the script `create_database.sql`
-This will create and populate the database.
-***NOTE**: The script uses **PostgreSQL***
+
+3. Open your DataBase Management System
+
+4. Run `./database/create_database.sql` to create and populate the database using the previously generated csv files
+
+***NOTE**: This script uses **PostgreSQL**. Use a compatible DBMS.*
