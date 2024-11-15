@@ -3,23 +3,39 @@ import re
 
 
 
-# extrait le résultat d'une recherche findall
+
 def extract(x):
+    """
+    Extrait le résultat d'une recherche findall
+    return: 
+    - x[0] si la liste n'est pas vide
+    - None si la liste est vide
+
+    """
+
     if isinstance(x, list) and len(x) >= 1:
         return x[0]
     else :
         return None
 
-# extrait le résultat d'une recherche findall pour le pays (retire les parenthèses)
 def extractWP(x):
+    """
+    Extrait le résultat d'une recherche findall pour le pays (retire les parenthèses)
+    return:
+    - x[0] sans les parenthèses si la liste n'est pas vide
+    - None si la liste est vide
+    """
     if isinstance(x, list) and len(x) >= 1:
         return x[0].replace('(','').replace(')','')
     else :
         return None
 
-# transforme une date au format "April 15th 1988" en "1988-04-15" pour correspondre au format date de SQL
 def reformatDate(dateString):
-
+    """
+    Transforme une date au format "April 15th 1988" en "1988-04-15" pour correspondre au format date de SQL
+    return:
+    - La date au format SQL si la date est valide
+    """
     # Au nom d'un mois associe son numéro
     month_dict = {
         "January": '01',
