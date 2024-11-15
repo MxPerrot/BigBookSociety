@@ -7,6 +7,7 @@ BUT Informatique 3
 2024-2025 
 
 **SAE 5.C.01 : Datamining**
+
 Propose an optimised solution based on internal and external data
  - Create a business intelligence application
  - Team development of a technical solution
