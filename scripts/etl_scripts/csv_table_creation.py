@@ -61,11 +61,11 @@ def main(books,authors):
     booksData = booksData.rename(columns={"rating_count": "nb_notes"})
     booksData = booksData.rename(columns={"review_count": "nb_critiques"})
     booksData = booksData.rename(columns={"average_rating": "note_moyenne"})
-    booksData = booksData.rename(columns={"one_star_ratings": "nb_notes_1_etoile"})
-    booksData = booksData.rename(columns={"two_star_ratings": "nb_notes_2_etoile"})
-    booksData = booksData.rename(columns={"three_star_ratings": "nb_notes_3_etoile"})
-    booksData = booksData.rename(columns={"four_star_ratings": "nb_notes_4_etoile"})
-    booksData = booksData.rename(columns={"five_star_ratings": "nb_notes_5_etoile"})
+    booksData = booksData.rename(columns={"one_star_ratings": "nb_note_1_etoile"})
+    booksData = booksData.rename(columns={"two_star_ratings": "nb_note_2_etoile"})
+    booksData = booksData.rename(columns={"three_star_ratings": "nb_note_3_etoile"})
+    booksData = booksData.rename(columns={"four_star_ratings": "nb_note_4_etoile"})
+    booksData = booksData.rename(columns={"five_star_ratings": "nb_note_5_etoile"})
     booksData = booksData.rename(columns={"number_of_pages": "nombre_pages"})
     booksData = booksData.rename(columns={"date_published": "date_publication"})
     booksData = booksData.rename(columns={"original_title": "titre_original"})
@@ -191,7 +191,7 @@ def main(books,authors):
 
     df_clean_books = df_clean_books.fillna(1)
     df_clean_books['nb_votes'] = df_clean_books['nb_votes'].astype(int)
-
+    df_clean_books = df_clean_books.drop_duplicates()
     df_clean_books.to_csv(os.path.join(PATH_POPULATE,"livre_genre.csv"),index=False)
     df_genre_glob2.to_csv(os.path.join(PATH_POPULATE,"genre.csv"),index=False)
 
