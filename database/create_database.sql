@@ -18,18 +18,17 @@ CREATE TABLE _prix (
     annee_prix NUMERIC
 );
 
+CREATE TABLE _pays (
+    id_pays SERIAL PRIMARY KEY,
+    nom VARCHAR
+);
+
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
     annee NUMERIC, 
     id_pays INTEGER REFERENCES _pays(id_pays),
     localisation VARCHAR
 );
-
-CREATE TABLE _pays (
-    id_pays SERIAL PRIMARY KEY,
-    nom VARCHAR
-);
-
 
 CREATE TABLE _livre (
     id_livre SERIAL PRIMARY KEY,
