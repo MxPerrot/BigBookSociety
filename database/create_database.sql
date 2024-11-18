@@ -275,7 +275,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../data/populate/serie.csv'
+-file='../data/populate/series.csv'
 -table=_serie
 -delimiter=','
 -header=true;
