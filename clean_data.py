@@ -27,7 +27,8 @@ import numpy as np
 import pandas as pd
 from io import StringIO
 import re
-
+import chardet
+import unicodedata
 #######################################
 #              CONSTANTS              #
 #######################################
@@ -111,6 +112,11 @@ UTF8_CORRESPONDANCY = {
 #              FUNCTIONS              #
 #######################################
 
+def normalize_text(text):
+    if not isinstance(text, str):
+        return text
+    return unicodedata.normalize('NFKC', text)  # Or 'NFKD' for decomposed form
+
 def encodeInUTF8(fileName):
     """
     Remplace les caratères mal encodés d'un fichier CSV et les renvoie sous forme de dataframe
@@ -128,7 +134,26 @@ def encodeInUTF8(fileName):
     csvStringIO = StringIO(document)
     data = pd.read_csv(csvStringIO, sep=',')
     df = pd.DataFrame(data)
+
     return df
+
+    # with open(fileName, 'rb') as f:
+    #     result = chardet.detect(f.read(10000))  # Read the first 10,000 bytes
+    # print(result)  # {'encoding': 'utf-8', 'confidence': 0.99}
+    # encoding = result['encoding']
+
+    # # Use the detected encoding
+    # df = pd.read_csv(fileName, encoding=encoding, encoding_errors='replace')
+    # return df
+    # Normalize Unicode
+
+    # df = pd.read_csv(fileName, encoding='utf-8')
+
+    # # Apply normalization
+    # for col in df.columns:
+    #     df[col] = df[col].apply(normalize_text)
+
+    # return df
 
 def pruneEmptyColumns(data):
     """
