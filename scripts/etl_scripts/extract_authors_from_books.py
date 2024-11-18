@@ -76,6 +76,10 @@ def main():
 
     bigAuthor = convertColumnsToRightType(bigAuthor,COLUMNS_TYPES_AUTHORS)
 
+    link_dataframe = link_dataframe.rename(columns={"book_id": "id_livre", "author_id": "id_auteur"})
+
+    link_dataframe = link_dataframe.drop_duplicates()
+
     bigAuthor.to_csv(authors_path, index=False)
     link_dataframe.to_csv(link_path, index=False)
 

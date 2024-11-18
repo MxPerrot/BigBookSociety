@@ -50,6 +50,7 @@ def main(chemin_fichier_livres_complet):
     link_dataframe = rows_authors_books[col_list]
 
     link_dataframe = link_dataframe.drop_duplicates(subset = ['book_id','author_id'], keep=False)
+
     
 
     #rows_authors_books = rows_authors_books.drop_duplicates(subset=['book_id'])
@@ -80,7 +81,6 @@ def main(chemin_fichier_livres_complet):
 
     link_dataframe = pd.concat([link_dataframe,common_books_titles_but_not_ID])
     
-
     # print(f"Number of common books titles but not ID: {len(common_books_titles_but_not_ID)}")
     # print(f"Common books titles but not ID by title: {common_books_titles_but_not_ID['book_title']}")
 
@@ -118,6 +118,8 @@ def main(chemin_fichier_livres_complet):
     bigBook = bigBook.drop(columns=['author'])
 
     bigBook = bigBook.drop_duplicates()
+
+    link_dataframe = link_dataframe.loc[link_dataframe['book_id'].isin(bigBook['id'])]
 
     bigBook.to_csv(chemin_fichier_livres_complet, index=False)
 

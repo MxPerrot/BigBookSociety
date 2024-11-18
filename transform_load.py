@@ -69,7 +69,7 @@ def main():
     )
 
     nettoyage_pour_insertion.main(
-        chemin_fichier_clean_livres = CHEMIN_FICHIER_CLEAN_LIVRES,
+        chemin_fichier_clean_livres = CHEMIN_FICHIER_LIVRES_COMPLET,
         chemin_fichier_livres_complet = CHEMIN_FICHIER_LIVRES_COMPLET 
     )
 

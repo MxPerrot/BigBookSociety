@@ -51,10 +51,21 @@ def main(books,authors):
 
 
     #Création d'un dataframe pour la table livres
-    publisherLinkData = pd.merge(books, dataset, left_on='publisher', right_on="nom_editeur", how='inner')
+    publisherLinkData = pd.merge(books, dataset, left_on='publisher', right_on="nom_editeur", how='outer') # FIX: le outer à l'air de régler le pb des livres manquants, on en a 4k en plus, sans doublons
+
     booksData = publisherLinkData[['id','title','rating_count','review_count','average_rating','five_star_ratings','four_star_ratings','three_star_ratings','two_star_ratings','one_star_ratings','number_of_pages','date_published','original_title','isbn','isbn13','description','id_editeur']]
     booksData = booksData.drop_duplicates()
     booksData = booksData.drop_duplicates(subset=['id'],keep='first')
+    
+    booksData['id_editeur'] = booksData['id_editeur'].astype('Int32')
+    booksData['rating_count'] = booksData['rating_count'].astype('Int32')
+    booksData['one_star_ratings'] = booksData['one_star_ratings'].astype('Int32')
+    booksData['two_star_ratings'] = booksData['two_star_ratings'].astype('Int32')
+    booksData['three_star_ratings'] = booksData['three_star_ratings'].astype('Int32')
+    booksData['four_star_ratings'] = booksData['four_star_ratings'].astype('Int32')
+    booksData['five_star_ratings'] = booksData['five_star_ratings'].astype('Int32')
+    booksData['number_of_pages'] = booksData['number_of_pages'].astype('Int32')
+    booksData['review_count'] = booksData['review_count'].astype('Int32')
 
     booksData = booksData.rename(columns={"id": "id_livre"})
     booksData = booksData.rename(columns={"title": "titre"})
@@ -125,6 +136,8 @@ def main(books,authors):
     episodeData = episodeData.rename(columns={"id": "id_livre"})
     episodeData = episodeData.rename(columns={"episodeNumber": "numero_episode"})
 
+    episodeData = episodeData.drop_duplicates()
+
     episodeData.to_csv(os.path.join(PATH_POPULATE,"episode_serie.csv"), index=False)
 
 
@@ -169,7 +182,7 @@ def main(books,authors):
     df_clean_books = df_clean_books.drop(columns=['libelle_genre'])
     df_clean_books = df_clean_books.drop_duplicates()
 
-    print("\n\n===---===\n\n",df_books.columns)
+    # print("\n\n===---===\n\n",df_books.columns)
     df_clean_books_author = df_books[['id','genre_1', 'genre_2']] 
     df_clean_books_author = df_clean_books_author.dropna(subset=['genre_1'])
 

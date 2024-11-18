@@ -147,6 +147,6 @@ def main(
 
 if __name__ == "__main__":
     main(
-        chemin_fichier_clean_livres = "data/Cleaned_books.csv",
+        chemin_fichier_clean_livres = "data/complete_book.csv",
         chemin_fichier_livres_complet = "data/complete_book.csv"
     )
