@@ -38,7 +38,7 @@ def main(books,authors):
     settingLinkData.to_csv(os.path.join(PATH_POPULATE,"cadre_livre.csv"), index=False)
     
     settingData = settingData.drop(columns=['id_livre'])
-    # settingData['annee'].astype(int) # FIXME: check if it works
+    settingData['annee'] = settingData['annee'].astype('Int32')
     settingData.to_csv(os.path.join(PATH_POPULATE,"cadre.csv"), index=False)
 
     #Création d'un dataframe pour la table editeur
@@ -230,7 +230,7 @@ def main(books,authors):
     awardData = awardData[['id_prix', 'nom_prix', 'annee_prix']]
 
     # Enregistrer le DataFrame dans le fichier data/populate/prix.csv
-    # awardData['annee_prix'].astype(int) # FIXME: check if it works
+    awardData['annee_prix'] = awardData['annee_prix'].astype('Int32')
     awardData.to_csv(os.path.join(PATH_POPULATE,"prix.csv"), index=False)
 
     # --- Suite du script pour générer prix_livre.csv ---

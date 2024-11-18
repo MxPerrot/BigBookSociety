@@ -15,7 +15,7 @@ CREATE TABLE _editeur (
 CREATE TABLE _prix (
     id_prix SERIAL PRIMARY KEY,
     nom_prix VARCHAR NOT NULL,
-    annee_prix NUMERIC
+    annee_prix INTEGER
 );
 
 CREATE TABLE _pays (
@@ -25,7 +25,7 @@ CREATE TABLE _pays (
 
 CREATE TABLE _cadre (
     id_cadre SERIAL PRIMARY KEY,
-    annee NUMERIC, 
+    annee INTEGER, 
     id_pays INTEGER REFERENCES _pays(id_pays),
     localisation VARCHAR
 );
