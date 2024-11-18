@@ -142,7 +142,7 @@ def main(books,authors):
 
 
 
-    df_books = pd.read_csv("data/complete_book_copy.csv")
+    df_books = pd.read_csv("data/complete_book_copy.csv", low_memory=False)
     df_genre_from_authors = genreData.copy()
 
     # 2. Clean the books dataframe:

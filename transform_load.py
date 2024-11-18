@@ -74,8 +74,8 @@ def main():
     )
 
     csv_table_creation.main(
-        books = pd.read_csv(CHEMIN_FICHIER_LIVRES_COMPLET),
-        authors = pd.read_csv(CHEMIN_FICHIER_AUTEURS_COMPLET)
+        books = pd.read_csv(CHEMIN_FICHIER_LIVRES_COMPLET,low_memory=False),
+        authors = pd.read_csv(CHEMIN_FICHIER_AUTEURS_COMPLET,low_memory=False)
     )
 
     

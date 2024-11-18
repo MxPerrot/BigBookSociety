@@ -132,7 +132,7 @@ def encodeInUTF8(fileName):
 
     # Convertit la chaîne de caractères en dataframe
     csvStringIO = StringIO(document)
-    data = pd.read_csv(csvStringIO, sep=',')
+    data = pd.read_csv(csvStringIO, sep=',',low_memory=False)
     df = pd.DataFrame(data)
 
     return df
@@ -160,37 +160,37 @@ def pruneEmptyColumns(data):
     Supprime les colonnes vides et les lignes possédant des valeurs dedant
     """
     str_column="Unnamed: "
-    print(f"\n--- Purge ligne vide     ---\n")
+    # print(f"\n--- Purge ligne vide     ---\n")
     for i in range(24,87):
         index = 0
         for y in data[str_column+str(i)]:
             if (pd.notna(y)):
                 data = data.drop([index])
             index += 1
-    print(f"\n--- Purge ligne vide OK ---\n")
-    print(f"\n--- Purge colonnes unnamed    ---\n")
+    # print(f"\n--- Purge ligne vide OK ---\n")
+    # print(f"\n--- Purge colonnes unnamed    ---\n")
     for i in range(24,87):
         data = data.drop(columns=[str_column+str(i)])
-    print(f"\n--- Purge colonnes unnamed OK ---\n")
+    # print(f"\n--- Purge colonnes unnamed OK ---\n")
     return data
 
 def convertStrToFloat(data,id):
     """"
     Convertie les virgules en point puis les string en float
     """
-    print(f"\n--- Nettoyage {id}    ---\n")
+    # print(f"\n--- Nettoyage {id}    ---\n")
     data[id] = data[id].replace({',': '.'}, regex=True)
     data[id] = pd.to_numeric(data[id],downcast='float')
-    print(f"\n--- Nettoyage {id} OK ---\n")
+    # print(f"\n--- Nettoyage {id} OK ---\n")
     return data
 
 def convertColumnsToRightType(data,Format):
     """
     Adapte toute les colonnes aux formats demandés et supprime les lignes problématiques
     """
-    print(f"\n--- Nettoyage Global---\n")
+    # print(f"\n--- Nettoyage Global---\n")
     for i in data:
-        print(f"\n--- Nettoyage {i} ---\n")
+        # print(f"\n--- Nettoyage {i} ---\n")
         try:
             if(Format[i]!=str):
                 data[i] = data[i].fillna(-1).astype(Format[i])
@@ -212,8 +212,8 @@ def convertColumnsToRightType(data,Format):
 
                 else:
                     data = data.drop(index)    
-        print(f"\n--- Nettoyage {i} OK ---\n")
-    print(f"\n--- Nettoyage Global OK ---\n")
+        # print(f"\n--- Nettoyage {i} OK ---\n")
+    # print(f"\n--- Nettoyage Global OK ---\n")
     return data
 
 

@@ -86,8 +86,8 @@ def main(
     chemin_fichier_livres_complet
 ):
     # Lit le fichier CSV avec les données brutes
-    df = pd.read_csv(chemin_fichier_clean_livres)
-    print("\n\n----\n\n",df.columns)
+    df = pd.read_csv(chemin_fichier_clean_livres,low_memory=False)
+    # print("\n\n----\n\n",df.columns)
     # Pattern regex pour séparer les différents settings
     patternSetting = r'(?:[A-Za-z\.]+(?:, |\s)?)+(?:,\d+)?(?:\([a-zA-Z\s]+\))?'
     # Pattern regex pour extraire le nom du pays dans le setting
@@ -142,7 +142,7 @@ def main(
     df = df.drop(columns = ['settingsClean'])
     df = df.drop(columns = ['awardsClean'])
     df = df.drop(columns = ['series'])
-    print("\n\n----\n\n",df.columns)
+    # print("\n\n----\n\n",df.columns)
     df.to_csv(chemin_fichier_livres_complet, index=False)
 
 if __name__ == "__main__":
