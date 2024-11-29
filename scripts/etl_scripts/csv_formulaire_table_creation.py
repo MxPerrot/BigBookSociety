@@ -116,9 +116,13 @@ def main(results):
 
     ##### TABLES DE RELATION #####
 
-    # _auteur_genre : id_auteur, id_genre
-
     # _format_utilisateur : id_format, id_utilisateur
+    #format_utilisateur = pd.merge(formats_preferes, utilisateur[''], left_on='id_format', right_on="id_utilisateur", how='inner')
+    #print(format_utilisateur)
+    #format_utilisateur = format_utilisateur[['id_format','id_utilisateur',]]
+    #format_utilisateur = format_utilisateur.drop_duplicates()
+    #format_utilisateur = format_utilisateur.rename(columns={"id_format": "id_utilisateur"})
+    #format_utilisateur.to_csv(os.path.join(PATH_POPULATE,"format_utilisateur.csv"), index=False)
 
     # _utilisateur_genre : id_utilisateur, id_genre
 
