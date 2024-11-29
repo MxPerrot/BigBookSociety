@@ -84,7 +84,7 @@ CREATE TABLE _format (
 CREATE TABLE _utilisateur (
     id_utilisateur SERIAL PRIMARY KEY,
     mail_utilisateur VARCHAR UNIQUE NOT NULL,
-    gender VARCHAR NOT NULL,
+    sexe VARCHAR NOT NULL,
     age INTEGER,
     profession VARCHAR,
     situation_familiale VARCHAR,
