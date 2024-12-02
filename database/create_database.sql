@@ -78,19 +78,19 @@ CREATE TABLE _code_postal (
 
 CREATE TABLE _format (
     id_format SERIAL PRIMARY KEY,
-    libelle_format VARCHAR UNIQUE NOT NULL
+    format VARCHAR UNIQUE NOT NULL
 );
 
 CREATE TABLE _utilisateur (
     id_utilisateur SERIAL PRIMARY KEY,
-    mail_utilisateur VARCHAR UNIQUE NOT NULL,
+    mail_utilisateur VARCHAR NOT NULL,
     sexe VARCHAR NOT NULL,
-    age INTEGER,
+    age VARCHAR,
     profession VARCHAR,
     situation_familiale VARCHAR,
     frequence_lecture VARCHAR,
     vitesse_lecture INTEGER,
-    nb_livres_lus INTEGER,
+    nb_livres_lus VARCHAR,
     id_code_postal INTEGER REFERENCES _code_postal(id_code_postal)
 );
 
@@ -221,17 +221,24 @@ CREATE TABLE _episode_serie (
 WbImport
 -usePgCopy
 -type=text
--file='../data/populate/auteur_sql.csv'
--table=_auteur
+-file='../data/populate/genre.csv'
+-table=_genre
 -delimiter=','
 -header=true;
-
 
 WbImport
 -usePgCopy
 -type=text
--file='../data/populate/genre.csv'
+-file='../../Wizards/formulaire/populate/genre.csv'
 -table=_genre
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/auteur.csv'
+-table=_auteur
 -delimiter=','
 -header=true;
 
@@ -253,15 +260,13 @@ WbImport
 -delimiter=','
 -header=true;
 
-
 WbImport
 -usePgCopy
 -type=text
--file='../data/populate/livre.csv'
+-file='../../Wizards/formulaire/populate/livre.csv'
 -table=_livre
 -delimiter=','
 -header=true;
-
 
 WbImport
 -usePgCopy
@@ -340,5 +345,127 @@ WbImport
 -type=text
 -file='../data/populate/link.csv'
 -table=_auteur_livre
+-delimiter=','
+-header=true;
+
+-- Asaiah
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/code_postal.csv'
+-table=_code_postal
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/format.csv'
+-table=_format
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur.csv'
+-table=_utilisateur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/raison_achat.csv'
+-table=_raison_achat
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/langue.csv'
+-table=_langue
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/procuration.csv'
+-table=_procuration
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/motivation.csv'
+-table=_motivation
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/format_utilisateur.csv'
+-table=_format_utilisateur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur_genre.csv'
+-table=_utilisateur_genre
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur_auteur.csv'
+-table=_utilisateur_auteur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/livre_utilisateur.csv'
+-table=_livre_utilisateur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur_motivation.csv'
+-table=_utilisateur_motivation
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur_procuration.csv'
+-table=_utilisateur_procuration
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur_langue.csv'
+-table=_utilisateur_langue
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../../Wizards/formulaire/populate/utilisateur_raison_achat.csv'
+-table=_utilisateur_raison_achat
 -delimiter=','
 -header=true;

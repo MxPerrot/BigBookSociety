@@ -41,17 +41,21 @@ def main(results):
         res = set(res)
         return res
     
-    def filtrer_livres_auteurs(list) :
+    def filtrer_livres_auteurs(list, list2) :
         res = []
         for element in list :
             if (not(isinstance(element, float))) :
                 element = element.split('\n')
                 for el in element :
-                    if (el != '') :
+                    if (el != '' and not(list2.isin([el]).any().any())) :
                         res.append(el)
         res = set(res)
         return res
-        
+
+    livre1_df = pd.read_csv('data/populate/livre.csv')
+    auteur1_df = pd.read_csv('data/populate/auteur_sql.csv')
+    genre1_df = pd.read_csv('data/populate/genre.csv')
+
     code_postal_unique = results['Code postal, si résident français (Optionnel)'].unique()
     code_postal_unique = code_postal_unique[~pd.isnull(code_postal_unique)]
     methode_procuration_unique = filtrer_choix_multiples(methode_procuration)
@@ -60,30 +64,51 @@ def main(results):
     formats_preferes_unique = filtrer_choix_multiples(formats_preferes)
     raison_achat_unique = filtrer_choix_multiples(raison_achat)
     langues_unique = filtrer_choix_multiples(langues)
-    livres_preferes_unique = filtrer_livres_auteurs(livres_preferes)
-    auteurs_preferes_unique = filtrer_livres_auteurs(auteurs_preferes)
+    livres_preferes_unique = filtrer_livres_auteurs(livres_preferes, livre1_df["titre"])
+    auteurs_preferes_unique = filtrer_livres_auteurs(auteurs_preferes, auteur1_df["nom"])
 
     ##### TABLES SIMPLES #####
 
     # _genre : id_genre, libelle_genre
     # EXISTE DEJA
-    genre_df = pd.DataFrame({'genre': list(genres_preferes_unique)})
-    genre_df.index = genre_df.index+1
+    max_id_genre1 = genre1_df['id_genre'].max()
+    genre_df = pd.DataFrame({'libelle_genre': list(genres_preferes_unique)})
+    genre_df.index = genre_df.index+max_id_genre1+1
     genre_df = genre_df.reset_index(names=['id_genre'])
     genre_df.to_csv(os.path.join(PATH_POPULATE,"genre.csv"), index=False)
 
     # _livre : id_livre, titre
     # EXISTE DEJA
-    livre_df = pd.DataFrame({'livre': list(livres_preferes_unique)})
-    livre_df.index = livre_df.index+1
+    max_id_livre1 = livre1_df['id_livre'].max()
+    livre_df = pd.DataFrame({'titre': list(livres_preferes_unique)})
+    livre_df.index = livre_df.index+max_id_livre1+1
     livre_df = livre_df.reset_index(names=['id_livre'])
+    livre_df = pd.concat([livre1_df, livre_df])
+    
+    livre_df['nb_notes'] = livre_df['nb_notes'].astype('Int64') # force convert numerical values to int
+    livre_df['nb_critiques'] = livre_df['nb_critiques'].astype('Int64') # force convert numerical values to int
+    livre_df['nb_note_5_etoile'] = livre_df['nb_note_5_etoile'].astype('Int64') # force convert numerical values to int
+    livre_df['nb_note_4_etoile'] = livre_df['nb_note_4_etoile'].astype('Int64') # force convert numerical values to int
+    livre_df['nb_note_3_etoile'] = livre_df['nb_note_3_etoile'].astype('Int64') # force convert numerical values to int
+    livre_df['nb_note_2_etoile'] = livre_df['nb_note_2_etoile'].astype('Int64') # force convert numerical values to int
+    livre_df['nb_note_1_etoile'] = livre_df['nb_note_1_etoile'].astype('Int64') # force convert numerical values to int
+    livre_df['nombre_pages'] = livre_df['nombre_pages'].astype('Int64') # force convert numerical values to int
+    livre_df['isbn13'] = livre_df['isbn13'].astype('Int64') # force convert numerical values to int
+    livre_df['id_editeur'] = livre_df['id_editeur'].astype('Int64') # force convert numerical values to int
+
     livre_df.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
 
     # _auteur : id_auteur, nom
     # EXISTE DEJA
-    auteur_df = pd.DataFrame({'auteur': list(auteurs_preferes_unique)})
-    auteur_df.index = auteur_df.index+1
+    max_id_auteur1 = auteur1_df['id_auteur'].max()
+    auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
+    auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
+    auteur_df = pd.concat([auteur1_df, auteur_df])
+    
+    auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
+    auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
+
     auteur_df.to_csv(os.path.join(PATH_POPULATE,"auteur.csv"), index=False)
     
     # _motivation
@@ -99,7 +124,7 @@ def main(results):
     code_postal_df.to_csv(os.path.join(PATH_POPULATE,"code_postal.csv"), index=False)
 
     # _procuration
-    procuration_df = pd.DataFrame({'procuration': list(methode_procuration_unique)})
+    procuration_df = pd.DataFrame({'methode_procuration': list(methode_procuration_unique)})
     procuration_df.index = procuration_df.index+1
     procuration_df = procuration_df.reset_index(names=['id_procuration'])
     procuration_df.to_csv(os.path.join(PATH_POPULATE,"procuration.csv"), index=False)
@@ -141,13 +166,13 @@ def main(results):
     
     def table_relation(list, list_multiple, dic, spl=',') :
         dic_mult = {}
-        for i in dic.values : 
+        for i in dic.values :
             i[1] = i[1].strip()
             i[1] = i[1].capitalize()
             dic_mult[i[1]] = i[0]
 
         res = []
-        i = 0
+        i = 1
         for element in list_multiple :
             id_user = i
 
@@ -160,16 +185,73 @@ def main(results):
                 element = element.split(spl)
                 
                 for el in element :
+                    if (el.strip() != ''): 
+                        el = el.strip()
+                        el = el.capitalize()
+                        id_mult = dic_mult[el]
+                    if not([i, id_mult] in res) :
+                        res.append([i, id_mult])
+             
+            i += 1
+        return res
+    
+    def table_relation_auteur(list, list_multiple, dic, spl='\n') :
+        dic_mult = {}
+        for i in dic.values :
+            if not(isinstance(i[3], float)) :
+                i[3] = i[3].strip()
+                i[3] = i[3].capitalize()
+                dic_mult[i[3]] = i[2]
+
+        res = []
+        i = 1
+        for element in list_multiple :
+            id_user = i
+
+            if (isinstance(element, float) or (element == '')) :
+                id_mult = dic_mult['']
+            else :
+                element = element.split(spl)
+                
+                for el in element :
                     if (el.strip() == ''):
-                        if ('[non renseigné]' in dic_mult) :
-                            id_mult = dic_mult['[non renseigné]']
-                        else : 
-                            id_mult = ''
+                        id_mult = dic_mult['']
                     else : 
                         el = el.strip()
                         el = el.capitalize()
                         id_mult = dic_mult[el]
                     res.append([i, id_mult])
+             
+            i += 1
+        return res
+    
+    def table_relation_livre(list, list_multiple, dic, spl='\n') :
+        dic_mult = {}
+        for i in dic.values :
+            i[1] = i[1].strip()
+            i[1] = i[1].capitalize()
+            dic_mult[i[1]] = i[0]
+
+        res = []
+        i = 1
+        for element in list_multiple :
+            id_user = i
+
+            if (isinstance(element, float) or (element == '')) :
+                if ('[non renseigné]' in dic_mult) :
+                    id_mult = dic_mult['[non renseigné]']
+                else : 
+                    id_mult = ''
+            else :
+                element = element.split(spl)
+                
+                for el in element :
+                    if (el.strip() != ''):
+                        el = el.strip()
+                        el = el.capitalize()
+                        id_mult = dic_mult[el]
+                    if not([i, id_mult] in res) :
+                        res.append([i, id_mult])
              
             i += 1
         return res
@@ -279,7 +361,7 @@ def main(results):
     # _utilisateur_auteur : id_utilisateur, id_auteur
     print("/// utilisateur_auteur ///")
     
-    list_utilisateur_auteur = table_relation(mails, auteurs_preferes, auteur_df, '\n')
+    list_utilisateur_auteur = table_relation_auteur(mails, auteurs_preferes, auteur_df)
 
     id_utilisateurs = []
     id_auteur = []
@@ -297,7 +379,7 @@ def main(results):
     # _livre_utilisateur : id_utilisateur, id_livre
     print("/// livre_utilisateur ///")
     
-    list_livre_utilisateur = table_relation(mails, livres_preferes, livre_df, '\n')
+    list_livre_utilisateur = table_relation_livre(mails, livres_preferes, livre_df)
 
     id_utilisateurs = []
     id_livre = []
@@ -315,6 +397,6 @@ def main(results):
 
 ##### __NAME__ #####
 
-if __name__ == "__main__":
+if __name__ == "__main__" :
     results = pd.read_csv("../Wizards/formulaire/formulaire.csv", low_memory=False)
     main(results)
