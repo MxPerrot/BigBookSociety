@@ -48,7 +48,6 @@ CREATE TABLE _livre (
     isbn13 VARCHAR,
     description VARCHAR,
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
--- TODO: éventuellement créer une colonne "format", afin que les nouveaux livres ajoutés puissent avoir un format afin d'enrichir la base.  
 );
 
 
@@ -229,7 +228,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/genre.csv'
+-file='../data/populate/genre_2.csv'
 -table=_genre
 -delimiter=','
 -header=true;
@@ -237,7 +236,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/auteur.csv'
+-file='../data/populate/auteur.csv'
 -table=_auteur
 -delimiter=','
 -header=true;
@@ -263,7 +262,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/livre.csv'
+-file='../data/populate/livre.csv'
 -table=_livre
 -delimiter=','
 -header=true;
@@ -353,7 +352,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/code_postal.csv'
+-file='../data/populate/code_postal.csv'
 -table=_code_postal
 -delimiter=','
 -header=true;
@@ -361,7 +360,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/format.csv'
+-file='../data/populate/format.csv'
 -table=_format
 -delimiter=','
 -header=true;
@@ -369,7 +368,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur.csv'
+-file='../data/populate/utilisateur.csv'
 -table=_utilisateur
 -delimiter=','
 -header=true;
@@ -377,7 +376,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/raison_achat.csv'
+-file='../data/populate/raison_achat.csv'
 -table=_raison_achat
 -delimiter=','
 -header=true;
@@ -385,7 +384,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/langue.csv'
+-file='../data/populate/langue.csv'
 -table=_langue
 -delimiter=','
 -header=true;
@@ -393,7 +392,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/procuration.csv'
+-file='../data/populate/procuration.csv'
 -table=_procuration
 -delimiter=','
 -header=true;
@@ -401,7 +400,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/motivation.csv'
+-file='../data/populate/motivation.csv'
 -table=_motivation
 -delimiter=','
 -header=true;
@@ -409,7 +408,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/format_utilisateur.csv'
+-file='../data/populate/format_utilisateur.csv'
 -table=_format_utilisateur
 -delimiter=','
 -header=true;
@@ -417,7 +416,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur_genre.csv'
+-file='../data/populate/utilisateur_genre.csv'
 -table=_utilisateur_genre
 -delimiter=','
 -header=true;
@@ -425,7 +424,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur_auteur.csv'
+-file='../data/populate/utilisateur_auteur.csv'
 -table=_utilisateur_auteur
 -delimiter=','
 -header=true;
@@ -433,7 +432,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/livre_utilisateur.csv'
+-file='../data/populate/livre_utilisateur.csv'
 -table=_livre_utilisateur
 -delimiter=','
 -header=true;
@@ -441,7 +440,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur_motivation.csv'
+-file='../data/populate/utilisateur_motivation.csv'
 -table=_utilisateur_motivation
 -delimiter=','
 -header=true;
@@ -449,7 +448,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur_procuration.csv'
+-file='../data/populate/utilisateur_procuration.csv'
 -table=_utilisateur_procuration
 -delimiter=','
 -header=true;
@@ -457,7 +456,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur_langue.csv'
+-file='../data/populate/utilisateur_langue.csv'
 -table=_utilisateur_langue
 -delimiter=','
 -header=true;
@@ -465,7 +464,7 @@ WbImport
 WbImport
 -usePgCopy
 -type=text
--file='../../Wizards/formulaire/populate/utilisateur_raison_achat.csv'
+-file='../data/populate/utilisateur_raison_achat.csv'
 -table=_utilisateur_raison_achat
 -delimiter=','
 -header=true;

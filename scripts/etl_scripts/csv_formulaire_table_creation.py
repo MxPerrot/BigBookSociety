@@ -2,13 +2,14 @@ import os
 import pandas as pd
 import numpy as np
 
-PATH_DATA = "../Wizards/formulaire/"
+PATH_DATA = "data/"
 PATH_POPULATE = os.path.join(PATH_DATA, "populate")
 
 def main(results):
     os.makedirs(PATH_POPULATE, exist_ok=True) #Créé le dossier voulu
 
     ##### COLONNES DU CSV #####
+    # Extractions de chaque colonne du csv
     mails = results['Adresse e-mail']
     sexe = results['Je suis...']
     age = results['Quel âge avez-vous ?']
@@ -28,7 +29,9 @@ def main(results):
     auteurs_preferes = results['Quels sont vos auteurs préférés ? (Optionnel)']
 
     ##### COLONNES UNIQUES #####
+    # Création de listes avec les valeurs uniques de chaque colonne
 
+    # Séparer les valeurs distinctes des résultats à choix multiples
     def filtrer_choix_multiples(list) :
         res = []
         for element in list : 
@@ -41,6 +44,7 @@ def main(results):
         res = set(res)
         return res
     
+    # Séparer les valeurs distinctes des livres et auteurs
     def filtrer_livres_auteurs(list, list2) :
         res = []
         for element in list :
@@ -70,15 +74,15 @@ def main(results):
     ##### TABLES SIMPLES #####
 
     # _genre : id_genre, libelle_genre
-    # EXISTE DEJA
+    # Fusion avec le csv déjà existant
     max_id_genre1 = genre1_df['id_genre'].max()
     genre_df = pd.DataFrame({'libelle_genre': list(genres_preferes_unique)})
     genre_df.index = genre_df.index+max_id_genre1+1
     genre_df = genre_df.reset_index(names=['id_genre'])
-    genre_df.to_csv(os.path.join(PATH_POPULATE,"genre.csv"), index=False)
+    genre_df.to_csv(os.path.join(PATH_POPULATE,"genre_2.csv"), index=False)
 
     # _livre : id_livre, titre
-    # EXISTE DEJA
+    # Fusion avec le csv déjà existant
     max_id_livre1 = livre1_df['id_livre'].max()
     livre_df = pd.DataFrame({'titre': list(livres_preferes_unique)})
     livre_df.index = livre_df.index+max_id_livre1+1
@@ -99,7 +103,7 @@ def main(results):
     livre_df.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
 
     # _auteur : id_auteur, nom
-    # EXISTE DEJA
+    # Fusion avec le csv déjà existant
     max_id_auteur1 = auteur1_df['id_auteur'].max()
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
     auteur_df.index = auteur_df.index+max_id_auteur1+1
@@ -164,6 +168,8 @@ def main(results):
 
     ##### TABLES DE RELATION #####
     
+    # Remplace les libelles par leurs ids
+    # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation(list, list_multiple, dic, spl=',') :
         dic_mult = {}
         for i in dic.values :
@@ -195,6 +201,9 @@ def main(results):
             i += 1
         return res
     
+    # Remplace les libelles par leurs ids
+    # Fonction spéciale pour gérer les auteurs
+    # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_auteur(list, list_multiple, dic, spl='\n') :
         dic_mult = {}
         for i in dic.values :
@@ -225,6 +234,9 @@ def main(results):
             i += 1
         return res
     
+    # Remplace les libelles par leurs ids
+    # Fonction spéciale pour gérer les livres
+    # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_livre(list, list_multiple, dic, spl='\n') :
         dic_mult = {}
         for i in dic.values :
@@ -262,7 +274,7 @@ def main(results):
 
     id_utilisateurs = []
     id_formats = []
-    for element in list_format_utilisateur :
+    for element in list_format_utilisateur : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_formats.append(element[1])
 
@@ -279,7 +291,7 @@ def main(results):
 
     id_utilisateurs = []
     id_motivation = []
-    for element in list_utilisateur_motivation :
+    for element in list_utilisateur_motivation : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_motivation.append(element[1])
 
@@ -296,7 +308,7 @@ def main(results):
 
     id_utilisateurs = []
     id_procuration = []
-    for element in list_utilisateur_procuration :
+    for element in list_utilisateur_procuration : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_procuration.append(element[1])
 
@@ -313,7 +325,7 @@ def main(results):
 
     id_utilisateurs = []
     id_langue = []
-    for element in list_utilisateur_langue :
+    for element in list_utilisateur_langue : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_langue.append(element[1])
 
@@ -330,7 +342,7 @@ def main(results):
 
     id_utilisateurs = []
     id_raison_achat = []
-    for element in list_utilisateur_raison_achat :
+    for element in list_utilisateur_raison_achat : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_raison_achat.append(element[1])
 
@@ -347,7 +359,7 @@ def main(results):
 
     id_utilisateurs = []
     id_genre = []
-    for element in list_utilisateur_genre :
+    for element in list_utilisateur_genre : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_genre.append(element[1])
 
@@ -365,7 +377,7 @@ def main(results):
 
     id_utilisateurs = []
     id_auteur = []
-    for element in list_utilisateur_auteur :
+    for element in list_utilisateur_auteur : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_auteur.append(element[1])
 
@@ -383,7 +395,7 @@ def main(results):
 
     id_utilisateurs = []
     id_livre = []
-    for element in list_livre_utilisateur :
+    for element in list_livre_utilisateur : # Séparer les différents éléments
         id_utilisateurs.append(element[0])
         id_livre.append(element[1])
 
@@ -398,5 +410,5 @@ def main(results):
 ##### __NAME__ #####
 
 if __name__ == "__main__" :
-    results = pd.read_csv("../Wizards/formulaire/formulaire.csv", low_memory=False)
+    results = pd.read_csv("data/formulaire.csv", low_memory=False)
     main(results)

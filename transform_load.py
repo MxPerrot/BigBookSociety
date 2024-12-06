@@ -46,7 +46,7 @@ CHEMIN_FICHIER_AUTEURS_COMPLET = "data/complete_author.csv"
 
 CHEMIN_LIEN_AUTEURS_LIVRES = "data/populate/link.csv"
 
-CHEMIN_FICHIER_FORMULAIRE = "../Wizards/formulaire/formulaire.csv"
+CHEMIN_FICHIER_FORMULAIRE = "data/formulaire.csv"
 
 
 #######################################
