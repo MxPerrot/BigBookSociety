@@ -49,6 +49,8 @@ CHEMIN_FICHIER_AUTEURS_COMPLET = "data/complete_author.csv"
 CHEMIN_LIEN_AUTEURS_LIVRES = "data/populate/link.csv"
 
 CHEMIN_FICHIER_FORMULAIRE = "data/formulaire.csv"
+CHEMIN_DATA = "data/"
+CHEMIN_POPULATE = os.path.join(CHEMIN_DATA, "populate")
 
 
 #######################################
@@ -60,6 +62,8 @@ def main():
     if not os.path.exists(newpath):
         os.makedirs(newpath)
 
+    os.makedirs(CHEMIN_POPULATE, exist_ok=True)
+
     # EXTRACT & TRANSFORM
     clean_data.main(
         chemin_fichier_livres = CHEMIN_FICHIER_LIVRES,
@@ -67,6 +71,8 @@ def main():
         nouveau_chemin_livres = CHEMIN_FICHIER_CLEAN_LIVRES,
         nouveau_chemin_auteurs = CHEMIN_FICHIER_CLEAN_AUTEURS
     )
+
+
     
     extract_books_from_authors.main(
         chemin_fichier_livres_complet = CHEMIN_FICHIER_LIVRES_COMPLET
