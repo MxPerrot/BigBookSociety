@@ -26,6 +26,7 @@ import pandas as pd
 import numpy as np
 
 import clean_data
+import scripts.etl_scripts.csv_formulaire_table_creation as csv_formulaire_table_creation
 import scripts.etl_scripts.csv_table_creation as csv_table_creation
 import scripts.etl_scripts.extract_authors_from_books as extract_authors_from_books
 import scripts.etl_scripts.extract_books_from_authors as extract_books_from_authors
@@ -44,6 +45,8 @@ CHEMIN_FICHIER_LIVRES_COMPLET = "data/complete_book.csv"
 CHEMIN_FICHIER_AUTEURS_COMPLET = "data/complete_author.csv"
 
 CHEMIN_LIEN_AUTEURS_LIVRES = "data/populate/link.csv"
+
+CHEMIN_FICHIER_FORMULAIRE = "data/formulaire.csv"
 
 
 #######################################
@@ -76,6 +79,10 @@ def main():
     csv_table_creation.main(
         books = pd.read_csv(CHEMIN_FICHIER_LIVRES_COMPLET,low_memory=False),
         authors = pd.read_csv(CHEMIN_FICHIER_AUTEURS_COMPLET,low_memory=False)
+    )
+
+    csv_formulaire_table_creation.main(
+        results = pd.read_csv(CHEMIN_FICHIER_FORMULAIRE,low_memory=False)
     )
 
     

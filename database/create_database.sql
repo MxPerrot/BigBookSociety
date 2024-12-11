@@ -48,17 +48,16 @@ CREATE TABLE _livre (
     isbn13 VARCHAR,
     description VARCHAR,
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
-    -- TODO: éventuellement créer une colonne "format", afin que les nouveaux livres ajoutés puissent avoir un format afin d'enrichir la base.  
 );
 
 
-CREATE TABLE IF NOT EXISTS _genre (
+CREATE TABLE _genre (
     id_genre SERIAL PRIMARY KEY,
     libelle_genre VARCHAR
 );
 
 
-CREATE TABLE IF NOT EXISTS _auteur (
+CREATE TABLE _auteur (
     id_auteur SERIAL PRIMARY KEY,
     note_moyenne DECIMAL,
     nom VARCHAR UNIQUE,
@@ -71,60 +70,112 @@ CREATE TABLE IF NOT EXISTS _auteur (
 );
 
 
-CREATE TABLE IF NOT EXISTS _code_postal (
+CREATE TABLE _code_postal (
     id_code_postal SERIAL PRIMARY KEY,
-    code_postal VARCHAR UNIQUE
+    code_postal VARCHAR UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS _format (
+CREATE TABLE _format (
     id_format SERIAL PRIMARY KEY,
-    libelle_format VARCHAR NOT NULL
+    format VARCHAR UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS _utilisateur (
+CREATE TABLE _utilisateur (
     id_utilisateur SERIAL PRIMARY KEY,
-    mail_utilisateur VARCHAR UNIQUE NOT NULL,
-    gender VARCHAR NOT NULL,
-    age INTEGER,
+    mail_utilisateur VARCHAR NOT NULL,
+    sexe VARCHAR NOT NULL,
+    age VARCHAR,
     profession VARCHAR,
     situation_familiale VARCHAR,
     frequence_lecture VARCHAR,
     vitesse_lecture INTEGER,
-    nbr_livre_lue INTEGER,
+    nb_livres_lus VARCHAR,
     id_code_postal INTEGER REFERENCES _code_postal(id_code_postal)
 );
 
+CREATE TABLE _raison_achat (
+    id_raison_achat SERIAL PRIMARY KEY,
+    raison_achat VARCHAR UNIQUE NOT NULL
+);
+
+CREATE TABLE _langue (
+    id_langue SERIAL PRIMARY KEY,
+    langue VARCHAR UNIQUE NOT NULL
+);
+
+CREATE TABLE _procuration (
+    id_procuration SERIAL PRIMARY KEY,
+    methode_procuration VARCHAR UNIQUE NOT NULL
+);
+
+CREATE TABLE _motivation (
+    id_motivation SERIAL PRIMARY KEY,
+    motivation VARCHAR UNIQUE NOT NULL
+);
 
 
 -- Table de liaison _auteur_genre pour la relation "préférence" entre Auteur et Genre
-CREATE TABLE IF NOT EXISTS _auteur_genre (
+CREATE TABLE _auteur_genre (
     id_auteur INTEGER  REFERENCES _auteur(id_auteur) ON DELETE CASCADE,
     id_genre INTEGER REFERENCES _genre(id_genre) ON DELETE CASCADE,
     PRIMARY KEY (id_auteur, id_genre)
 );
 
+
+
 -- Table de liaison _format_utilisateur pour la relation "préférence" entre Utilisateur et Format
-CREATE TABLE IF NOT EXISTS _format_utilisateur (
+CREATE TABLE _format_utilisateur (
     id_format INTEGER  REFERENCES _format(id_format) ON DELETE CASCADE,
     id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
     PRIMARY KEY (id_format, id_utilisateur)
 );
 
-
-
 -- Table de liaison _utilisateur_genre pour la relation "préférence" entre Utilisateur et Genre
-CREATE TABLE IF NOT EXISTS _utilisateur_genre (
+CREATE TABLE _utilisateur_genre (
     id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
     id_genre INTEGER REFERENCES _genre(id_genre) ON DELETE CASCADE,
     PRIMARY KEY (id_utilisateur, id_genre)
 );
 
 -- Table _utilisateur_auteur pour la relation de "préférence" entre Utilisateur et Auteur
-CREATE TABLE IF NOT EXISTS _utilisateur_auteur (
+CREATE TABLE _utilisateur_auteur (
     id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
     id_auteur INTEGER REFERENCES _auteur(id_auteur) ON DELETE CASCADE,
     PRIMARY KEY (id_utilisateur, id_auteur)
 );
+
+-- Table _livre_utilisateur pour la relation de préférences d'un utilisateur avec ses livres préférés
+CREATE TABLE _livre_utilisateur (
+  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  PRIMARY KEY(id_utilisateur,id_livre)
+);
+
+CREATE TABLE _utilisateur_motivation (
+  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+  id_motivation INTEGER REFERENCES _motivation(id_motivation) ON DELETE CASCADE,
+  PRIMARY KEY(id_utilisateur,id_motivation)
+);
+
+CREATE TABLE _utilisateur_procuration (
+  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+  id_procuration INTEGER REFERENCES _procuration(id_procuration) ON DELETE CASCADE,
+  PRIMARY KEY(id_utilisateur,id_procuration)
+);
+
+CREATE TABLE _utilisateur_langue (
+  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+  id_langue INTEGER REFERENCES _langue(id_langue) ON DELETE CASCADE,
+  PRIMARY KEY(id_utilisateur,id_langue)
+);
+
+CREATE TABLE _utilisateur_raison_achat (
+  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
+  id_raison_achat INTEGER REFERENCES _raison_achat(id_raison_achat) ON DELETE CASCADE,
+  PRIMARY KEY(id_utilisateur,id_raison_achat)
+);
+
+
 
 -- Table _prix_livre pour la relation entre un prix et le livre attribué
 CREATE TABLE _prix_livre (
@@ -138,13 +189,6 @@ CREATE TABLE _cadre_livre (
   id_cadre INTEGER REFERENCES _cadre(id_cadre) ON DELETE CASCADE,
   id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
   PRIMARY KEY(id_cadre,id_livre)
-);
-
--- Table _livre_prefere_utilisateur pour la relation de préférences d'un utilisateur avec ses livres préférés
-CREATE TABLE _livre_prefere_utilisateur (
-  id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
-  id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
-  PRIMARY KEY(id_utilisateur,id_livre)
 );
 
 -- Table _auteur_livre pour la relation entre des auteur et les livre qu'ils ont écrit
@@ -176,17 +220,24 @@ CREATE TABLE _episode_serie (
 WbImport
 -usePgCopy
 -type=text
--file='../data/populate/auteur_sql.csv'
--table=_auteur
+-file='../data/populate/genre.csv'
+-table=_genre
 -delimiter=','
 -header=true;
-
 
 WbImport
 -usePgCopy
 -type=text
--file='../data/populate/genre.csv'
+-file='../data/populate/genre_2.csv'
 -table=_genre
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/auteur.csv'
+-table=_auteur
 -delimiter=','
 -header=true;
 
@@ -208,7 +259,6 @@ WbImport
 -delimiter=','
 -header=true;
 
-
 WbImport
 -usePgCopy
 -type=text
@@ -216,7 +266,6 @@ WbImport
 -table=_livre
 -delimiter=','
 -header=true;
-
 
 WbImport
 -usePgCopy
@@ -298,3 +347,124 @@ WbImport
 -delimiter=','
 -header=true;
 
+-- Asaiah
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/code_postal.csv'
+-table=_code_postal
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/format.csv'
+-table=_format
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur.csv'
+-table=_utilisateur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/raison_achat.csv'
+-table=_raison_achat
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/langue.csv'
+-table=_langue
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/procuration.csv'
+-table=_procuration
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/motivation.csv'
+-table=_motivation
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/format_utilisateur.csv'
+-table=_format_utilisateur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur_genre.csv'
+-table=_utilisateur_genre
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur_auteur.csv'
+-table=_utilisateur_auteur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/livre_utilisateur.csv'
+-table=_livre_utilisateur
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur_motivation.csv'
+-table=_utilisateur_motivation
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur_procuration.csv'
+-table=_utilisateur_procuration
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur_langue.csv'
+-table=_utilisateur_langue
+-delimiter=','
+-header=true;
+
+WbImport
+-usePgCopy
+-type=text
+-file='../data/populate/utilisateur_raison_achat.csv'
+-table=_utilisateur_raison_achat
+-delimiter=','
+-header=true;
