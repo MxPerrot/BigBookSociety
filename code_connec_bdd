@@ -1,0 +1,7 @@
+import psycopg2
+
+# pip install psycopg2-binary
+
+connection = psycopg2.connect(database="pg_dgoupil", user="dgoupil", password="password", host="servbdd", port=5432)
+
+cursor = connection.cursor()
