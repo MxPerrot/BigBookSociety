@@ -4,3 +4,4 @@ __pycache__
 graphs
 *IGNOREME*
 *.csv
+.env
