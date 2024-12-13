@@ -68,7 +68,7 @@ for i in dataResults:
 
 bookDataFrame = pd.DataFrame(listResults, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "nom_prix", "annee_prix", "nom_serie", "numero_episode", "pays_cadre", "nom_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
-#print(bookDataFrame)
+GBbookDataFrame = bookDataFrame.groupby(by="id_livre")
 
 # ----------------------------------
 #  Fonctions de vectorisation 
@@ -153,16 +153,18 @@ def vectorizePublishingDate(publishingDate):
             indPeriod = 1
     return indPeriod
 
-bookDataFrame["vectPopularite"] = bookDataFrame["nb_notes"].apply(vectorizeReviewNb)
-#print(bookDataFrame["vectPopularite"])
-bookDataFrame["vectLongeurLivre"] = bookDataFrame["nombre_pages"].apply(vectorizeBookLength)
-#print(bookDataFrame["vectLongeurLivre"])
-
-bookDataFrame["vectPeriode"] = bookDataFrame["date_publication"].apply(vectorizePublishingDate)
-print(bookDataFrame["vectPeriode"])
-
-#def listAllElements():
+bookDataFrame["isTrue"] = True
+vectorAuthor = bookDataFrame.pivot_table(index="id_livre", columns="nom_auteur", values="isTrue")
+vectorAuthor = vectorAuthor.fillna(0)
+print(vectorAuthor)
 
 """
-users['vector'] = bookDataFrame.apply(lambda x: vectorizeBooks(x.nombre_pages, x.date_publication, x.description, x.nom_editeur), axis=1)
+for livre in GBbookDataFrame:
+    livre["vectPopularite"] = livre["nb_notes"].apply(vectorizeReviewNb)
+    #print(livre["vectPopularite"])
+    livre["vectLongeurLivre"] = livre["nombre_pages"].apply(vectorizeBookLength)
+    #print(livre["vectLongeurLivre"])
+
+    livre["vectPeriode"] = livre["date_publication"].apply(vectorizePublishingDate)
+    print(livre["vectPeriode"])
 """
