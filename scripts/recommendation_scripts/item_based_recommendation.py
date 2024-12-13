@@ -158,6 +158,11 @@ vectorAuthor = bookDataFrame.pivot_table(index="id_livre", columns="nom_auteur",
 vectorAuthor = vectorAuthor.fillna(0)
 print(vectorAuthor)
 
+vectorPrix = bookDataFrame.pivot_table(index="id_livre", columns="nom_prix", values="isTrue")
+vectorPrix = vectorPrix.fillna(0)
+print(vectorPrix)
+
+
 """
 for livre in GBbookDataFrame:
     livre["vectPopularite"] = livre["nb_notes"].apply(vectorizeReviewNb)
