@@ -3,7 +3,7 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2
 import pandas as pd
 import numpy as np
-
+from sklearn.metrics.pairwise import cosine_similarity
 
 # ----------------------------------
 #  Fonctions de vectorisation 
@@ -100,6 +100,9 @@ def vectorizeAuthorGender(gender):
             indGender = 3
     return indGender
 
+def addVector(id, vector):
+    return vector[id]
+
 
 # loading variables from .env file
 load_dotenv() 
@@ -179,27 +182,40 @@ vectorPeriode = {}
 
 "nom_prix", 
 vectorPrix = bookDataFrame.pivot_table(index="id_livre", columns="nom_prix", values="isTrue")
-vectorPrix = vectorPrix.fillna(0)
 # "nom_serie", 
 # "numero_episode", 
 "pays_cadre", 
 vectorPaysCadre = bookDataFrame.pivot_table(index="id_livre", columns="pays_cadre", values="isTrue")
-vectorPaysCadre = vectorPaysCadre.fillna(0)
 "nom_auteur", 
 vectorAuthor = bookDataFrame.pivot_table(index="id_livre", columns="nom_auteur", values="isTrue")
-vectorAuthor = vectorAuthor.fillna(0)
 "sexe_auteur", 
 vectorSexeAuteur = {}
 "origine_auteur", 
 vectorAuthorOrigin = bookDataFrame.pivot_table(index="id_livre", columns="origine_auteur", values="isTrue")
-vectorAuthorOrigin = vectorAuthorOrigin.fillna(0)
 # "id_genre",
 
+listIdLivre = []
 for livre in GBbookDataFrame:
+    listIdLivre.append(livre[0])
     vectorPopularite[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["nb_notes"].apply(vectorizeReviewNb).iloc[0]
     vectorLongeurLivre[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["nombre_pages"].apply(vectorizeBookLength).iloc[0]
     vectorPeriode[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["date_publication"].apply(vectorizePublishingDate).iloc[0]
     vectorSexeAuteur[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]
-print(vectorSexeAuteur)
 
-# pd.concat([df1,df2], axis=1)
+completeBookVector = pd.DataFrame(index=listIdLivre)
+print(completeBookVector)
+#completeBookVector = pd.concat([completeBookVector, vectorAuthorOrigin], axis=1)
+#completeBookVector = pd.concat([completeBookVector, vectorPaysCadre], axis=1)
+#completeBookVector = pd.concat([completeBookVector, vectorAuthor], axis=1)
+#completeBookVector = pd.concat([completeBookVector, vectorPrix], axis=1)
+completeBookVector = completeBookVector.fillna(0)
+
+completeBookVector["id_livre"] = completeBookVector.index
+completeBookVector["vecteurPopularite"] = completeBookVector.apply(lambda x:  addVector(x['id_livre'], vectorPopularite), axis=1)
+completeBookVector["vectorLongeurLivre"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorLongeurLivre), axis=1)
+completeBookVector["vectorPeriode"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorPeriode), axis=1)
+completeBookVector["vectorSexeAuteur"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorSexeAuteur), axis=1)
+
+completeBookVector = completeBookVector.drop('id_livre', axis=1)
+print(completeBookVector)
+print(cosine_similarity(completeBookVector))
