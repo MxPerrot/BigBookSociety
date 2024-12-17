@@ -1,74 +1,85 @@
 import os
 from dotenv import load_dotenv
-import psycopg2
+from sqlalchemy import create_engine
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Chargement des variables d'environnement depuis le fichier .env
 load_dotenv()
 
-# Connexion à la base de données PostgreSQL
+# Connexion à la base de données PostgreSQL avec SQLAlchemy
 def se_connecter_bdd():
     try:
-        conn = psycopg2.connect(
-            database=os.getenv("DATABASE_NAME"),
-            user=os.getenv("USERNAME"),
-            password=os.getenv("PASSWORD"),
-            host=os.getenv("HOST"),
-            port=os.getenv("PORT")
+        engine = create_engine(
+            f"postgresql+psycopg2://{os.getenv('USERNAME')}:{os.getenv('PASSWORD')}@{os.getenv('HOST')}:{os.getenv('PORT')}/{os.getenv('DATABASE_NAME')}"
         )
         print("Connexion réussie à la base de données.")
-        return conn
+        return engine
     except Exception as e:
         print(f"Erreur de connexion : {e}")
         return None
 
 # Récupérer les genres préférés des utilisateurs
-def recuperer_genres_utilisateur(conn):
+def recuperer_genres_utilisateur(engine):
     query = """
     SELECT id_utilisateur, id_genre
     FROM sae._utilisateur_genre
     """
-    return pd.read_sql(query, conn)
+    try:
+        return pd.read_sql(query, engine)
+    except Exception as e:
+        print(f"Erreur lors de la récupération des genres utilisateurs : {e}")
+        return pd.DataFrame()
 
 # Récupérer les livres associés aux genres
-def recuperer_livres_par_genre(conn):
+def recuperer_livres_par_genre(engine):
     query = """
     SELECT id_livre, id_genre
     FROM sae._genre_livre
     """
-    return pd.read_sql(query, conn)
+    try:
+        return pd.read_sql(query, engine)
+    except Exception as e:
+        print(f"Erreur lors de la récupération des livres par genre : {e}")
+        return pd.DataFrame()
 
 # Récupérer les interactions utilisateurs-livres
-def recuperer_interactions(conn):
+def recuperer_interactions(engine):
     query = """
     SELECT id_utilisateur, id_livre
     FROM sae._livre_utilisateur
     """
-    return pd.read_sql(query, conn)
+    try:
+        return pd.read_sql(query, engine)
+    except Exception as e:
+        print(f"Erreur lors de la récupération des interactions : {e}")
+        return pd.DataFrame()
 
 # Calcul des interactions entre utilisateurs et livres en fonction des genres préférés
-def calculer_interactions(df_utilisateur_genre, df_livre_utilisateur):
-    interactions = []
-    for _, row in df_utilisateur_genre.iterrows():
-        id_utilisateur = row['id_utilisateur']
-        id_genre = row['id_genre']
+def calculer_interactions(df_utilisateur_genre, df_livres_par_genre):
+    # Vérification des colonnes nécessaires
+    if 'id_genre' not in df_utilisateur_genre.columns or 'id_genre' not in df_livres_par_genre.columns:
+        print("Les données ne contiennent pas les colonnes nécessaires (id_genre).")
+        return pd.DataFrame()
 
-        # Récupérer les livres associés à ce genre
-        livres_genre = df_livre_utilisateur[df_livre_utilisateur['id_genre'] == id_genre]
-        
-        # Ajouter une interaction pour chaque livre du genre
-        for _, livre_row in livres_genre.iterrows():
-            interactions.append({
-                'id_utilisateur': id_utilisateur,
-                'id_livre': livre_row['id_livre']
-            })
+    # Fusionner les genres préférés des utilisateurs avec les livres par genre
+    merged_df = pd.merge(df_utilisateur_genre, df_livres_par_genre, on='id_genre', how='inner')
 
-    return pd.DataFrame(interactions)
+    # Garder uniquement les colonnes nécessaires
+    interactions = merged_df[['id_utilisateur', 'id_livre']]
+
+    return interactions
 
 # Calcul de la similarité entre utilisateurs
 def calculer_similarites(df_interactions):
+    if df_interactions.empty:
+        print("Aucune interaction disponible pour calculer la similarité.")
+        return pd.DataFrame()
+
+    # Créer une table pivot pour les interactions
     pivot_df = df_interactions.pivot_table(index='id_utilisateur', columns='id_livre', aggfunc='size', fill_value=0)
+    
+    # Calculer la similarité cosinus
     similarity_matrix = cosine_similarity(pivot_df)
     similarity_df = pd.DataFrame(similarity_matrix, index=pivot_df.index, columns=pivot_df.index)
     
@@ -96,27 +107,42 @@ def recommander_livres(id_utilisateur, interactions_df, similarite_df, top_n=5):
         return recommandations[:top_n]
 
     else:
-        genres_utilisateur = interactions_df[interactions_df['id_utilisateur'] == id_utilisateur]['id_genre'].unique()
-        livres_recommandes = interactions_df[interactions_df['id_genre'].isin(genres_utilisateur)]['id_livre'].unique()
-        
-        return livres_recommandes[:top_n]
+        print(f"L'utilisateur {id_utilisateur} n'a pas d'interactions enregistrées.")
+        return []
 
 # Exemple d'utilisation
-conn = se_connecter_bdd()
+if __name__ == "__main__":
+    engine = se_connecter_bdd()
 
-if conn:
-    # Récupérer les données
-    df_utilisateur_genre = recuperer_genres_utilisateur(conn)
-    df_livre_utilisateur = recuperer_livres_par_genre(conn)
-    df_interactions = recuperer_interactions(conn)
+    if engine:
+        # Récupérer les données
+        df_utilisateur_genre = recuperer_genres_utilisateur(engine)
+        df_livres_par_genre = recuperer_livres_par_genre(engine)
+        df_interactions = recuperer_interactions(engine)
 
-    # Calculer les interactions et les similarités
-    interactions_df = calculer_interactions(df_utilisateur_genre, df_livre_utilisateur)
-    similarite_df = calculer_similarites(interactions_df)
+        # Vérifier les données récupérées
+        print("Genres préférés des utilisateurs :")
+        print(df_utilisateur_genre.head())
 
-    # Recommander des livres pour un utilisateur donné
-    id_utilisateur = 1
-    recommandations = recommander_livres(id_utilisateur, interactions_df, similarite_df, top_n=5)
-    print(f"Recommandations pour l'utilisateur {id_utilisateur} : {recommandations}")
-else:
-    print("Échec de la connexion à la base de données.")
+        print("Livres par genre :")
+        print(df_livres_par_genre.head())
+
+        print("Interactions utilisateurs-livres :")
+        print(df_interactions.head())
+
+        # Calculer les interactions et les similarités
+        interactions_df = calculer_interactions(df_utilisateur_genre, df_livres_par_genre)
+        print("Interactions calculées :")
+        print(interactions_df.head())
+
+        if not interactions_df.empty:
+            similarite_df = calculer_similarites(interactions_df)
+            print("Matrice de similarité :")
+            print(similarite_df)
+
+            # Recommander des livres pour un utilisateur donné
+            id_utilisateur = 1
+            recommandations = recommander_livres(id_utilisateur, interactions_df, similarite_df, top_n=5)
+            print(f"Recommandations pour l'utilisateur {id_utilisateur} : {recommandations}")
+    else:
+        print("Échec de la connexion à la base de données.")
