@@ -1,0 +1,5 @@
+Comment créer un vecteur avec certains des attributs d'un livre ?
+Ils ne se prètent pas tous : auteurs, prix, origines etc.
+one hot encoding non approprié, ordinal non plus
+comparaison simple plus appropriée, mais comment associer ça à une matrice de similarité cosine ?
+ponderer les résultats et faire leur moyenne pour obtenir un score global 
