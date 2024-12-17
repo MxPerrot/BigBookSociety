@@ -12,6 +12,11 @@ NB_DIMENTION_VECTEUR = 4
 # ----------------------------------
 
 def vectorizeBookLength(nb_pages):
+    """
+    Transforme le nombre de pages en un entier servant de dimention au vecteur d'un livre
+    Cet entier représente dans quelle tranche d'une échelle de taille le livre se trouve.
+    (1 est un livre court, 6 étant gigantesque)
+    """
     if pd.isnull(nb_pages):
         indTaille = 0
     else :
@@ -30,6 +35,11 @@ def vectorizeBookLength(nb_pages):
     return indTaille
 
 def vectorizeReviewNb(nb_note):
+    """
+    Transforme le nombre de review en un entier servant de dimention au vecteur d'un livre
+    Cet entier représente dans quelle tranche d'une échelle de popularité un livre se trouve.
+    (1 est un livre peu connu, 9 étant un livre très connu)
+    """
     if pd.isnull(nb_note):
         indPop = 0
     else :
@@ -54,6 +64,12 @@ def vectorizeReviewNb(nb_note):
     return indPop
 
 def vectorizePublishingDate(publishingDate):
+    """
+    Transforme l'an de la date de publication en un entier servant de dimention au vecteur d'un livre
+    Cet entier représente dans quelle courant litéraire ce livre se trouve t'il.
+    Les courants litéraires associés sont indiqués plus bas.
+    (1 etant un livre ancien, 10 etant un livre récent)
+    """
     if pd.isnull(publishingDate):
         indPeriod = 0
     else :
@@ -90,7 +106,11 @@ def vectorizePublishingDate(publishingDate):
             indPeriod = 1
     return indPeriod
 
+# TODO : Vérifier le sens ce cette dimention de vecteur
 def vectorizeAuthorGender(gender):
+    """
+    TODO
+    """
     if pd.isnull(gender):
         indGender = 0
     else :
@@ -106,22 +126,44 @@ def addVector(id, vector):
     return vector[id]
 
 def valeursEnCommun(nomValeur, livreX, livreY):
+    """
+    Donne un indice permettant de savoir à quel point deux livres sont proches basé sur une valeur indiquée en paramètre (nomValeur)
+    """
     nbValeurEnCommun = 0
     listeValeursX = livreX[nomValeur].unique()
     listeValeursY = livreY[nomValeur].unique()
+    if livreX["id_livre"].iloc[0] == livreY["id_livre"].iloc[0]:
+        return 1
+    if len(listeValeursX) == 0 and len(listeValeursY) == 0:
+        return 1
+    if len(listeValeursX) == 0 or len(listeValeursY) == 0:
+        return 0
     for valeursX in listeValeursX:
         for valeursY in listeValeursY:
             if valeursX == valeursY:
                 nbValeurEnCommun += 1
-    return nbValeurEnCommun
+    if len(listeValeursX) > len(listeValeursY):
+        return nbValeurEnCommun/len(listeValeursX)
+    else:
+        return nbValeurEnCommun/len(listeValeursY)
+    
+def compareValeur(nomValeur, livreX, livreY):
+    """
+    Renvoie True si ces livres partagent la même valeur indiquée par le paramétre nomValeur
+    """
+    return bool(livreX[nomValeur].iloc[0] == livreY[nomValeur].iloc[0])
 
 def calculateScore(cossim, listSim):
+    """
+    Calcule le Score global de similarité d'une comparaison entre deux livres
+    Fait la moyenne des indices de similarités et pondérant celui de la similarité cosine dû au fait qu'elle prends plus de valeurs en compte
+    """
     scoreSum = cossim * NB_DIMENTION_VECTEUR
     cmpt = NB_DIMENTION_VECTEUR
     for sim in listSim:
         scoreSum += sim
-        cmpt += 1 
-    return scoreSum/cmpt
+        cmpt += 1
+    return float(scoreSum/cmpt)
     
     
 
@@ -185,8 +227,6 @@ listResults = []
 for i in dataResults:
     listResults.append(list(i))
 
-#print(listResults[0])
-
 bookDataFrame = pd.DataFrame(listResults, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
 GBbookDataFrame = bookDataFrame.groupby(by="id_livre")
@@ -200,7 +240,7 @@ vectorLongeurLivre = {}
 vectorPeriode = {}
 # "description", 
 "id_editeur", 
-
+comparaisonEditeur = []
 "nom_prix", 
 comparaisonPrix = []
 # "nom_serie", 
@@ -215,8 +255,9 @@ vectorSexeAuteur = {}
 comparaisonOriginesAuteur = []
 #vectorAuthorOrigin = bookDataFrame.pivot_table(index="id_livre", columns="origine_auteur", values="isTrue")
 # "id_genre",
-combinedMatrixes = []
 
+
+combinedMatrixes = []
 listeIdLivre = []
 for livre in GBbookDataFrame:
     listeIdLivre.append(livre[0])
@@ -236,13 +277,13 @@ completeBookVector["vectorSexeAuteur"] = completeBookVector.apply(lambda x: addV
 
 completeBookVector = completeBookVector.drop('id_livre', axis=1)
 cosineSimilarityMatrix = cosine_similarity(completeBookVector)
-print(cosineSimilarityMatrix[0][1])
 
 for i, idLivreX in enumerate(listeIdLivre):
-    comparaisonAuteurs.append([])
+    """comparaisonAuteurs.append([])
     comparaisonPrix.append([])
     comparaisonCadres.append([])
     comparaisonOriginesAuteur.append([])
+    comparaisonEditeur.append([])"""
     combinedMatrixes.append([])
 
     for j, idLivreY in enumerate(listeIdLivre):
@@ -250,14 +291,22 @@ for i, idLivreX in enumerate(listeIdLivre):
         livreYData = bookDataFrame[bookDataFrame['id_livre'] == idLivreY]
 
         cmpAuteur = valeursEnCommun('id_auteur', livreXData, livreYData)
-        comparaisonAuteurs[i].append(cmpAuteur)
+        # comparaisonAuteurs[i].append(cmpAuteur)
         cmpPrix = valeursEnCommun('id_prix', livreXData, livreYData)
-        comparaisonPrix[i].append(cmpPrix)
+        # comparaisonPrix[i].append(cmpPrix)
         cmpCadres = valeursEnCommun('id_pays', livreXData, livreYData)
-        comparaisonCadres[i].append(cmpCadres)
+        # comparaisonCadres[i].append(cmpCadres)
         cmpOrigines = valeursEnCommun('origine_auteur', livreXData, livreYData)
-        comparaisonOriginesAuteur[i].append(cmpOrigines)
-
-        combinedMatrixes[i].append(calculateScore(cosineSimilarityMatrix[i][j], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines]))
+        # comparaisonOriginesAuteur[i].append(cmpOrigines)
+        cmpEditeur = compareValeur('id_editeur', livreXData, livreYData)
+        # comparaisonEditeur[i].append(cmpEditeur)
+        """
+        if i == j:
+            print("Auteur : "+str(cmpAuteur))
+            print("Prix : "+str(cmpPrix))
+            print("Cadre : "+str(cmpCadres))
+            print("Origine : "+str(cmpOrigines))
+        """
+        combinedMatrixes[i].append(calculateScore(cosineSimilarityMatrix[i][j], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur]))
 
 print(combinedMatrixes)
