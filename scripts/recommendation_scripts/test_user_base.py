@@ -90,6 +90,7 @@ def vectorizeAuthorGender(gender):
             indGender = 3
     return indGender
 
+
 # loading variables from .env file
 load_dotenv()
 
