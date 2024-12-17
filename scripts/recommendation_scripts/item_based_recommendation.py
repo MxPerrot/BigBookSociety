@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+NB_DIMENTION_VECTEUR = 4
+
 # ----------------------------------
 #  Fonctions de vectorisation 
 # ----------------------------------
@@ -103,6 +105,25 @@ def vectorizeAuthorGender(gender):
 def addVector(id, vector):
     return vector[id]
 
+def valeursEnCommun(nomValeur, livreX, livreY):
+    nbValeurEnCommun = 0
+    listeValeursX = livreX[nomValeur].unique()
+    listeValeursY = livreY[nomValeur].unique()
+    for valeursX in listeValeursX:
+        for valeursY in listeValeursY:
+            if valeursX == valeursY:
+                nbValeurEnCommun += 1
+    return nbValeurEnCommun
+
+def calculateScore(cossim, listSim):
+    scoreSum = cossim * NB_DIMENTION_VECTEUR
+    cmpt = NB_DIMENTION_VECTEUR
+    for sim in listSim:
+        scoreSum += sim
+        cmpt += 1 
+    return scoreSum/cmpt
+    
+    
 
 # loading variables from .env file
 load_dotenv() 
@@ -134,7 +155,7 @@ cursor.execute("SET SCHEMA 'sae';")
 """
 
 cursor.execute("""
-    SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.nom_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.nom, _auteur.nom, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+    SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
     FROM _utilisateur 
     INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
     INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
@@ -166,7 +187,7 @@ for i in dataResults:
 
 #print(listResults[0])
 
-bookDataFrame = pd.DataFrame(listResults, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "nom_prix", "annee_prix", "nom_serie", "numero_episode", "pays_cadre", "nom_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
+bookDataFrame = pd.DataFrame(listResults, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
 GBbookDataFrame = bookDataFrame.groupby(by="id_livre")
 bookDataFrame["isTrue"] = True
@@ -181,34 +202,31 @@ vectorPeriode = {}
 "id_editeur", 
 
 "nom_prix", 
-vectorPrix = bookDataFrame.pivot_table(index="id_livre", columns="nom_prix", values="isTrue")
+comparaisonPrix = []
 # "nom_serie", 
 # "numero_episode", 
-"pays_cadre", 
-vectorPaysCadre = bookDataFrame.pivot_table(index="id_livre", columns="pays_cadre", values="isTrue")
-"nom_auteur", 
-vectorAuthor = bookDataFrame.pivot_table(index="id_livre", columns="nom_auteur", values="isTrue")
+"id_pays", 
+comparaisonCadres = []
+"id_auteur", 
+comparaisonAuteurs = []
 "sexe_auteur", 
 vectorSexeAuteur = {}
 "origine_auteur", 
-vectorAuthorOrigin = bookDataFrame.pivot_table(index="id_livre", columns="origine_auteur", values="isTrue")
+comparaisonOriginesAuteur = []
+#vectorAuthorOrigin = bookDataFrame.pivot_table(index="id_livre", columns="origine_auteur", values="isTrue")
 # "id_genre",
+combinedMatrixes = []
 
-listIdLivre = []
+listeIdLivre = []
 for livre in GBbookDataFrame:
-    listIdLivre.append(livre[0])
-    vectorPopularite[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["nb_notes"].apply(vectorizeReviewNb).iloc[0]
-    vectorLongeurLivre[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["nombre_pages"].apply(vectorizeBookLength).iloc[0]
-    vectorPeriode[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["date_publication"].apply(vectorizePublishingDate).iloc[0]
-    vectorSexeAuteur[livre[0]] = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]
+    listeIdLivre.append(livre[0])
+    livreData = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]
+    vectorPopularite[livre[0]] = livreData["nb_notes"].apply(vectorizeReviewNb).iloc[0]
+    vectorLongeurLivre[livre[0]] = livreData["nombre_pages"].apply(vectorizeBookLength).iloc[0]
+    vectorPeriode[livre[0]] = livreData["date_publication"].apply(vectorizePublishingDate).iloc[0]
+    vectorSexeAuteur[livre[0]] = livreData["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]
 
-completeBookVector = pd.DataFrame(index=listIdLivre)
-print(completeBookVector)
-#completeBookVector = pd.concat([completeBookVector, vectorAuthorOrigin], axis=1)
-#completeBookVector = pd.concat([completeBookVector, vectorPaysCadre], axis=1)
-#completeBookVector = pd.concat([completeBookVector, vectorAuthor], axis=1)
-#completeBookVector = pd.concat([completeBookVector, vectorPrix], axis=1)
-completeBookVector = completeBookVector.fillna(0)
+completeBookVector = pd.DataFrame(index=listeIdLivre)
 
 completeBookVector["id_livre"] = completeBookVector.index
 completeBookVector["vecteurPopularite"] = completeBookVector.apply(lambda x:  addVector(x['id_livre'], vectorPopularite), axis=1)
@@ -217,5 +235,29 @@ completeBookVector["vectorPeriode"] = completeBookVector.apply(lambda x: addVect
 completeBookVector["vectorSexeAuteur"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorSexeAuteur), axis=1)
 
 completeBookVector = completeBookVector.drop('id_livre', axis=1)
-print(completeBookVector)
-print(cosine_similarity(completeBookVector))
+cosineSimilarityMatrix = cosine_similarity(completeBookVector)
+print(cosineSimilarityMatrix[0][1])
+
+for i, idLivreX in enumerate(listeIdLivre):
+    comparaisonAuteurs.append([])
+    comparaisonPrix.append([])
+    comparaisonCadres.append([])
+    comparaisonOriginesAuteur.append([])
+    combinedMatrixes.append([])
+
+    for j, idLivreY in enumerate(listeIdLivre):
+        livreXData = bookDataFrame[bookDataFrame['id_livre'] == idLivreX]
+        livreYData = bookDataFrame[bookDataFrame['id_livre'] == idLivreY]
+
+        cmpAuteur = valeursEnCommun('id_auteur', livreXData, livreYData)
+        comparaisonAuteurs[i].append(cmpAuteur)
+        cmpPrix = valeursEnCommun('id_prix', livreXData, livreYData)
+        comparaisonPrix[i].append(cmpPrix)
+        cmpCadres = valeursEnCommun('id_pays', livreXData, livreYData)
+        comparaisonCadres[i].append(cmpCadres)
+        cmpOrigines = valeursEnCommun('origine_auteur', livreXData, livreYData)
+        comparaisonOriginesAuteur[i].append(cmpOrigines)
+
+        combinedMatrixes[i].append(calculateScore(cosineSimilarityMatrix[i][j], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines]))
+
+print(combinedMatrixes)
