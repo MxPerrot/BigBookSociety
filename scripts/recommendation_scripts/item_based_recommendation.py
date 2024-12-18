@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
 
 NB_DIMENTION_VECTEUR = 4
-NOMBRE_LIVRES_TESTES = 100
+NOMBRE_LIVRES_TESTES = 500
 
 # ----------------------------------
 #  Fonctions de vectorisation 
@@ -285,6 +285,7 @@ def defineUserVect(userBookDataFrame):
 
 def defineBookVect(book):
     vecteurLivre = []
+    # Tout les lignes d'un même livre ont les mêmes valeurs pour les colonnes suivantes, on prend donc celle de la première ligne
     vecteurLivre.append(int(book["nb_notes"].apply(vectorizeReviewNb).iloc[0]))
     vecteurLivre.append(int(book["nombre_pages"].apply(vectorizeBookLength).iloc[0]))
     vecteurLivre.append(int(book["date_publication"].apply(vectorizePublishingDate).iloc[0]))
@@ -298,7 +299,6 @@ def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
     evaluationBookDataFrame = getLivresAEvaluer(cursor)
     vecteursLivres = {}
     moySimCosLivres = {}
-    combinedMatrixes = {}
 
     for id_livreEva, livreEva in evaluationBookDataFrame.groupby(by="id_livre"):
         vecteursLivres[id_livreEva] = defineBookVect(livreEva)
@@ -353,7 +353,7 @@ def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
     print(userBookDataFrame)
     '''
 
-    return bestBooks
+    return [tupl[0] for tupl in bestBooks]
 
 """
     GBuserBookDataFrame = userBookDataFrame.groupby(by="id_livre")
