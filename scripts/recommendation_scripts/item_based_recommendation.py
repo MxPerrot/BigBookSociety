@@ -4,8 +4,10 @@ import psycopg2
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from numpy.linalg import norm
 
 NB_DIMENTION_VECTEUR = 4
+NOMBRE_LIVRES_TESTES = 100
 
 # ----------------------------------
 #  Fonctions de vectorisation 
@@ -122,6 +124,13 @@ def vectorizeAuthorGender(gender):
             indGender = 3
     return indGender
 
+def vectorizeCompleteBook(book):
+    return
+
+# ----------------------------
+#  Autres fonctions
+# ----------------------------
+
 def addVector(id, vector):
     return vector[id]
 
@@ -165,148 +174,195 @@ def calculateScore(cossim, listSim):
         cmpt += 1
     return float(scoreSum/cmpt)
     
+def setUpCursor():
+    # loading variables from .env file
+    load_dotenv() 
+
+    connection = psycopg2.connect(
+        database=os.getenv("DATABASE_NAME"), 
+        user=os.getenv("USERNAME"), 
+        password=os.getenv("PASSWORD"), 
+        host=os.getenv("HOST"), 
+        port=os.getenv("PORT")
+    )
+
+    cursor = connection.cursor()
+    cursor.execute("SET SCHEMA 'sae';")
+
+    return cursor
+
+def getLivresUtilisateur(cursor, id_utilisateur):
+    cursor.execute(f"""
+        SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        FROM _utilisateur 
+        INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
+        INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
+
+        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
+
+        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
+        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
+                
+        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
+        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
+        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
+
+        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
+
+        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+                
+        WHERE _utilisateur.id_utilisateur = {id_utilisateur};
+    """)
+
+    userData = cursor.fetchall()
+
+    if len(userData) == 0:
+        return -1
     
+    userBookList = [list(book) for book in userData]
 
-# loading variables from .env file
-load_dotenv() 
+    return pd.DataFrame(userBookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
-connection = psycopg2.connect(
-    database=os.getenv("DATABASE_NAME"), 
-    user=os.getenv("USERNAME"), 
-    password=os.getenv("PASSWORD"), 
-    host=os.getenv("HOST"), 
-    port=os.getenv("PORT")
-)
+def getLivresAEvaluer(cursor):
+    cursor.execute(f"""
+        SELECT _livre.id_livre
+        FROM _livre
+        ORDER BY random()
+        LIMIT {NOMBRE_LIVRES_TESTES};
+    """)
 
-cursor = connection.cursor()
+    idLivresAEvaluerRaw = cursor.fetchall()
+    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
 
-cursor.execute("SET SCHEMA 'sae';")
+    cursor.execute(f"""
+        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        FROM _livre
+
+        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
+
+        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
+        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
+                
+        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
+        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
+                
+        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
+        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
+        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
+
+        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
+
+        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+
+        WHERE _livre.id_livre IN {idLivresAEvaluer}
+    """)
+
+    bookData = cursor.fetchall()
+    
+    if len(bookData) == 0:
+        return -1
+  
+    bookList = [list(book) for book in bookData]
+
+    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
+
+def defineUserVect(userBookDataFrame):
+    completeBookVector = {}
+
+    for id_livreUsr, livreUsr in userBookDataFrame.groupby(by="id_livre"):
+        # Tout les lignes d'un même livre ont les mêmes valeurs pour les colonnes suivantes, on prend donc celle de la première ligne
+        popularite = int(livreUsr["nb_notes"].apply(vectorizeReviewNb).iloc[0])
+        longeurLivre = int(livreUsr["nombre_pages"].apply(vectorizeBookLength).iloc[0])
+        periode = int(livreUsr["date_publication"].apply(vectorizePublishingDate).iloc[0])
+        sexeAuteur = int(livreUsr["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0])
+        completeBookVector[id_livreUsr] = (popularite, longeurLivre, periode, sexeAuteur)
+
+    return completeBookVector
+
+def defineBookVect(book):
+    vecteurLivre = []
+    vecteurLivre.append(int(book["nb_notes"].apply(vectorizeReviewNb).iloc[0]))
+    vecteurLivre.append(int(book["nombre_pages"].apply(vectorizeBookLength).iloc[0]))
+    vecteurLivre.append(int(book["date_publication"].apply(vectorizePublishingDate).iloc[0]))
+    vecteurLivre.append(int(book["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]))
+    return vecteurLivre
+
+def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
+    userBookDataFrame = getLivresUtilisateur(cursor, id_utilisateur)
+    userBookVectors = defineUserVect(userBookDataFrame)
+
+    evaluationBookDataFrame = getLivresAEvaluer(cursor)
+    vecteursLivres = {}
+    moySimCosLivres = {}
+    combinedMatrixes = {}
+
+    for id_livreEva, livreEva in evaluationBookDataFrame.groupby(by="id_livre"):
+        vecteursLivres[id_livreEva] = defineBookVect(livreEva)
+    
+    for id_livreEva, vecteurEva in vecteursLivres.items():
+        cmpt = 0
+        sumSimCosLivres = 0
+        for id_livreUser, vecteurUser in userBookVectors.items():
+            cosine = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
+            sumSimCosLivres = sumSimCosLivres + cosine
+            cmpt += 1
+
+        if cmpt != 0:
+            moySimCosLivres[id_livreEva] = float(sumSimCosLivres)/cmpt
+        else:
+            moySimCosLivres[id_livreEva] = 0
+    
+    booksScores = {}
+
+    for id_livreEva, livreEva in evaluationBookDataFrame.groupby(by="id_livre"):
+        sumScores = 0
+        cmpt = 0
+
+        for id_livreUser, livreUser in userBookDataFrame.groupby(by="id_livre"):
+
+            cmpAuteur = valeursEnCommun('id_auteur', livreEva, livreUser)
+            cmpPrix = valeursEnCommun('id_prix', livreEva, livreUser)
+            cmpCadres = valeursEnCommun('id_pays', livreEva, livreUser)
+            cmpOrigines = valeursEnCommun('origine_auteur', livreEva, livreUser)
+            cmpEditeur = compareValeur('id_editeur', livreEva, livreUser)
+            
+            cmpt += 1
+            sumScores += calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur])
+            
+        if cmpt > 0:
+            booksScores[id_livreEva] = sumScores/cmpt
+        else:
+            booksScores[id_livreEva] = 0
+
+    bestBooks = sorted(booksScores.items(), key=lambda x: x[1], reverse=True)[:nbRecommendations]
+
+    '''
+    for (key,value) in bestBooks:
+        cursor.execute(f"""
+        SELECT _livre.titre, _genre.libelle_genre
+        FROM _livre
+        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+        WHERE _livre.id_livre = {key};
+        """)
+        print(cursor.fetchall())
+    print(userBookDataFrame)
+    '''
+
+    return bestBooks
 
 """
-    FROM _utilisateur
-    LEFT JOIN _utilisateur_genre ON _utilisateur.id_utilisateur = _utilisateur_genre.id_utilisateur
-    LEFT JOIN _genre ON _genre.id_genre = _utilisateur_genre.id_genre
-    LEFT JOIN _utilisateur_langue ON _utilisateur.id_utilisateur = _utilisateur_langue.id_utilisateur
-    LEFT JOIN _langue ON _langue.id_langue = _utilisateur_langue.id_langue
-    LEFT JOIN _utilisateur_motivation ON _utilisateur_motivation.id_utilisateur = _utilisateur.id_utilisateur
-    LEFT JOIN _motivation ON _motivation.id_motivation = _utilisateur_motivation.id_motivation
-    LEFT JOIN _utilisateur_procuration ON _utilisateur_procuration.id_utilisateur = _utilisateur.id_utilisateur
-    LEFT JOIN _procuration ON _procuration.id_procuration = _utilisateur_procuration.id_procuration
-    LEFT JOIN _utilisateur_raison_achat ON _utilisateur_raison_achat.id_utilisateur = _utilisateur.id_utilisateur
-    LEFT JOIN _raison_achat ON _raison_achat.id_raison_achat = _utilisateur_raison_achat.id_raison_achat
-"""
+    GBuserBookDataFrame = userBookDataFrame.groupby(by="id_livre")
+    userBookDataFrame["isTrue"] = True
 
-cursor.execute("""
-    SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
-    FROM _utilisateur 
-    INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
-    INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
+    # "description",
+    # "id_genre",
 
-    INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
+    """
 
-    LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-    LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-               
-    LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
-    LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
-               
-    LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
-    LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-    LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-
-    LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
-    LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-
-    LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-    LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-""")
-
-dataResults = cursor.fetchall()
-listResults = []
-
-for i in dataResults:
-    listResults.append(list(i))
-
-bookDataFrame = pd.DataFrame(listResults, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
-
-GBbookDataFrame = bookDataFrame.groupby(by="id_livre")
-bookDataFrame["isTrue"] = True
-
-"nb_notes", 
-vectorPopularite = {}
-"nombre_pages", 
-vectorLongeurLivre = {}
-"date_publication", 
-vectorPeriode = {}
-# "description", 
-"id_editeur", 
-comparaisonEditeur = []
-"nom_prix", 
-comparaisonPrix = []
-# "nom_serie", 
-# "numero_episode", 
-"id_pays", 
-comparaisonCadres = []
-"id_auteur", 
-comparaisonAuteurs = []
-"sexe_auteur", 
-vectorSexeAuteur = {}
-"origine_auteur", 
-comparaisonOriginesAuteur = []
-#vectorAuthorOrigin = bookDataFrame.pivot_table(index="id_livre", columns="origine_auteur", values="isTrue")
-# "id_genre",
-
-
-combinedMatrixes = []
-listeIdLivre = []
-for livre in GBbookDataFrame:
-    listeIdLivre.append(livre[0])
-    livreData = bookDataFrame[bookDataFrame['id_livre'] == livre[0]]
-    vectorPopularite[livre[0]] = livreData["nb_notes"].apply(vectorizeReviewNb).iloc[0]
-    vectorLongeurLivre[livre[0]] = livreData["nombre_pages"].apply(vectorizeBookLength).iloc[0]
-    vectorPeriode[livre[0]] = livreData["date_publication"].apply(vectorizePublishingDate).iloc[0]
-    vectorSexeAuteur[livre[0]] = livreData["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]
-
-completeBookVector = pd.DataFrame(index=listeIdLivre)
-
-completeBookVector["id_livre"] = completeBookVector.index
-completeBookVector["vecteurPopularite"] = completeBookVector.apply(lambda x:  addVector(x['id_livre'], vectorPopularite), axis=1)
-completeBookVector["vectorLongeurLivre"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorLongeurLivre), axis=1)
-completeBookVector["vectorPeriode"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorPeriode), axis=1)
-completeBookVector["vectorSexeAuteur"] = completeBookVector.apply(lambda x: addVector(x['id_livre'], vectorSexeAuteur), axis=1)
-
-completeBookVector = completeBookVector.drop('id_livre', axis=1)
-cosineSimilarityMatrix = cosine_similarity(completeBookVector)
-
-for i, idLivreX in enumerate(listeIdLivre):
-    """comparaisonAuteurs.append([])
-    comparaisonPrix.append([])
-    comparaisonCadres.append([])
-    comparaisonOriginesAuteur.append([])
-    comparaisonEditeur.append([])"""
-    combinedMatrixes.append([])
-
-    for j, idLivreY in enumerate(listeIdLivre):
-        livreXData = bookDataFrame[bookDataFrame['id_livre'] == idLivreX]
-        livreYData = bookDataFrame[bookDataFrame['id_livre'] == idLivreY]
-
-        cmpAuteur = valeursEnCommun('id_auteur', livreXData, livreYData)
-        # comparaisonAuteurs[i].append(cmpAuteur)
-        cmpPrix = valeursEnCommun('id_prix', livreXData, livreYData)
-        # comparaisonPrix[i].append(cmpPrix)
-        cmpCadres = valeursEnCommun('id_pays', livreXData, livreYData)
-        # comparaisonCadres[i].append(cmpCadres)
-        cmpOrigines = valeursEnCommun('origine_auteur', livreXData, livreYData)
-        # comparaisonOriginesAuteur[i].append(cmpOrigines)
-        cmpEditeur = compareValeur('id_editeur', livreXData, livreYData)
-        # comparaisonEditeur[i].append(cmpEditeur)
-        """
-        if i == j:
-            print("Auteur : "+str(cmpAuteur))
-            print("Prix : "+str(cmpPrix))
-            print("Cadre : "+str(cmpCadres))
-            print("Origine : "+str(cmpOrigines))
-        """
-        combinedMatrixes[i].append(calculateScore(cosineSimilarityMatrix[i][j], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur]))
-
-print(combinedMatrixes)
+cursor = setUpCursor()
+print(recommendationItemBased(cursor,11,5))
