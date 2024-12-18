@@ -19,65 +19,65 @@ def se_connecter_bdd():
         print(f"Erreur de connexion : {e}")
         return None
 
-# Récupérer les genres préférés des utilisateurs
-def recuperer_genres_utilisateur(engine):
-    query = """
-    SELECT id_utilisateur, id_genre
-    FROM sae._utilisateur_genre
-    """
-    try:
-        return pd.read_sql(query, engine)
-    except Exception as e:
-        print(f"Erreur lors de la récupération des genres utilisateurs : {e}")
-        return pd.DataFrame()
+# ----------------------------------
+#  Fonctions de vectorisation 
+# ----------------------------------
+def vectorizeBookLength(nb_pages):
+    if pd.isnull(nb_pages):
+        indTaille = 0
+    else:
+        if nb_pages > 1000:
+            indTaille = 6
+        elif nb_pages > 500:
+            indTaille = 5
+        elif nb_pages > 200:
+            indTaille = 4
+        elif nb_pages > 100:
+            indTaille = 3
+        elif nb_pages > 50:
+            indTaille = 2
+        else:
+            indTaille = 1
+    return indTaille
 
-# Récupérer les livres associés aux genres
-def recuperer_livres_par_genre(engine):
-    query = """
-    SELECT id_livre, id_genre
-    FROM sae._genre_livre
-    """
-    try:
-        return pd.read_sql(query, engine)
-    except Exception as e:
-        print(f"Erreur lors de la récupération des livres par genre : {e}")
-        return pd.DataFrame()
+def vectorizeReviewNb(nb_note):
+    if pd.isnull(nb_note):
+        indPop = 0
+    else:
+        if nb_note > 1000000:
+            indPop = 9
+        elif nb_note > 500000:
+            indPop = 8
+        elif nb_note > 250000:
+            indPop = 7
+        elif nb_note > 100000:
+            indPop = 6
+        elif nb_note > 50000:
+            indPop = 5
+        elif nb_note > 10000:
+            indPop = 4
+        elif nb_note > 5000:
+            indPop = 3
+        elif nb_note > 1000:
+            indPop = 2
+        else:
+            indPop = 1
+    return indPop
 
-# Récupérer les interactions utilisateurs-livres
-def recuperer_interactions(engine):
-    query = """
-    SELECT id_utilisateur, id_livre
-    FROM sae._livre_utilisateur
-    """
-    try:
-        return pd.read_sql(query, engine)
-    except Exception as e:
-        print(f"Erreur lors de la récupération des interactions : {e}")
-        return pd.DataFrame()
-
-# Calcul des interactions entre utilisateurs et livres en fonction des genres préférés
-def calculer_interactions(df_utilisateur_genre, df_livres_par_genre):
-    # Vérification des colonnes nécessaires
-    if 'id_genre' not in df_utilisateur_genre.columns or 'id_genre' not in df_livres_par_genre.columns:
-        print("Les données ne contiennent pas les colonnes nécessaires (id_genre).")
-        return pd.DataFrame()
-
-    # Fusionner les genres préférés des utilisateurs avec les livres par genre
-    merged_df = pd.merge(df_utilisateur_genre, df_livres_par_genre, on='id_genre', how='inner')
-
-    # Garder uniquement les colonnes nécessaires
-    interactions = merged_df[['id_utilisateur', 'id_livre']]
-
-    return interactions
+# Vectorisation des données
+def vectoriser_donnees(df):
+    df['taille_livre'] = df['nombre_pages'].apply(vectorizeBookLength)
+    df['popularite'] = df['nb_notes'].apply(vectorizeReviewNb)
+    return df
 
 # Calcul de la similarité entre utilisateurs
-def calculer_similarites(df_interactions):
-    if df_interactions.empty:
-        print("Aucune interaction disponible pour calculer la similarité.")
+def calculer_similarites(df):
+    if df.empty:
+        print("Aucune donnée pour calculer la similarité.")
         return pd.DataFrame()
 
     # Créer une table pivot pour les interactions
-    pivot_df = df_interactions.pivot_table(index='id_utilisateur', columns='id_livre', aggfunc='size', fill_value=0)
+    pivot_df = df.pivot_table(index='id_utilisateur', columns='id_livre', aggfunc='size', fill_value=0)
     
     # Calculer la similarité cosinus
     similarity_matrix = cosine_similarity(pivot_df)
@@ -116,33 +116,26 @@ if __name__ == "__main__":
 
     if engine:
         # Récupérer les données
-        df_utilisateur_genre = recuperer_genres_utilisateur(engine)
-        df_livres_par_genre = recuperer_livres_par_genre(engine)
-        df_interactions = recuperer_interactions(engine)
+        query = """
+            SELECT DISTINCT _utilisateur.id_utilisateur, _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages
+            FROM sae._utilisateur 
+            INNER JOIN sae._livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
+            INNER JOIN sae._livre ON _livre.id_livre = _livre_utilisateur.id_livre
+        """
+        donnees = pd.read_sql(query, engine)
 
-        # Vérifier les données récupérées
-        print("Genres préférés des utilisateurs :")
-        print(df_utilisateur_genre.head())
+        # Vectoriser les données
+        donnees_vectorisees = vectoriser_donnees(donnees)
 
-        print("Livres par genre :")
-        print(df_livres_par_genre.head())
+        # Calculer les similarités
+        similarite_df = calculer_similarites(donnees_vectorisees)
 
-        print("Interactions utilisateurs-livres :")
-        print(df_interactions.head())
-
-        # Calculer les interactions et les similarités
-        interactions_df = calculer_interactions(df_utilisateur_genre, df_livres_par_genre)
-        print("Interactions calculées :")
-        print(interactions_df.head())
-
-        if not interactions_df.empty:
-            similarite_df = calculer_similarites(interactions_df)
-            print("Matrice de similarité :")
-            print(similarite_df)
-
-            # Recommander des livres pour un utilisateur donné
-            id_utilisateur = 1
-            recommandations = recommander_livres(id_utilisateur, interactions_df, similarite_df, top_n=5)
+        if not similarite_df.empty:
+            # Recommander des livres
+            id_utilisateur = 1  # Exemple d'utilisateur
+            recommandations = recommander_livres(id_utilisateur, donnees, similarite_df, top_n=5)
             print(f"Recommandations pour l'utilisateur {id_utilisateur} : {recommandations}")
+        else:
+            print("Aucune similarité calculée.")
     else:
         print("Échec de la connexion à la base de données.")
