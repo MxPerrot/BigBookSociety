@@ -102,8 +102,42 @@ def in_series(user):
     Si oui récupère livre suivant dans série
     Renvoie
     """
+    # loading variables from .env file
+    load_dotenv() 
+
+    connection = psycopg2.connect(
+        database=os.getenv("DATABASE_NAME"), 
+        user=os.getenv("USERNAME"), 
+        password=os.getenv("PASSWORD"), 
+        host=os.getenv("HOST"), 
+        port=os.getenv("PORT")
+    )
+
+    cursor = connection.cursor()
 
 
-    return list
+    cursor.execute(f"""
+    SELECT id_livre FROM sae._utilisateur NATURAL JOIN sae._livre_utilisateur NATURAL JOIN sae._episode_serie WHERE id_utilisateur = {user};
+    """)
 
-print(same_author(69, 10))
+    record = cursor.fetchall()
+
+    liste_continuer_lecture = []
+    
+    for y in record:
+        cursor.execute(f"""
+        SELECT id_serie,numero_episode FROM sae._episode_serie WHERE id_livre = {y[0]};
+        """)
+        serie = cursor.fetchall()
+
+        episode = int(serie[0][1])+1
+
+        cursor.execute(f"""
+        SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}';
+        """)
+        livre = cursor.fetchall()
+        liste_continuer_lecture.append(livre[0][0])
+
+    return liste_continuer_lecture
+
+print(in_series(69))
