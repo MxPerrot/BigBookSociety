@@ -87,6 +87,11 @@ def calculer_similarites(df):
 
 # Recommandation de livres
 def recommander_livres(id_utilisateur, interactions_df, similarite_df, top_n=5):
+    # Vérifier si l'utilisateur est dans la matrice de similarité
+    if id_utilisateur not in similarite_df.index:  # Modification
+        print(f"L'utilisateur {id_utilisateur} n'existe pas dans la matrice de similarité.")
+        return []
+
     # Vérifier si l'utilisateur a des interactions
     user_interactions = interactions_df[interactions_df['id_utilisateur'] == id_utilisateur]
 
@@ -95,7 +100,7 @@ def recommander_livres(id_utilisateur, interactions_df, similarite_df, top_n=5):
         recommandations = []
 
         # Utilisateurs similaires
-        similar_users = similarite_df[id_utilisateur].sort_values(ascending=False).index[1:top_n+1]
+        similar_users = similarite_df.loc[id_utilisateur].sort_values(ascending=False).index[1:top_n+1]
 
         for similar_user in similar_users:
             user_livres = interactions_df[interactions_df['id_utilisateur'] == similar_user]['id_livre']
@@ -118,9 +123,9 @@ if __name__ == "__main__":
         # Récupérer les données
         query = """
             SELECT DISTINCT _utilisateur.id_utilisateur, _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages
-            FROM sae._utilisateur 
-            INNER JOIN sae._livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
-            INNER JOIN sae._livre ON _livre.id_livre = _livre_utilisateur.id_livre
+            FROM sae._utilisateur
+            LEFT JOIN sae._livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
+            LEFT JOIN sae._livre ON _livre.id_livre = _livre_utilisateur.id_livre
         """
         donnees = pd.read_sql(query, engine)
 
@@ -132,7 +137,7 @@ if __name__ == "__main__":
 
         if not similarite_df.empty:
             # Recommander des livres
-            id_utilisateur = 1  # Exemple d'utilisateur
+            id_utilisateur = 2  # Exemple d'utilisateur
             recommandations = recommander_livres(id_utilisateur, donnees, similarite_df, top_n=5)
             print(f"Recommandations pour l'utilisateur {id_utilisateur} : {recommandations}")
         else:
