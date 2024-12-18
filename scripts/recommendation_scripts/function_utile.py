@@ -4,10 +4,7 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import re
-from gensim.models import Word2Vec
 import gensim
-from nltk.tokenize import sent_tokenize, word_tokenize
-import warnings
 import itertools
 
 
@@ -36,7 +33,7 @@ def model_genre():
     record = cursor.fetchall()
 
     for i in range(len(record)):    
-            record[i]= list(record[i])
+        record[i]= list(record[i])
 
     livre = pd.DataFrame(record, columns = ['Livre', 'Genre']) 
 
@@ -52,26 +49,36 @@ def model_genre():
     return model1
 
 
-def vect_genre(model,livre1,livre2):
-     tot = 0
-     index = 0
-     genres1 = []
-     genres2 = []
+def vect_genre(model,livre1genre,livre2genre):
 
-     for i in livre1:
+    if len(livre1genre) < 1 or len(livre2genre) < 1:
+        return 0
+
+    tot = 0
+    index = 0
+    genres1 = []
+    genres2 = []
+
+    for i in livre1genre:
+        if pd.isna(i):
+            return 0
         genres1.append(genre_expand(i))
-     for y in livre2 :
+    for y in livre2genre :
+        if pd.isna(y):
+            return 0
         genres2.append(genre_expand(y))
 
-     genres1 = list(itertools.chain.from_iterable(genres1))
-     genres2 = list(itertools.chain.from_iterable(genres2))
+    genres1 = list(itertools.chain.from_iterable(genres1))
+    genres2 = list(itertools.chain.from_iterable(genres2))
 
-     for i in genres1:
-          for y in genres2:
-               tot = tot + model.wv.similarity(i,y)
-               index+=1
-     
-     return tot/index
+    for i in genres1:
+        for y in genres2:
+            tot = tot + model.wv.similarity(i,y)
+            index+=1
+    
+    return tot/index
 
-
+"""
 model = model_genre()
+print(vect_genre(model,["bdsm", "history"], ["romance, science"]))
+"""

@@ -5,9 +5,10 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
+import function_utile as fu
 
 NB_DIMENTION_VECTEUR = 4
-NOMBRE_LIVRES_TESTES = 500
+NOMBRE_LIVRES_TESTES = 1000
 
 # ----------------------------------
 #  Fonctions de vectorisation 
@@ -292,7 +293,7 @@ def defineBookVect(book):
     vecteurLivre.append(int(book["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]))
     return vecteurLivre
 
-def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
+def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendations):
     userBookDataFrame = getLivresUtilisateur(cursor, id_utilisateur)
     userBookVectors = defineUserVect(userBookDataFrame)
 
@@ -329,9 +330,10 @@ def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
             cmpCadres = valeursEnCommun('id_pays', livreEva, livreUser)
             cmpOrigines = valeursEnCommun('origine_auteur', livreEva, livreUser)
             cmpEditeur = compareValeur('id_editeur', livreEva, livreUser)
+            cmpGenre = fu.vect_genre(modelGenres, livreEva["genre"], livreUser["genre"])  
             
             cmpt += 1
-            sumScores += calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur])
+            sumScores += calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur, cmpGenre])
             
         if cmpt > 0:
             booksScores[id_livreEva] = sumScores/cmpt
@@ -355,14 +357,6 @@ def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
 
     return [tupl[0] for tupl in bestBooks]
 
-"""
-    GBuserBookDataFrame = userBookDataFrame.groupby(by="id_livre")
-    userBookDataFrame["isTrue"] = True
-
-    # "description",
-    # "id_genre",
-
-    """
-
+modelGenres = fu.model_genre()
 cursor = setUpCursor()
-print(recommendationItemBased(cursor,11,5))
+print(recommendationItemBased(cursor, modelGenres, 11, 5))
