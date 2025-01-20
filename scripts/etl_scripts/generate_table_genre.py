@@ -22,6 +22,8 @@ This module aims to generate the genre-book relation table from book, author and
 
 import numpy as np
 import pandas as pd
+import os
+
 
 
 #######################################
@@ -31,6 +33,8 @@ import pandas as pd
 AUTHORS_CSV = "data/complete_author.csv"
 BOOKS_CSV = "data/complete_book.csv"
 GENRES_FROM_AUTHORS_CSV = "data/populate/genre.csv"
+PATH_DATA = "data/"
+PATH_POPULATE = os.path.join(PATH_DATA, "populate")
 
 #######################################
 #              FUNCTIONS              #
@@ -71,6 +75,10 @@ def main():
     
     # 3. Join the books dataframe with the genre table
     df_genre_from_authors_libelle_only = df_genre_from_authors['libelle_genre'] 
+
+
+
+    
     df_genre = df_clean_books[['genre']].drop_duplicates().sort_values('genre')
     df_genre.rename(columns={'genre': 'libelle_genre'}, inplace=True)
 
@@ -80,6 +88,8 @@ def main():
     df_genre_global = df_genre_global.drop_duplicates()
 
     df_genre_global = pd.merge(df_genre_global, df_genre_from_authors, on='libelle_genre', how='outer')
+
+    print(df_genre_global              )
 
     df_genre_global = df_genre_global.sort_values(by=['id_genre'])
     df_genre_global['id_genre'] = df_genre_global.index + 1
@@ -111,10 +121,14 @@ def main():
     df_clean_books = df_clean_books.fillna(1)
     df_clean_books['nb_votes'] = df_clean_books['nb_votes'].astype(int)
 
-    df_clean_books.to_csv('SQL/livre_genre.csv',index=False)
-    df_genre_glob2.to_csv('SQL/genre.csv',index=False)
+    #df_clean_books.to_csv('livre_genre.csv',index=False)
+    #df_genre_glob2.to_csv('genre.csv',index=False)
 
+    df_clean_books = df_clean_books.drop_duplicates()
+    df_genre_glob2 = df_genre_glob2.drop_duplicates()
 
+    # df_clean_books.to_csv(os.path.join(PATH_POPULATE,"livre_genre.csv"), index=False)
+    # df_genre_glob2.to_csv(os.path.join(PATH_POPULATE,"genre.csv"), index=False)
 
 if __name__ == "__main__":
     main()
