@@ -31,6 +31,8 @@ import scripts.etl_scripts.csv_table_creation as csv_table_creation
 import scripts.etl_scripts.extract_authors_from_books as extract_authors_from_books
 import scripts.etl_scripts.extract_books_from_authors as extract_books_from_authors
 import scripts.etl_scripts.nettoyage_pour_insertion as nettoyage_pour_insertion
+import scripts.etl_scripts.generate_table_genre as generate_table_genre
+
 #######################################
 #              CONSTANTS              #
 #######################################
@@ -85,10 +87,13 @@ def main():
         chemin_fichier_livres_complet = CHEMIN_FICHIER_LIVRES_COMPLET 
     )
 
+
     csv_table_creation.main(
         books = pd.read_csv(CHEMIN_FICHIER_LIVRES_COMPLET,low_memory=False),
         authors = pd.read_csv(CHEMIN_FICHIER_AUTEURS_COMPLET,low_memory=False)
     )
+
+    # generate_table_genre.main()
 
     csv_formulaire_table_creation.main(
         results = pd.read_csv(CHEMIN_FICHIER_FORMULAIRE,low_memory=False)
