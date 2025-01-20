@@ -54,6 +54,9 @@ CHEMIN_FICHIER_FORMULAIRE = "data/formulaire.csv"
 #######################################
 
 def main():
+    newpath = r'data/populate' 
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
 
     # EXTRACT & TRANSFORM
     clean_data.main(
