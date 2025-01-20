@@ -56,6 +56,9 @@ CHEMIN_POPULATE = os.path.join(CHEMIN_DATA, "populate")
 #######################################
 
 def main():
+    newpath = r'data/populate' 
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
 
     os.makedirs(CHEMIN_POPULATE, exist_ok=True)
 
