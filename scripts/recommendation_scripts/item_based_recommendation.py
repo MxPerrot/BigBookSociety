@@ -125,15 +125,9 @@ def vectorizeAuthorGender(gender):
             indGender = 3
     return indGender
 
-def vectorizeCompleteBook(book):
-    return
-
 # ----------------------------
 #  Autres fonctions
 # ----------------------------
-
-def addVector(id, vector):
-    return vector[id]
 
 def valeursEnCommun(nomValeur, livreX, livreY):
     """
