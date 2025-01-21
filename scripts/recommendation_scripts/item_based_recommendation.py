@@ -187,6 +187,7 @@ def setUpCursor():
     return cursor
 
 def getLivresUtilisateur(cursor, id_utilisateur):
+    # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
     cursor.execute(f"""
         SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _utilisateur 

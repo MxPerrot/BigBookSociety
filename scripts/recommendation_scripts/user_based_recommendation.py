@@ -3,6 +3,7 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2
 import pandas as pd
 import numpy as np
+import random as rd
 from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
 from operator import itemgetter
@@ -234,21 +235,22 @@ def calculateScore(cossim, listSim):
         cmpt += 1
     return float(scoreSum/cmpt)
 
-def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
-    userData = getUtilisateur(cursor, id_utilisateur)
+def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
+    livresLus = getIdLivresUtilisateur(cursor, id_utilisateur_a_recommander)
+
+    userData = getUtilisateur(cursor, id_utilisateur_a_recommander)
     vecteurUser = defineUserVect(userData)
+    print(userData)
 
     utilisateursAEvaluer = getUtilisateursAEvaluer(cursor)
     # TODO: retirer l'utilisateur en paramétre de la liste à évaluer si pris
     simCosUsers = {}
-    livresPref = {}
     userSim = []
     i = 0
 
     for id_userEva, userEva in utilisateursAEvaluer.groupby(by="id_utilisateur"):
         vecteurEva = defineUserVect(userEva)
         simCosUsers[id_userEva] = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
-        livresPref[id_userEva] = getIdLivresUtilisateur(cursor, id_userEva)
         cmpSexe = compareValeur('sexe', userEva, userData)
         cmpPro = compareValeur('profession', userEva, userData)
         cmpFami = compareValeur('situation_familiale', userEva, userData)
@@ -257,14 +259,74 @@ def recommendationItemBased(cursor, id_utilisateur, nbRecommendations):
         
         i+=1
 
-    sortUserSim = sorted(userSim, key=itemgetter(1))
-    print(sortUserSim)
+    sortUserSim = sorted(userSim, key=itemgetter(1), reverse=True)
 
-    
+    cpt = 0
+    nbLivresARec = nbRecommendations
+    livreRecommandes = []
+    """
+    # Première approche
+    while nbLivresARec > 0:
+        idUser = sortUserSim[cpt][0]
+        if idUser != id_utilisateur_a_recommander:
+            livres_preferés = getIdLivresUtilisateur(cursor, idUser)
+            print(idUser,livres_preferés)
+            if livres_preferés != -1:
+                for livreId in livres_preferés:
+                    if nbLivresARec > 0:
+                        if livresLus != -1:
+                            if (livreId not in livresLus):
+                                livreRecommandes.append(livreId)
+                                nbLivresARec-=1
+                        else:
+                            livreRecommandes.append(livreId)
+                            nbLivresARec-=1
+        cpt+=1
+        if cpt >= len(sortUserSim):
+            break
+    """
+    # Seconde approche
+    for (idUser,simCos) in sortUserSim:
+        if idUser != id_utilisateur_a_recommander:
+            livres_preferés = getIdLivresUtilisateur(cursor, idUser)
+            livresTestés = 0
+            if livres_preferés != -1:
+                for i in range(len(livres_preferés)):
+                    livre_a_rec = rd.choice(livres_preferés)
+                    livres_preferés.remove(livre_a_rec)
+                    livresTestés += 1
+                    if livresLus != -1:
+                        if (livre_a_rec not in livresLus):
+                            livreRecommandes.append(livre_a_rec)
+                            nbLivresARec-=1
+                            break
+                    else:
+                        livreRecommandes.append(livre_a_rec)
+                        nbLivresARec-=1
+                        break
+            if nbLivresARec <= 0:
+                break
 
-    # TODO: retirer livres préférés de l'utilisateur avant de recommander
-    return None
+            
+
+    return livreRecommandes
 
 
 cursor = setUpCursor()
-print(recommendationItemBased(cursor, 11, 5))
+idLivresRecommandes = recommendationItemBased(cursor, 124, 5)
+
+cursor.execute(f"""
+    SELECT DISTINCT _livre.titre, _auteur.nom, _genre.libelle_genre
+    FROM _livre
+
+    LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+    LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
+
+    LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+    LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+
+    WHERE _livre.id_livre IN {tuple(idLivresRecommandes)};
+""")
+
+livresRecommandes = cursor.fetchall()
+print(livresRecommandes)
