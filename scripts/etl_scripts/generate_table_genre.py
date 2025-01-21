@@ -145,8 +145,8 @@ def main():
     df_clean_books = df_clean_books.drop_duplicates()
     df_genre_glob2 = df_genre_glob2.drop_duplicates()
 
-    # df_clean_books.to_csv(os.path.join(PATH_POPULATE,"livre_genre.csv"), index=False)
-    # df_genre_glob2.to_csv(os.path.join(PATH_POPULATE,"genre.csv"), index=False)
+    df_clean_books.to_csv(os.path.join(PATH_POPULATE,"livre_genre.csv"), index=False)
+    df_genre_glob2.to_csv(os.path.join(PATH_POPULATE,"genre.csv"), index=False)
 
 if __name__ == "__main__":
     main()
