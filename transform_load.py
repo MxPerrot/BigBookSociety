@@ -93,7 +93,7 @@ def main():
         authors = pd.read_csv(CHEMIN_FICHIER_AUTEURS_COMPLET,low_memory=False)
     )
 
-    # generate_table_genre.main()
+    generate_table_genre.main()
 
     csv_formulaire_table_creation.main(
         results = pd.read_csv(CHEMIN_FICHIER_FORMULAIRE,low_memory=False)
