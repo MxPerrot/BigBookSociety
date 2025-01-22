@@ -7,26 +7,11 @@ import random as rd
 from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
 from operator import itemgetter
+import recommendation_utilities as ru
 
 NB_DIMENTION_VECTEUR = 4
 NOMBRE_UTILISATEURS_TESTES = 100
 
-def setUpCursor():
-    # loading variables from .env file
-    load_dotenv() 
-
-    connection = psycopg2.connect(
-        database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
-        host=os.getenv("HOST"), 
-        port=os.getenv("PORT")
-    )
-
-    cursor = connection.cursor()
-    cursor.execute("SET SCHEMA 'sae';")
-
-    return cursor
 
 def getUtilisateur(cursor, id_utilisateur):
     cursor.execute(f"""
@@ -203,46 +188,6 @@ def defineUserVect(book):
     vecteurUser.append(int(book["nb_livres_lus"].apply(vectorizeNbBookRed).iloc[0]))
     return vecteurUser
 
-def compareValeur(nomValeur, livreX, livreY):
-    """
-    Renvoie True si ces livres partagent la même valeur indiquée par le paramétre nomValeur
-    """
-    return bool(livreX[nomValeur].iloc[0] == livreY[nomValeur].iloc[0])
-
-def valeursEnCommun(nomValeur, livreX, livreY):
-    """
-    Donne un indice permettant de savoir à quel point deux livres sont proches basé sur une valeur indiquée en paramètre (nomValeur)
-    """
-    nbValeurEnCommun = 0
-    listeValeursX = livreX[nomValeur].unique()
-    listeValeursY = livreY[nomValeur].unique()
-    if livreX["id_utilisateur"].iloc[0] == livreY["id_utilisateur"].iloc[0]:
-        return 1
-    if len(listeValeursX) == 0 and len(listeValeursY) == 0:
-        return 1
-    if len(listeValeursX) == 0 or len(listeValeursY) == 0:
-        return 0
-    for valeursX in listeValeursX:
-        for valeursY in listeValeursY:
-            if valeursX == valeursY:
-                nbValeurEnCommun += 1
-    if len(listeValeursX) > len(listeValeursY):
-        return nbValeurEnCommun/len(listeValeursX)
-    else:
-        return nbValeurEnCommun/len(listeValeursY)
-
-def calculateScore(cossim, listSim):
-    """
-    Calcule le Score global de similarité d'une comparaison entre deux objets
-    Fait la moyenne des indices de similarités et pondérant celui de la similarité cosine dû au fait qu'elle prends plus de valeurs en compte
-    """
-    scoreSum = cossim * NB_DIMENTION_VECTEUR
-    cmpt = NB_DIMENTION_VECTEUR
-    for sim in listSim:
-        scoreSum += sim
-        cmpt += 1
-    return float(scoreSum/cmpt)
-
 def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
     livresLus = getIdLivresUtilisateur(cursor, id_utilisateur_a_recommander)
 
@@ -257,17 +202,17 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
     for id_userEva, userEva in utilisateursAEvaluer.groupby(by="id_utilisateur"):
         vecteurEva = defineUserVect(userEva)
         simCosUsers[id_userEva] = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
-        cmpSexe = compareValeur('sexe', userEva, userData)
-        cmpProfes = compareValeur('profession', userEva, userData)
-        cmpFamille = compareValeur('situation_familiale', userEva, userData)
+        cmpSexe = ru.compareValeur('sexe', userEva, userData)
+        cmpProfes = ru.compareValeur('profession', userEva, userData)
+        cmpFamille = ru.compareValeur('situation_familiale', userEva, userData)
 
-        cmpLangue = valeursEnCommun('langue', userEva, userData)
-        cmpMotiva = valeursEnCommun('motivation', userEva, userData)
-        cmpRaison = valeursEnCommun('raison_achat', userEva, userData)
-        cmpProcur = valeursEnCommun('procuration', userEva, userData)
-        cmpFormat = valeursEnCommun('format', userEva, userData)
+        cmpLangue = ru.valeursEnCommun('langue', userEva, userData, "id_utilisateur")
+        cmpMotiva = ru.valeursEnCommun('motivation', userEva, userData, "id_utilisateur")
+        cmpRaison = ru.valeursEnCommun('raison_achat', userEva, userData, "id_utilisateur")
+        cmpProcur = ru.valeursEnCommun('procuration', userEva, userData, "id_utilisateur")
+        cmpFormat = ru.valeursEnCommun('format', userEva, userData, "id_utilisateur")
 
-        userSim.append((id_userEva,calculateScore(simCosUsers[id_userEva], [cmpSexe, cmpProfes, cmpFamille, cmpLangue, cmpMotiva, cmpRaison, cmpProcur, cmpFormat])))
+        userSim.append((id_userEva,ru.calculateScore(simCosUsers[id_userEva], [cmpSexe, cmpProfes, cmpFamille, cmpLangue, cmpMotiva, cmpRaison, cmpProcur, cmpFormat], NB_DIMENTION_VECTEUR)))
         
         i+=1
 
@@ -325,7 +270,7 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
     return livreRecommandes
 
 
-cursor = setUpCursor()
+cursor = ru.setUpCursor()
 idLivresRecommandes = recommendationItemBased(cursor, 124, 5)
 
 cursor.execute(f"""

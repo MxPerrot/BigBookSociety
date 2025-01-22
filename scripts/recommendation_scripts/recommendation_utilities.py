@@ -7,6 +7,62 @@ import re
 import gensim
 import itertools
 
+def setUpCursor():
+    # loading variables from .env file
+    load_dotenv() 
+
+    connection = psycopg2.connect(
+        database=os.getenv("DATABASE_NAME"), 
+        user=os.getenv("USERNAME"), 
+        password=os.getenv("PASSWORD"), 
+        host=os.getenv("HOST"), 
+        port=os.getenv("PORT")
+    )
+
+    cursor = connection.cursor()
+    cursor.execute("SET SCHEMA 'sae';")
+
+    return cursor
+
+def compareValeur(nomValeur, elemX, elemY):
+    """
+    Renvoie True si ces éléments partagent la même valeur indiquée par le paramétre nomValeur
+    """
+    return bool(elemX[nomValeur].iloc[0] == elemY[nomValeur].iloc[0])
+
+def valeursEnCommun(nomValeur, elemX, elemY, valeurComp):
+    """
+    Donne un indice permettant de savoir à quel point deux livres sont proches basé sur une valeur indiquée en paramètre (nomValeur)
+    """
+    nbValeurEnCommun = 0
+    listeValeursX = elemX[nomValeur].unique()
+    listeValeursY = elemY[nomValeur].unique()
+    if elemX[valeurComp].iloc[0] == elemY[valeurComp].iloc[0]:
+        return 1
+    if len(listeValeursX) == 0 and len(listeValeursY) == 0:
+        return 1
+    if len(listeValeursX) == 0 or len(listeValeursY) == 0:
+        return 0
+    for valeursX in listeValeursX:
+        for valeursY in listeValeursY:
+            if valeursX == valeursY:
+                nbValeurEnCommun += 1
+    if len(listeValeursX) > len(listeValeursY):
+        return nbValeurEnCommun/len(listeValeursX)
+    else:
+        return nbValeurEnCommun/len(listeValeursY)
+
+def calculateScore(cossim, listSim, nbVecteur):
+    """
+    Calcule le Score global de similarité d'une comparaison entre deux livres
+    Fait la moyenne des indices de similarités et pondérant celui de la similarité cosine dû au fait qu'elle prends plus de valeurs en compte
+    """
+    scoreSum = cossim * nbVecteur 
+    cmpt = nbVecteur
+    for sim in listSim:
+        scoreSum += sim
+        cmpt += 1
+    return float(scoreSum/cmpt)
 
 def genre_expand(genre):
     expanded_genre = genre.split(" ")

@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
-import function_utile as fu
+import recommendation_utilities as ru
 
 NB_DIMENTION_VECTEUR = 4
 NOMBRE_LIVRES_TESTES = 1000
@@ -129,63 +129,6 @@ def vectorizeAuthorGender(gender):
 #  Autres fonctions
 # ----------------------------
 
-def valeursEnCommun(nomValeur, livreX, livreY):
-    """
-    Donne un indice permettant de savoir à quel point deux livres sont proches basé sur une valeur indiquée en paramètre (nomValeur)
-    """
-    nbValeurEnCommun = 0
-    listeValeursX = livreX[nomValeur].unique()
-    listeValeursY = livreY[nomValeur].unique()
-    if livreX["id_livre"].iloc[0] == livreY["id_livre"].iloc[0]:
-        return 1
-    if len(listeValeursX) == 0 and len(listeValeursY) == 0:
-        return 1
-    if len(listeValeursX) == 0 or len(listeValeursY) == 0:
-        return 0
-    for valeursX in listeValeursX:
-        for valeursY in listeValeursY:
-            if valeursX == valeursY:
-                nbValeurEnCommun += 1
-    if len(listeValeursX) > len(listeValeursY):
-        return nbValeurEnCommun/len(listeValeursX)
-    else:
-        return nbValeurEnCommun/len(listeValeursY)
-    
-def compareValeur(nomValeur, livreX, livreY):
-    """
-    Renvoie True si ces livres partagent la même valeur indiquée par le paramétre nomValeur
-    """
-    return bool(livreX[nomValeur].iloc[0] == livreY[nomValeur].iloc[0])
-
-def calculateScore(cossim, listSim):
-    """
-    Calcule le Score global de similarité d'une comparaison entre deux livres
-    Fait la moyenne des indices de similarités et pondérant celui de la similarité cosine dû au fait qu'elle prends plus de valeurs en compte
-    """
-    scoreSum = cossim * NB_DIMENTION_VECTEUR
-    cmpt = NB_DIMENTION_VECTEUR
-    for sim in listSim:
-        scoreSum += sim
-        cmpt += 1
-    return float(scoreSum/cmpt)
-    
-def setUpCursor():
-    # loading variables from .env file
-    load_dotenv() 
-
-    connection = psycopg2.connect(
-        database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
-        host=os.getenv("HOST"), 
-        port=os.getenv("PORT")
-    )
-
-    cursor = connection.cursor()
-    cursor.execute("SET SCHEMA 'sae';")
-
-    return cursor
-
 def getLivresUtilisateur(cursor, id_utilisateur):
     # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
     cursor.execute(f"""
@@ -266,7 +209,7 @@ def getLivresAEvaluer(cursor):
 
     return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
-def defineUserVect(userBookDataFrame):
+def defineUserBooksVect(userBookDataFrame):
     completeBookVector = {}
 
     for id_livreUsr, livreUsr in userBookDataFrame.groupby(by="id_livre"):
@@ -290,7 +233,7 @@ def defineBookVect(book):
 
 def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendations):
     userBookDataFrame = getLivresUtilisateur(cursor, id_utilisateur)
-    userBookVectors = defineUserVect(userBookDataFrame)
+    userBookVectors = defineUserBooksVect(userBookDataFrame)
 
     evaluationBookDataFrame = getLivresAEvaluer(cursor)
     vecteursLivres = {}
@@ -320,15 +263,15 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
 
         for id_livreUser, livreUser in userBookDataFrame.groupby(by="id_livre"):
 
-            cmpAuteur = valeursEnCommun('id_auteur', livreEva, livreUser)
-            cmpPrix = valeursEnCommun('id_prix', livreEva, livreUser)
-            cmpCadres = valeursEnCommun('id_pays', livreEva, livreUser)
-            cmpOrigines = valeursEnCommun('origine_auteur', livreEva, livreUser)
-            cmpEditeur = compareValeur('id_editeur', livreEva, livreUser)
-            cmpGenre = fu.vect_genre(modelGenres, livreEva["genre"], livreUser["genre"])  
+            cmpAuteur = ru.valeursEnCommun('id_auteur', livreEva, livreUser, "id_livre")
+            cmpPrix = ru.valeursEnCommun('id_prix', livreEva, livreUser, "id_livre")
+            cmpCadres = ru.valeursEnCommun('id_pays', livreEva, livreUser, "id_livre")
+            cmpOrigines = ru.valeursEnCommun('origine_auteur', livreEva, livreUser, "id_livre")
+            cmpEditeur = ru.compareValeur('id_editeur', livreEva, livreUser)
+            cmpGenre = ru.vect_genre(modelGenres, livreEva["genre"], livreUser["genre"])  
             
             cmpt += 1
-            sumScores += calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur, cmpGenre])
+            sumScores += ru.calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur, cmpGenre], NB_DIMENTION_VECTEUR)
             
         if cmpt > 0:
             booksScores[id_livreEva] = sumScores/cmpt
@@ -352,6 +295,6 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
 
     return [tupl[0] for tupl in bestBooks]
 
-modelGenres = fu.model_genre()
-cursor = setUpCursor()
+modelGenres = ru.model_genre()
+cursor = ru.setUpCursor()
 print(recommendationItemBased(cursor, modelGenres, 11, 5))
