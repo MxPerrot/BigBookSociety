@@ -153,7 +153,7 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
     return livreRecommandes
 
 
-cursor = ru.setUpCursor()
+cursor = bdd.setUpCursor()
 idLivresRecommandes = recommendationItemBased(cursor, 124, 5)
 
 cursor.execute(f"""
