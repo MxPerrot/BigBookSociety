@@ -140,4 +140,27 @@ def in_series(user):
 
     return liste_continuer_lecture
 
-print(in_series(69))
+def decouverte(limit):
+
+    load_dotenv() 
+
+    connection = psycopg2.connect(
+        database=os.getenv("DATABASE_NAME"), 
+        user=os.getenv("USERNAME"), 
+        password=os.getenv("PASSWORD"), 
+        host=os.getenv("HOST"), 
+        port=os.getenv("PORT")
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute(f"""
+    SELECT * FROM sae._livre WHERE note_moyenne is not null and nb_notes>1000 and nb_notes<50000 ORDER BY note_moyenne DESC LIMIT
+    {limit};
+    """)
+
+    # 
+
+    record = cursor.fetchall()
+
+print(decouverte(69))
