@@ -155,8 +155,12 @@ def decouverte(limit):
     cursor = connection.cursor()
 
     cursor.execute(f"""
-    SELECT * FROM sae._livre WHERE note_moyenne is not null and nb_notes>1000 and nb_notes<50000 ORDER BY note_moyenne DESC LIMIT
-    {limit};
+    SELECT * FROM sae._livre 
+    WHERE note_moyenne is not null 
+    and nb_notes>1000 
+    and nb_notes<50000 
+    ORDER BY note_moyenne DESC 
+    LIMIT {limit};
     """)
 
     # 
