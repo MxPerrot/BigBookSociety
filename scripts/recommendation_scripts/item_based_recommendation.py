@@ -349,15 +349,15 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
         
         vecteurEva = defineBookVect(livreEva)
         if sum(vecteurEva) != 0:
-            cmpt = 0
+            cmptCos = 0
             sumSimCosLivres = 0
             for id_livreUser, vecteurUser in userBookVectors.items():
                 cosine = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
                 sumSimCosLivres = sumSimCosLivres + cosine
-                cmpt += 1
+                cmptCos += 1
 
-            if cmpt != 0:
-                moySimCosLivres[id_livreEva] = float(sumSimCosLivres)/cmpt
+            if cmptCos != 0:
+                moySimCosLivres[id_livreEva] = float(sumSimCosLivres)/cmptCos
             else:
                 moySimCosLivres[id_livreEva] = 0
         
