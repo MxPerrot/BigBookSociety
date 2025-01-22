@@ -1,134 +1,13 @@
-import os
-from dotenv import load_dotenv, dotenv_values 
-import psycopg2
 import pandas as pd
 import numpy as np
 import random as rd
-from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
 from operator import itemgetter
 import recommendation_utilities as ru
+import database_functions as bdd
 
 NB_DIMENTION_VECTEUR = 4
 NOMBRE_UTILISATEURS_TESTES = 100
-
-
-def getUtilisateur(cursor, id_utilisateur):
-    cursor.execute(f"""
-        SELECT 
-            _utilisateur.id_utilisateur, 
-            _utilisateur.sexe, 
-            _utilisateur.age, 
-            _utilisateur.profession, 
-            _utilisateur.situation_familiale, 
-            _utilisateur.frequence_lecture, 
-            _utilisateur.vitesse_lecture, 
-            _utilisateur.nb_livres_lus,
-            _langue.id_langue,
-            _motivation.id_motivation,
-            _raison_achat.id_raison_achat,
-            _procuration.id_procuration,
-            _format.id_format
-                   
-        FROM _utilisateur
-                   
-        LEFT JOIN _utilisateur_langue ON _utilisateur.id_utilisateur = _utilisateur_langue.id_utilisateur
-        LEFT JOIN _langue ON _utilisateur_langue.id_langue = _langue.id_langue
-        
-        LEFT JOIN _utilisateur_motivation ON _utilisateur.id_utilisateur = _utilisateur_motivation.id_utilisateur
-        LEFT JOIN _motivation ON _utilisateur_motivation.id_motivation = _motivation.id_motivation
-
-        LEFT JOIN _utilisateur_raison_achat ON _utilisateur.id_utilisateur = _utilisateur_raison_achat.id_utilisateur
-        LEFT JOIN _raison_achat ON _utilisateur_raison_achat.id_raison_achat = _raison_achat.id_raison_achat
-
-        LEFT JOIN _utilisateur_procuration ON _utilisateur.id_utilisateur = _utilisateur_procuration.id_utilisateur
-        LEFT JOIN _procuration ON _utilisateur_procuration.id_procuration = _procuration.id_procuration
-
-        LEFT JOIN _format_utilisateur ON _utilisateur.id_utilisateur = _format_utilisateur.id_utilisateur
-        LEFT JOIN _format ON _format_utilisateur.id_format = _format.id_format
-        
-        WHERE _utilisateur.id_utilisateur = {id_utilisateur}
-    """)
-
-    utilisateur = cursor.fetchall()
-
-    return pd.DataFrame(utilisateur, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
-
-def getUtilisateursAEvaluer(cursor):
-    cursor.execute(f"""
-        SELECT _utilisateur.id_utilisateur
-        FROM _utilisateur
-        ORDER BY random()
-        LIMIT {NOMBRE_UTILISATEURS_TESTES};
-    """)
-    
-    idUtilisateursAEvaluerRaw = cursor.fetchall()
-    idUtilisateursAEvaluer = tuple([utilisateur[0] for utilisateur in idUtilisateursAEvaluerRaw])
-    
-
-    cursor.execute(f"""
-        SELECT 
-            _utilisateur.id_utilisateur, 
-            _utilisateur.sexe, 
-            _utilisateur.age, 
-            _utilisateur.profession, 
-            _utilisateur.situation_familiale, 
-            _utilisateur.frequence_lecture, 
-            _utilisateur.vitesse_lecture, 
-            _utilisateur.nb_livres_lus,
-            _langue.id_langue,
-            _motivation.id_motivation,
-            _raison_achat.id_raison_achat,
-            _procuration.id_procuration,
-            _format.id_format
-                   
-        FROM _utilisateur
-
-        LEFT JOIN _utilisateur_langue ON _utilisateur.id_utilisateur = _utilisateur_langue.id_utilisateur
-        LEFT JOIN _langue ON _utilisateur_langue.id_langue = _langue.id_langue
-        
-        LEFT JOIN _utilisateur_motivation ON _utilisateur.id_utilisateur = _utilisateur_motivation.id_utilisateur
-        LEFT JOIN _motivation ON _utilisateur_motivation.id_motivation = _motivation.id_motivation
-
-        LEFT JOIN _utilisateur_raison_achat ON _utilisateur.id_utilisateur = _utilisateur_raison_achat.id_utilisateur
-        LEFT JOIN _raison_achat ON _utilisateur_raison_achat.id_raison_achat = _raison_achat.id_raison_achat
-
-        LEFT JOIN _utilisateur_procuration ON _utilisateur.id_utilisateur = _utilisateur_procuration.id_utilisateur
-        LEFT JOIN _procuration ON _utilisateur_procuration.id_procuration = _procuration.id_procuration
-
-        LEFT JOIN _format_utilisateur ON _utilisateur.id_utilisateur = _format_utilisateur.id_utilisateur
-        LEFT JOIN _format ON _format_utilisateur.id_format = _format.id_format
-
-        WHERE _utilisateur.id_utilisateur IN {idUtilisateursAEvaluer}
-    """)
-
-    userData = cursor.fetchall()
-    
-    if len(userData) == 0:
-        return -1
-    
-    userList = [list(user) for user in userData]
-    return pd.DataFrame(userList, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
-
-def getIdLivresUtilisateur(cursor, id_utilisateur):
-    cursor.execute(f"""
-        SELECT DISTINCT _livre.id_livre
-        FROM _utilisateur 
-        INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
-        INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
-
-        WHERE _utilisateur.id_utilisateur = {id_utilisateur};
-    """)
-
-    userData = cursor.fetchall()
-
-    if len(userData) == 0:
-        return -1
-    
-    userIdBookList = [list(book)[0] for book in userData]
-
-    return userIdBookList
-
 
 # ----------------------------------
 #  Fonctions de vectorisation 
@@ -188,13 +67,17 @@ def defineUserVect(book):
     vecteurUser.append(int(book["nb_livres_lus"].apply(vectorizeNbBookRed).iloc[0]))
     return vecteurUser
 
-def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
-    livresLus = getIdLivresUtilisateur(cursor, id_utilisateur_a_recommander)
+# ----------------------------
+#  Fonction principale
+# ----------------------------
 
-    userData = getUtilisateur(cursor, id_utilisateur_a_recommander)
+def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
+    livresLus = bdd.getIdLivresUtilisateur(cursor, id_utilisateur_a_recommander)
+
+    userData = bdd.getUtilisateurById(cursor, id_utilisateur_a_recommander)
     vecteurUser = defineUserVect(userData)
 
-    utilisateursAEvaluer = getUtilisateursAEvaluer(cursor)
+    utilisateursAEvaluer = bdd.getUtilisateursAEvaluer(cursor, NOMBRE_UTILISATEURS_TESTES)
     simCosUsers = {}
     userSim = []
     i = 0
@@ -226,7 +109,7 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
     while nbLivresARec > 0:
         idUser = sortUserSim[cpt][0]
         if idUser != id_utilisateur_a_recommander:
-            livres_preferés = getIdLivresUtilisateur(cursor, idUser)
+            livres_preferés = bdd.getIdLivresUtilisateur(cursor, idUser)
             print(idUser,livres_preferés)
             if livres_preferés != -1:
                 for livreId in livres_preferés:
@@ -246,7 +129,7 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
 
     sortUserSim = [usr for usr in sortUserSim if usr[0] != id_utilisateur_a_recommander]
     for (idUser,simCos) in sortUserSim:
-        livres_preferés = getIdLivresUtilisateur(cursor, idUser)
+        livres_preferés = bdd.getIdLivresUtilisateur(cursor, idUser)
         livresTestés = 0
         if livres_preferés != -1:
             for i in range(len(livres_preferés)):

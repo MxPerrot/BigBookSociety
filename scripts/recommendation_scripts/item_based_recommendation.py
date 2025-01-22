@@ -1,11 +1,8 @@
-import os
-from dotenv import load_dotenv, dotenv_values 
-import psycopg2
 import pandas as pd
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 from numpy.linalg import norm
 import recommendation_utilities as ru
+import database_functions as bdd
 
 NB_DIMENTION_VECTEUR = 4
 NOMBRE_LIVRES_TESTES = 1000
@@ -125,188 +122,6 @@ def vectorizeAuthorGender(gender):
             indGender = 3
     return indGender
 
-# ----------------------------
-#  Autres fonctions
-# ----------------------------
-
-def getLivresUtilisateur(cursor, id_utilisateur):
-    # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
-    cursor.execute(f"""
-        SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
-        FROM _utilisateur 
-        INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
-        INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
-
-        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-
-        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-                
-        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
-        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-
-        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
-        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-
-        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-                
-        WHERE _utilisateur.id_utilisateur = {id_utilisateur};
-    """)
-
-    userData = cursor.fetchall()
-
-    if len(userData) == 0:
-        return -1
-    
-    userBookList = [list(book) for book in userData]
-
-    return pd.DataFrame(userBookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
-
-def getLivresAEvaluer(cursor):
-    cursor.execute(f"""
-        SELECT _livre.id_livre
-        FROM _livre
-        ORDER BY random()
-        LIMIT {NOMBRE_LIVRES_TESTES};
-    """)
-
-    idLivresAEvaluerRaw = cursor.fetchall()
-    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
-
-    cursor.execute(f"""
-        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
-        FROM _livre
-
-        LEFT JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-
-        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-                
-        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
-        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
-                
-        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
-        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-
-        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
-        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-
-        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-
-        WHERE _livre.id_livre IN {idLivresAEvaluer}
-    """)
-
-    bookData = cursor.fetchall()
-    
-    if len(bookData) == 0:
-        return -1
-  
-    bookList = [list(book) for book in bookData]
-
-    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
-
-def getLivresAEvaluerTendance(cursor):
-    cursor.execute(f"""
-        SELECT b.id_livre
-        FROM sae._livre b
-        INNER JOIN sae._episode_serie s ON b.id_livre = s.id_livre
-        WHERE numero_episode = '1'
-        AND b.note_moyenne IS NOT NULL
-        AND b.nb_notes IS NOT NULL
-        ORDER BY random(), b.nb_notes DESC, b.note_moyenne DESC
-        LIMIT {NOMBRE_LIVRES_TESTES};
-    """)
-
-    idLivresAEvaluerRaw = cursor.fetchall()
-    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
-
-    cursor.execute(f"""
-        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
-        FROM _livre
-
-        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-
-        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-                
-        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
-        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
-                
-        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
-        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-
-        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
-        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-
-        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-
-        WHERE _livre.id_livre IN {idLivresAEvaluer}
-    """)
-
-    bookData = cursor.fetchall()
-    
-    if len(bookData) == 0:
-        return -1
-  
-    bookList = [list(book) for book in bookData]
-
-    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
-
-def getLivresAEvaluerDecouverte(cursor):
-    cursor.execute(f"""
-        SELECT * FROM sae._livre 
-        WHERE note_moyenne is not null 
-        and nb_notes>1000 
-        and nb_notes<50000 
-        ORDER BY random(), note_moyenne DESC 
-        LIMIT {NOMBRE_LIVRES_TESTES};
-    """)
-
-    idLivresAEvaluerRaw = cursor.fetchall()
-    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
-
-    cursor.execute(f"""
-        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
-        FROM _livre
-
-        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-
-        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-                
-        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
-        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
-                
-        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
-        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-
-        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
-        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-
-        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-
-        WHERE _livre.id_livre IN {idLivresAEvaluer}
-    """)
-
-    bookData = cursor.fetchall()
-    
-    if len(bookData) == 0:
-        return -1
-  
-    bookList = [list(book) for book in bookData]
-
-    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
-
-
-
 def defineUserBooksVect(userBookDataFrame):
     completeBookVector = {}
 
@@ -329,8 +144,12 @@ def defineBookVect(book):
     vecteurLivre.append(int(book["sexe_auteur"].apply(vectorizeAuthorGender).iloc[0]))
     return vecteurLivre
 
+# ----------------------------
+#  Fonction principale
+# ----------------------------
+
 def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendations):
-    userBookDataFrame = getLivresUtilisateur(cursor, id_utilisateur)
+    userBookDataFrame = bdd.getLivresUtilisateur(cursor, id_utilisateur)
     userBookVectors = defineUserBooksVect(userBookDataFrame)
     
     sumVect = 0
@@ -339,7 +158,7 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
     if sumVect == 0:
         return []
 
-    evaluationBookDataFrame = getLivresAEvaluer(cursor)
+    evaluationBookDataFrame = bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES)
     moySimCosLivres = {}
     booksScores = {}
 

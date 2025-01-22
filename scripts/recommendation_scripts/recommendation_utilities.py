@@ -7,23 +7,6 @@ import re
 import gensim
 import itertools
 
-def setUpCursor():
-    # loading variables from .env file
-    load_dotenv() 
-
-    connection = psycopg2.connect(
-        database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
-        host=os.getenv("HOST"), 
-        port=os.getenv("PORT")
-    )
-
-    cursor = connection.cursor()
-    cursor.execute("SET SCHEMA 'sae';")
-
-    return cursor
-
 def compareValeur(nomValeur, elemX, elemY):
     """
     Renvoie True si ces éléments partagent la même valeur indiquée par le paramétre nomValeur
