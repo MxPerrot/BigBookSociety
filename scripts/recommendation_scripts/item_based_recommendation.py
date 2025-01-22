@@ -179,7 +179,7 @@ def getLivresAEvaluer(cursor):
         SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _livre
 
-        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
+        LEFT JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
 
         LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
         LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
@@ -332,49 +332,52 @@ def defineBookVect(book):
 def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendations):
     userBookDataFrame = getLivresUtilisateur(cursor, id_utilisateur)
     userBookVectors = defineUserBooksVect(userBookDataFrame)
+    
+    sumVect = 0
+    for vect in userBookVectors.values():
+        sumVect += sum(vect)
+    if sumVect == 0:
+        return []
 
     evaluationBookDataFrame = getLivresAEvaluer(cursor)
-    vecteursLivres = {}
     moySimCosLivres = {}
-
-    for id_livreEva, livreEva in evaluationBookDataFrame.groupby(by="id_livre"):
-        vecteursLivres[id_livreEva] = defineBookVect(livreEva)
-    
-    for id_livreEva, vecteurEva in vecteursLivres.items():
-        cmpt = 0
-        sumSimCosLivres = 0
-        for id_livreUser, vecteurUser in userBookVectors.items():
-            cosine = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
-            sumSimCosLivres = sumSimCosLivres + cosine
-            cmpt += 1
-
-        if cmpt != 0:
-            moySimCosLivres[id_livreEva] = float(sumSimCosLivres)/cmpt
-        else:
-            moySimCosLivres[id_livreEva] = 0
-    
     booksScores = {}
 
     for id_livreEva, livreEva in evaluationBookDataFrame.groupby(by="id_livre"):
         sumScores = 0
         cmpt = 0
+        
+        vecteurEva = defineBookVect(livreEva)
+        if sum(vecteurEva) != 0:
+            cmpt = 0
+            sumSimCosLivres = 0
+            for id_livreUser, vecteurUser in userBookVectors.items():
+                cosine = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
+                sumSimCosLivres = sumSimCosLivres + cosine
+                cmpt += 1
 
-        for id_livreUser, livreUser in userBookDataFrame.groupby(by="id_livre"):
+            if cmpt != 0:
+                moySimCosLivres[id_livreEva] = float(sumSimCosLivres)/cmpt
+            else:
+                moySimCosLivres[id_livreEva] = 0
+        
 
-            cmpAuteur = ru.valeursEnCommun('id_auteur', livreEva, livreUser, "id_livre")
-            cmpPrix = ru.valeursEnCommun('id_prix', livreEva, livreUser, "id_livre")
-            cmpCadres = ru.valeursEnCommun('id_pays', livreEva, livreUser, "id_livre")
-            cmpOrigines = ru.valeursEnCommun('origine_auteur', livreEva, livreUser, "id_livre")
-            cmpEditeur = ru.compareValeur('id_editeur', livreEva, livreUser)
-            cmpGenre = ru.vect_genre(modelGenres, livreEva["genre"], livreUser["genre"])  
-            
-            cmpt += 1
-            sumScores += ru.calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur, cmpGenre], NB_DIMENTION_VECTEUR)
-            
-        if cmpt > 0:
-            booksScores[id_livreEva] = sumScores/cmpt
-        else:
-            booksScores[id_livreEva] = 0
+            for id_livreUser, livreUser in userBookDataFrame.groupby(by="id_livre"):
+
+                cmpAuteur = ru.valeursEnCommun('id_auteur', livreEva, livreUser, "id_livre")
+                cmpPrix = ru.valeursEnCommun('id_prix', livreEva, livreUser, "id_livre")
+                cmpCadres = ru.valeursEnCommun('id_pays', livreEva, livreUser, "id_livre")
+                cmpOrigines = ru.valeursEnCommun('origine_auteur', livreEva, livreUser, "id_livre")
+                cmpEditeur = ru.compareValeur('id_editeur', livreEva, livreUser)
+                cmpGenre = ru.vect_genre(modelGenres, livreEva["genre"], livreUser["genre"])  
+                
+                cmpt += 1
+                sumScores += ru.calculateScore(moySimCosLivres[id_livreEva], [cmpAuteur, cmpPrix, cmpCadres, cmpOrigines, cmpEditeur, cmpGenre], NB_DIMENTION_VECTEUR)
+                
+            if cmpt > 0:
+                booksScores[id_livreEva] = sumScores/cmpt
+            else:
+                booksScores[id_livreEva] = 0
 
     bestBooks = sorted(booksScores.items(), key=lambda x: x[1], reverse=True)[:nbRecommendations]
 
