@@ -216,5 +216,5 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
     return [tupl[0] for tupl in bestBooks]
 
 modelGenres = ru.model_genre()
-cursor = ru.setUpCursor()
+cursor = bdd.setUpCursor()
 print(recommendationItemBased(cursor, modelGenres, 11, 5))
