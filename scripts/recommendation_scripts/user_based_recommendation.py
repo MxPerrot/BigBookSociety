@@ -38,16 +38,36 @@ def getUtilisateur(cursor, id_utilisateur):
             _utilisateur.situation_familiale, 
             _utilisateur.frequence_lecture, 
             _utilisateur.vitesse_lecture, 
-            _utilisateur.nb_livres_lus
+            _utilisateur.nb_livres_lus,
+            _langue.id_langue,
+            _motivation.id_motivation,
+            _raison_achat.id_raison_achat,
+            _procuration.id_procuration,
+            _format.id_format
                    
         FROM _utilisateur
+                   
+        LEFT JOIN _utilisateur_langue ON _utilisateur.id_utilisateur = _utilisateur_langue.id_utilisateur
+        LEFT JOIN _langue ON _utilisateur_langue.id_langue = _langue.id_langue
+        
+        LEFT JOIN _utilisateur_motivation ON _utilisateur.id_utilisateur = _utilisateur_motivation.id_utilisateur
+        LEFT JOIN _motivation ON _utilisateur_motivation.id_motivation = _motivation.id_motivation
+
+        LEFT JOIN _utilisateur_raison_achat ON _utilisateur.id_utilisateur = _utilisateur_raison_achat.id_utilisateur
+        LEFT JOIN _raison_achat ON _utilisateur_raison_achat.id_raison_achat = _raison_achat.id_raison_achat
+
+        LEFT JOIN _utilisateur_procuration ON _utilisateur.id_utilisateur = _utilisateur_procuration.id_utilisateur
+        LEFT JOIN _procuration ON _utilisateur_procuration.id_procuration = _procuration.id_procuration
+
+        LEFT JOIN _format_utilisateur ON _utilisateur.id_utilisateur = _format_utilisateur.id_utilisateur
+        LEFT JOIN _format ON _format_utilisateur.id_format = _format.id_format
         
         WHERE _utilisateur.id_utilisateur = {id_utilisateur}
     """)
 
     utilisateur = cursor.fetchall()
 
-    return pd.DataFrame(utilisateur, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus"])
+    return pd.DataFrame(utilisateur, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
 
 def getUtilisateursAEvaluer(cursor):
     cursor.execute(f"""
@@ -70,10 +90,30 @@ def getUtilisateursAEvaluer(cursor):
             _utilisateur.situation_familiale, 
             _utilisateur.frequence_lecture, 
             _utilisateur.vitesse_lecture, 
-            _utilisateur.nb_livres_lus
+            _utilisateur.nb_livres_lus,
+            _langue.id_langue,
+            _motivation.id_motivation,
+            _raison_achat.id_raison_achat,
+            _procuration.id_procuration,
+            _format.id_format
                    
         FROM _utilisateur
+
+        LEFT JOIN _utilisateur_langue ON _utilisateur.id_utilisateur = _utilisateur_langue.id_utilisateur
+        LEFT JOIN _langue ON _utilisateur_langue.id_langue = _langue.id_langue
         
+        LEFT JOIN _utilisateur_motivation ON _utilisateur.id_utilisateur = _utilisateur_motivation.id_utilisateur
+        LEFT JOIN _motivation ON _utilisateur_motivation.id_motivation = _motivation.id_motivation
+
+        LEFT JOIN _utilisateur_raison_achat ON _utilisateur.id_utilisateur = _utilisateur_raison_achat.id_utilisateur
+        LEFT JOIN _raison_achat ON _utilisateur_raison_achat.id_raison_achat = _raison_achat.id_raison_achat
+
+        LEFT JOIN _utilisateur_procuration ON _utilisateur.id_utilisateur = _utilisateur_procuration.id_utilisateur
+        LEFT JOIN _procuration ON _utilisateur_procuration.id_procuration = _procuration.id_procuration
+
+        LEFT JOIN _format_utilisateur ON _utilisateur.id_utilisateur = _format_utilisateur.id_utilisateur
+        LEFT JOIN _format ON _format_utilisateur.id_format = _format.id_format
+
         WHERE _utilisateur.id_utilisateur IN {idUtilisateursAEvaluer}
     """)
 
@@ -83,7 +123,7 @@ def getUtilisateursAEvaluer(cursor):
         return -1
     
     userList = [list(user) for user in userData]
-    return pd.DataFrame(userList, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus"])
+    return pd.DataFrame(userList, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
 
 def getIdLivresUtilisateur(cursor, id_utilisateur):
     cursor.execute(f"""
@@ -154,63 +194,9 @@ def vectorizeNbBookRed(nbBook):
         indNbBook = 0
     return indNbBook
 
-"""
-def indexSexe(gender):
-"""
-# test
-"""
-    if gender == "Femme":
-        indGen = 2
-    elif gender == "Homme":
-        indGen = 1
-    else :
-        indGen = 0
-    return indGen
-
-def indexSituationProfessionelle(situPro):
-"""
-"""
-    if situPro == "Etudiant":
-        indAge = 7
-    elif situPro == "Alternant":
-        indAge = 6
-    elif situPro == "Employé":
-        indAge = 5
-    elif situPro == "Patron/Auto-entrepreuneur":
-        indAge = 4
-    elif situPro == "Fonctionnaire":
-        indAge = 3
-    elif situPro == "Sans emploi":
-        indAge = 2
-    elif situPro == "Retraité":
-        indAge = 1
-    else :
-        indAge = 0
-    return indAge
-
-def indexSituationProfessionelle(situPro):
-"""
-"""
-    if situPro == "Célibataire":
-        indAge = 6
-    elif situPro == "Concubinage":
-        indAge = 5
-    elif situPro == "Pacsée":
-        indAge = 4
-    elif situPro == "Marié(e)":
-        indAge = 3
-    elif situPro == "Divorcé":
-        indAge = 2
-    elif situPro == "Veuf/Veuve":
-        indAge = 1
-    else :
-        indAge = 0
-    return indAge
-"""
-
 def defineUserVect(book):
     vecteurUser = []
-    # Tout les lignes d'un même livre ont les mêmes valeurs pour les colonnes suivantes, on prend donc celle de la première ligne
+    # Tout les lignes d'un même utilisateur ont les mêmes valeurs pour les colonnes suivantes, on prend donc celle de la première ligne
     vecteurUser.append(int(book["age"].apply(vectorizeAge).iloc[0]))
     vecteurUser.append(int(book["frequence_lecture"].apply(vectorizeReadingFrequence).iloc[0]))
     vecteurUser.append(int(book["vitesse_lecture"].iloc[0]))
@@ -222,6 +208,28 @@ def compareValeur(nomValeur, livreX, livreY):
     Renvoie True si ces livres partagent la même valeur indiquée par le paramétre nomValeur
     """
     return bool(livreX[nomValeur].iloc[0] == livreY[nomValeur].iloc[0])
+
+def valeursEnCommun(nomValeur, livreX, livreY):
+    """
+    Donne un indice permettant de savoir à quel point deux livres sont proches basé sur une valeur indiquée en paramètre (nomValeur)
+    """
+    nbValeurEnCommun = 0
+    listeValeursX = livreX[nomValeur].unique()
+    listeValeursY = livreY[nomValeur].unique()
+    if livreX["id_utilisateur"].iloc[0] == livreY["id_utilisateur"].iloc[0]:
+        return 1
+    if len(listeValeursX) == 0 and len(listeValeursY) == 0:
+        return 1
+    if len(listeValeursX) == 0 or len(listeValeursY) == 0:
+        return 0
+    for valeursX in listeValeursX:
+        for valeursY in listeValeursY:
+            if valeursX == valeursY:
+                nbValeurEnCommun += 1
+    if len(listeValeursX) > len(listeValeursY):
+        return nbValeurEnCommun/len(listeValeursX)
+    else:
+        return nbValeurEnCommun/len(listeValeursY)
 
 def calculateScore(cossim, listSim):
     """
@@ -240,10 +248,8 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
 
     userData = getUtilisateur(cursor, id_utilisateur_a_recommander)
     vecteurUser = defineUserVect(userData)
-    print(userData)
 
     utilisateursAEvaluer = getUtilisateursAEvaluer(cursor)
-    # TODO: retirer l'utilisateur en paramétre de la liste à évaluer si pris
     simCosUsers = {}
     userSim = []
     i = 0
@@ -252,10 +258,16 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
         vecteurEva = defineUserVect(userEva)
         simCosUsers[id_userEva] = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
         cmpSexe = compareValeur('sexe', userEva, userData)
-        cmpPro = compareValeur('profession', userEva, userData)
-        cmpFami = compareValeur('situation_familiale', userEva, userData)
+        cmpProfes = compareValeur('profession', userEva, userData)
+        cmpFamille = compareValeur('situation_familiale', userEva, userData)
 
-        userSim.append((id_userEva,calculateScore(simCosUsers[id_userEva], [cmpSexe, cmpPro, cmpFami])))
+        cmpLangue = valeursEnCommun('langue', userEva, userData)
+        cmpMotiva = valeursEnCommun('motivation', userEva, userData)
+        cmpRaison = valeursEnCommun('raison_achat', userEva, userData)
+        cmpProcur = valeursEnCommun('procuration', userEva, userData)
+        cmpFormat = valeursEnCommun('format', userEva, userData)
+
+        userSim.append((id_userEva,calculateScore(simCosUsers[id_userEva], [cmpSexe, cmpProfes, cmpFamille, cmpLangue, cmpMotiva, cmpRaison, cmpProcur, cmpFormat])))
         
         i+=1
 
@@ -286,26 +298,27 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
             break
     """
     # Seconde approche
+
+    sortUserSim = [usr for usr in sortUserSim if usr[0] != id_utilisateur_a_recommander]
     for (idUser,simCos) in sortUserSim:
-        if idUser != id_utilisateur_a_recommander:
-            livres_preferés = getIdLivresUtilisateur(cursor, idUser)
-            livresTestés = 0
-            if livres_preferés != -1:
-                for i in range(len(livres_preferés)):
-                    livre_a_rec = rd.choice(livres_preferés)
-                    livres_preferés.remove(livre_a_rec)
-                    livresTestés += 1
-                    if livresLus != -1:
-                        if (livre_a_rec not in livresLus):
-                            livreRecommandes.append(livre_a_rec)
-                            nbLivresARec-=1
-                            break
-                    else:
+        livres_preferés = getIdLivresUtilisateur(cursor, idUser)
+        livresTestés = 0
+        if livres_preferés != -1:
+            for i in range(len(livres_preferés)):
+                livre_a_rec = rd.choice(livres_preferés)
+                livres_preferés.remove(livre_a_rec)
+                livresTestés += 1
+                if livresLus != -1:
+                    if (livre_a_rec not in livresLus):
                         livreRecommandes.append(livre_a_rec)
                         nbLivresARec-=1
                         break
-            if nbLivresARec <= 0:
-                break
+                else:
+                    livreRecommandes.append(livre_a_rec)
+                    nbLivresARec-=1
+                    break
+        if nbLivresARec <= 0:
+            break
 
             
 
