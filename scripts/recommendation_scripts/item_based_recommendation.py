@@ -209,6 +209,104 @@ def getLivresAEvaluer(cursor):
 
     return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
+def getLivresAEvaluerTendance(cursor):
+    cursor.execute(f"""
+        SELECT b.id_livre
+        FROM sae._livre b
+        INNER JOIN sae._episode_serie s ON b.id_livre = s.id_livre
+        WHERE numero_episode = '1'
+        AND b.note_moyenne IS NOT NULL
+        AND b.nb_notes IS NOT NULL
+        ORDER BY random(), b.nb_notes DESC, b.note_moyenne DESC
+        LIMIT {NOMBRE_LIVRES_TESTES};
+    """)
+
+    idLivresAEvaluerRaw = cursor.fetchall()
+    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
+
+    cursor.execute(f"""
+        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        FROM _livre
+
+        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
+
+        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
+        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
+                
+        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
+        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
+                
+        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
+        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
+        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
+
+        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
+
+        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+
+        WHERE _livre.id_livre IN {idLivresAEvaluer}
+    """)
+
+    bookData = cursor.fetchall()
+    
+    if len(bookData) == 0:
+        return -1
+  
+    bookList = [list(book) for book in bookData]
+
+    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
+
+def getLivresAEvaluerDecouverte(cursor):
+    cursor.execute(f"""
+        SELECT * FROM sae._livre 
+        WHERE note_moyenne is not null 
+        and nb_notes>1000 
+        and nb_notes<50000 
+        ORDER BY random(), note_moyenne DESC 
+        LIMIT {NOMBRE_LIVRES_TESTES};
+    """)
+
+    idLivresAEvaluerRaw = cursor.fetchall()
+    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
+
+    cursor.execute(f"""
+        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        FROM _livre
+
+        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
+
+        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
+        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
+                
+        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
+        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
+                
+        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
+        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
+        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
+
+        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
+
+        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+
+        WHERE _livre.id_livre IN {idLivresAEvaluer}
+    """)
+
+    bookData = cursor.fetchall()
+    
+    if len(bookData) == 0:
+        return -1
+  
+    bookList = [list(book) for book in bookData]
+
+    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
+
+
+
 def defineUserBooksVect(userBookDataFrame):
     completeBookVector = {}
 
