@@ -23,7 +23,7 @@ def setUpCursor():
 def getLivresUtilisateur(cursor, id_utilisateur):
     # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
     cursor.execute(f"""
-        SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _utilisateur 
         INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
         INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
@@ -31,11 +31,9 @@ def getLivresUtilisateur(cursor, id_utilisateur):
         INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
 
         LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
                 
         LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
         LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
 
         LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
         LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
@@ -53,24 +51,19 @@ def getLivresUtilisateur(cursor, id_utilisateur):
     
     userBookList = [list(book) for book in userData]
 
-    return pd.DataFrame(userBookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
+    return pd.DataFrame(userBookList, columns = ["id_livre", "titre", "nb_notes", "nombre_pages", "date_publication", "id_editeur", "id_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
 def getLivresFromIdList(cursor, idLivres):
     cursor.execute(f"""
-        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.note_moyenne, _livre.nombre_pages, _livre.date_publication, _livre.description, _editeur.id_editeur, _editeur.nom_editeur, _prix.id_prix, _prix.annee_prix, _serie.nom_serie, _episode_serie.numero_episode, _pays.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _livre
 
         LEFT JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
 
         LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-        LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-                
-        LEFT JOIN _episode_serie ON _livre.id_livre = _episode_serie.id_livre
-        LEFT JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
                 
         LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
         LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-        LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
 
         LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
         LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
@@ -88,7 +81,7 @@ def getLivresFromIdList(cursor, idLivres):
   
     bookList = [list(book) for book in bookData]
 
-    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "note_moyenne", "nombre_pages", "date_publication", "description", "id_editeur", "nom_editeur", "id_prix", "annee_prix", "nom_serie", "numero_episode", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
+    return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "nombre_pages", "date_publication", "id_editeur", "id_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
 def getLivresAEvaluer(cursor, nbLivreEva):
     cursor.execute(f"""
