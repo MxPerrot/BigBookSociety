@@ -4,6 +4,9 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2
 
 def setUpCursor():
+    """
+    Connects to the Database and returns the cursor
+    """
     # loading variables from .env file
     load_dotenv() 
 
@@ -21,7 +24,11 @@ def setUpCursor():
     return cursor
 
 def getLivresUtilisateur(cursor, id_utilisateur):
+    """
+    Renvoie les données des livres lus par l'utilisateur donné en paramètre
+    """
     # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
+    # Execute la requete SQL
     cursor.execute(f"""
         SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _utilisateur 
@@ -46,14 +53,21 @@ def getLivresUtilisateur(cursor, id_utilisateur):
 
     userData = cursor.fetchall()
 
+    # Si aucun livre n'est recupéré renvoie un -1, indiquateur de l'absence de données
     if len(userData) == 0:
         return -1
     
+    # Reformate les données
     userBookList = [list(book) for book in userData]
 
+    # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(userBookList, columns = ["id_livre", "titre", "nb_notes", "nombre_pages", "date_publication", "id_editeur", "id_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
 def getLivresFromIdList(cursor, idLivres):
+    """
+    Renvoie les données des livres dont les identifiants sont présents dans la liste mise en paramètre
+    """
+    # Execute la requête
     cursor.execute(f"""
         SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _livre
@@ -76,14 +90,21 @@ def getLivresFromIdList(cursor, idLivres):
 
     bookData = cursor.fetchall()
     
+    # Si aucun livre n'est recupéré renvoie un -1, indiquateur de l'absence de données
     if len(bookData) == 0:
         return -1
-  
+    
+    # Reformate les données
     bookList = [list(book) for book in bookData]
 
+    # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(bookList, columns = ["id_livre", "titre", "nb_notes", "nombre_pages", "date_publication", "id_editeur", "id_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
 
 def getLivresAEvaluer(cursor, nbLivreEva):
+    """
+    Renvoie les données d'un nombre mis en paramètre de livres pris au hasard
+    """
+    # Recupère les identifiant des livres pris au hasard
     cursor.execute(f"""
         SELECT _livre.id_livre
         FROM _livre
@@ -92,12 +113,19 @@ def getLivresAEvaluer(cursor, nbLivreEva):
     """)
 
     idLivresAEvaluerRaw = cursor.fetchall()
+
+    # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
 
+    # Renvoie les données des livres
     return getLivresFromIdList(cursor, idLivresAEvaluer)
 
 
 def getLivresAEvaluerTendance(cursor, nbLivreEva):
+    """
+    Renvoie les données d'un nombre de livres pris parmi les plus populaires
+    """
+    # TODO Recupère les identifiant des livres 
     cursor.execute(f"""
         SELECT b.id_livre
         FROM sae._livre b
@@ -110,12 +138,19 @@ def getLivresAEvaluerTendance(cursor, nbLivreEva):
     """)
 
     idLivresAEvaluerRaw = cursor.fetchall()
+
+    # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
 
+    # Renvoie les données des livres
     return getLivresFromIdList(cursor, idLivresAEvaluer)
 
 
 def getLivresAEvaluerDecouverte(cursor, nbLivreEva):
+    """
+    Renvoie les données d'un nombre de livres pris parmi ceux moyennement populaires mais bien notés
+    """
+    # TODO Recupère les identifiant des livres 
     cursor.execute(f"""
         SELECT * FROM sae._livre 
         WHERE note_moyenne is not null 
@@ -126,12 +161,18 @@ def getLivresAEvaluerDecouverte(cursor, nbLivreEva):
     """)
 
     idLivresAEvaluerRaw = cursor.fetchall()
+
+    # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
 
+    # Renvoie les données des livres
     return getLivresFromIdList(cursor, idLivresAEvaluer)
 
 
 def getUtilisateurById(cursor, id_utilisateur):
+    """
+    Renvoie les données de l'utilisateur correspondant à l'identifiant donné en paramètre
+    """
     cursor.execute(f"""
         SELECT 
             _utilisateur.id_utilisateur, 
@@ -170,9 +211,17 @@ def getUtilisateurById(cursor, id_utilisateur):
 
     utilisateur = cursor.fetchall()
 
+    # Si aucun utilisateur n'est recupéré renvoie un -1, indiquateur de l'absence de données
+    if len(utilisateur) == 0:
+        return -1
+
+    # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(utilisateur, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
 
 def getUtilisateursFromIdList(cursor, idUtilisateurs):
+    """
+    Renvoie les données des utilisateur dont l'identifiant correspond à l'un de ceux dans la liste mise en paramètre
+    """
     cursor.execute(f"""
         SELECT 
             _utilisateur.id_utilisateur, 
@@ -211,14 +260,22 @@ def getUtilisateursFromIdList(cursor, idUtilisateurs):
 
     userData = cursor.fetchall()
     
+    # Si aucun utilisateur n'est recupéré renvoie un -1, indiquateur de l'absence de données
     if len(userData) == 0:
         return -1
     
+    # Reformate les données
     userList = [list(user) for user in userData]
+
+    # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(userList, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
 
 
 def getUtilisateursAEvaluer(cursor, nbUtilisateurEva):
+    """
+    Renvoie les données d'un nombre mis en paramètres d'utilisateurs pris au hasard
+    """
+    # Recupère les identifiant d'utilisateurs pris au hasard
     cursor.execute(f"""
         SELECT _utilisateur.id_utilisateur
         FROM _utilisateur
@@ -227,13 +284,19 @@ def getUtilisateursAEvaluer(cursor, nbUtilisateurEva):
     """)
     
     idUtilisateursAEvaluerRaw = cursor.fetchall()
+
+    # Reformate les données
     idUtilisateursAEvaluer = tuple([utilisateur[0] for utilisateur in idUtilisateursAEvaluerRaw])
 
+    # Renvoie les données des livres
     return getUtilisateursFromIdList(cursor, idUtilisateursAEvaluer)
     
 
-    
 def getIdLivresUtilisateur(cursor, id_utilisateur):
+    """
+    Renvoie les identifiants des livres préférés de l'utilisateur mis en paramètre
+    """
+    # Execute la requête
     cursor.execute(f"""
         SELECT DISTINCT _livre.id_livre
         FROM _utilisateur 
@@ -245,9 +308,12 @@ def getIdLivresUtilisateur(cursor, id_utilisateur):
 
     userData = cursor.fetchall()
 
+    # Si aucun utilisateur n'a été récupéré renvoie un -1, indiquateur de données nulles
     if len(userData) == 0:
         return -1
     
+    # Reformate les données
     userIdBookList = [list(book)[0] for book in userData]
 
+    # Renvoie les identifiants des livres
     return userIdBookList
