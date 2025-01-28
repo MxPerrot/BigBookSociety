@@ -9,27 +9,33 @@ import itertools
 
 def compareValeur(nomValeur, elemX, elemY):
     """
-    Renvoie True si ces éléments partagent la même valeur indiquée par le paramétre nomValeur
+    Renvoie True (1) si ces éléments partagent la même valeur indiquée par le paramétre nomValeur sinon False (0)
     """
     return bool(elemX[nomValeur].iloc[0] == elemY[nomValeur].iloc[0])
 
 def valeursEnCommun(nomValeur, elemX, elemY, valeurComp):
     """
-    Donne un indice permettant de savoir à quel point deux livres sont proches basé sur une valeur indiquée en paramètre (nomValeur)
+    Donne un coefficient permettant de savoir à quel point deux éléments sont similaires basé sur une valeur indiquée en paramètre (nomValeur)
     """
     nbValeurEnCommun = 0
-    listeValeursX = elemX[nomValeur].unique()
-    listeValeursY = elemY[nomValeur].unique()
+    # Si ces elements ont le même identifiant, ils sont le même
     if elemX[valeurComp].iloc[0] == elemY[valeurComp].iloc[0]:
         return 1
+    # Recupère la liste des valeurs uniques de la colonne du dataframe 'nomValeur'
+    listeValeursX = elemX[nomValeur].unique()
+    listeValeursY = elemY[nomValeur].unique()
+    # Si aucun d'entre eux n'ont de données ils sont similaires
     if len(listeValeursX) == 0 and len(listeValeursY) == 0:
         return 1
+    # Si seulement l'un d'entre eux n'en a pas, ils ne partage aucune similarité
     if len(listeValeursX) == 0 or len(listeValeursY) == 0:
         return 0
+    # Sinon compte le nombre de valeurs en commun
     for valeursX in listeValeursX:
         for valeursY in listeValeursY:
             if valeursX == valeursY:
                 nbValeurEnCommun += 1
+    # Revoie ensuite la moyenne de valeurs en commun (somme divisée par la plus grande longueur parmi les deux listes)
     if len(listeValeursX) > len(listeValeursY):
         return nbValeurEnCommun/len(listeValeursX)
     else:
@@ -38,13 +44,15 @@ def valeursEnCommun(nomValeur, elemX, elemY, valeurComp):
 def calculateScore(cossim, listSim, nbVecteur):
     """
     Calcule le Score global de similarité d'une comparaison entre deux livres
-    Fait la moyenne des indices de similarités et pondérant celui de la similarité cosine dû au fait qu'elle prends plus de valeurs en compte
     """
+    # Pondère la similarité cosine par rapport au nombre de variables qu'elle prend en compte
     scoreSum = cossim * nbVecteur 
     cmpt = nbVecteur
+    # Calcule la somme des similarité
     for sim in listSim:
         scoreSum += sim
         cmpt += 1
+    # Renvoie la similarité moyenne (Score)
     return float(scoreSum/cmpt)
 
 def genre_expand(genre):
@@ -116,8 +124,3 @@ def vect_genre(model,livre1genre,livre2genre):
             index+=1
     
     return tot/index
-
-"""
-model = model_genre()
-print(vect_genre(model,["bdsm", "history"], ["romance, science"]))
-"""
