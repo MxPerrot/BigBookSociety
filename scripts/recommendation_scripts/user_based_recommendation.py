@@ -6,7 +6,9 @@ from operator import itemgetter
 import recommendation_utilities as ru
 import database_functions as bdd
 
+# Nombres de données prises en compte dans la création des vecteurs de livres
 NB_DIMENTION_VECTEUR = 4
+# Nombre d'utilisateurs qui vont être testés (une valeur plus élevée peut causer des ralentissements)
 NOMBRE_UTILISATEURS_TESTES = 100
 
 # ----------------------------------
@@ -15,6 +17,8 @@ NOMBRE_UTILISATEURS_TESTES = 100
 
 def vectorizeAge(age):
     """
+    Transforme la chaine représentant l'age en un entier servant de dimention au vecteur d'un utilisateur
+    Cet entier représente la réponse donnée par l'utilisateur, ordonnée du plus jeune au plus agé.
     """
     if age == "+ de 65 ans":
         indAge = 4
@@ -30,6 +34,8 @@ def vectorizeAge(age):
 
 def vectorizeReadingFrequence(frequ):
     """
+    Transforme la chaine représentant la fréquence de lecture en un entier servant de dimention au vecteur d'un utilisateur
+    Cet entier représente la réponse donnée par l'utilisateur, ordonnée de la fréquence la plus basse a la plus élevée.
     """
     if frequ == "Quotidiennement":
         indFrequ = 4
@@ -45,6 +51,8 @@ def vectorizeReadingFrequence(frequ):
 
 def vectorizeNbBookRed(nbBook):
     """
+    Transforme la chaine représentant la nombre de livres lus en un entier servant de dimention au vecteur d'un utilisateur
+    Cet entier représente la réponse donnée par l'utilisateur, ordonnée du nombre le plus bas au plus élevée.
     """
     if nbBook == "Plus de 20":
         indNbBook = 4
@@ -59,6 +67,9 @@ def vectorizeNbBookRed(nbBook):
     return indNbBook
 
 def defineUserVect(book):
+    """
+    Crée le vecteur de l'utilisateur donnée en paramètre
+    """
     vecteurUser = []
     # Tout les lignes d'un même utilisateur ont les mêmes valeurs pour les colonnes suivantes, on prend donc celle de la première ligne
     vecteurUser.append(int(book["age"].apply(vectorizeAge).iloc[0]))
@@ -72,19 +83,30 @@ def defineUserVect(book):
 # ----------------------------
 
 def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
+    """
+    Renvoie des livres parmi ceux lus par les utilisateurs les plus similaires à l'utilisateur à recommander donnée en paramètre
+    """
     livresLus = bdd.getIdLivresUtilisateur(cursor, id_utilisateur_a_recommander)
 
+    # Crée un vecteur pour l'utilisateur à recommander
     userData = bdd.getUtilisateurById(cursor, id_utilisateur_a_recommander)
     vecteurUser = defineUserVect(userData)
 
+    # Récupère les utilisateurs qui vont étre testés pour leur similarité
     utilisateursAEvaluer = bdd.getUtilisateursAEvaluer(cursor, NOMBRE_UTILISATEURS_TESTES)
     simCosUsers = {}
     userSim = []
     i = 0
 
+    # Parcours des utilisateurs à tester
     for id_userEva, userEva in utilisateursAEvaluer.groupby(by="id_utilisateur"):
+
+        # Compare grace à la similarité cosine à quel point cet utilisateur est proche de l'utilisateur à recommander
         vecteurEva = defineUserVect(userEva)
+        # Récupère la similarité cosine moyenne
         simCosUsers[id_userEva] = np.dot(vecteurUser,vecteurEva)/(norm(vecteurUser)*norm(vecteurEva))
+
+        # Récupère les coefficients de similarité sur plusieurs critères
         cmpSexe = ru.compareValeur('sexe', userEva, userData)
         cmpProfes = ru.compareValeur('profession', userEva, userData)
         cmpFamille = ru.compareValeur('situation_familiale', userEva, userData)
@@ -95,10 +117,12 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
         cmpProcur = ru.valeursEnCommun('procuration', userEva, userData, "id_utilisateur")
         cmpFormat = ru.valeursEnCommun('format', userEva, userData, "id_utilisateur")
 
+        # Fait la somme des scores obtenus par un utilisateur avec la moyenne des similarités
         userSim.append((id_userEva,ru.calculateScore(simCosUsers[id_userEva], [cmpSexe, cmpProfes, cmpFamille, cmpLangue, cmpMotiva, cmpRaison, cmpProcur, cmpFormat], NB_DIMENTION_VECTEUR)))
         
         i+=1
 
+    # Trie les utilisateurs par score puis prends les X avec les scores les plus élevés
     sortUserSim = sorted(userSim, key=itemgetter(1), reverse=True)
 
     cpt = 0
@@ -127,15 +151,21 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
     """
     # Seconde approche
 
+    # Retire l'utilisateur à recommander des utilisateurs à tester
     sortUserSim = [usr for usr in sortUserSim if usr[0] != id_utilisateur_a_recommander]
+    # Parcours les utilisateurs du plus similaire au moins
     for (idUser,simCos) in sortUserSim:
+        # Recupère la liste des livres lus par l'utilisateur à tester
         livres_preferés = bdd.getIdLivresUtilisateur(cursor, idUser)
         livresTestés = 0
+        # Passe si l'utilisateur à tester n'a pas de livres lus
         if livres_preferés != -1:
             for i in range(len(livres_preferés)):
+                # Prend un livre au hasard parmi les livres lus par l'utilisateur à tester
                 livre_a_rec = rd.choice(livres_preferés)
                 livres_preferés.remove(livre_a_rec)
                 livresTestés += 1
+                # Si l'utilisateur à recommander n'a pas de livres lus l'ajoute sinon vérifie d'abord si le livre n'a pas déja été lu
                 if livresLus != -1:
                     if (livre_a_rec not in livresLus):
                         livreRecommandes.append(livre_a_rec)
@@ -145,6 +175,7 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
                     livreRecommandes.append(livre_a_rec)
                     nbLivresARec-=1
                     break
+        # Vérifie si le nombre de livres a recommander n'est pas atteint
         if nbLivresARec <= 0:
             break
 
@@ -152,10 +183,13 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
 
     return livreRecommandes
 
-
+# Met en place le curseur de la connexion à la base de données
 cursor = bdd.setUpCursor()
+
 idLivresRecommandes = recommendationItemBased(cursor, 124, 5)
 
+
+# DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
 cursor.execute(f"""
     SELECT DISTINCT _livre.titre, _auteur.nom, _genre.libelle_genre
     FROM _livre
