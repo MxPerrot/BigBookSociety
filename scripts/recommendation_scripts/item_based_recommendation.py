@@ -148,7 +148,7 @@ def defineBookVect(book):
 #  Fonction principale
 # ----------------------------
 
-def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendations):
+def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendations, evaluationBookDataFrame):
     userBookDataFrame = bdd.getLivresUtilisateur(cursor, id_utilisateur)
     userBookVectors = defineUserBooksVect(userBookDataFrame)
     
@@ -158,7 +158,7 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
     if sumVect == 0:
         return []
 
-    evaluationBookDataFrame = bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES)
+
     moySimCosLivres = {}
     booksScores = {}
 
@@ -217,4 +217,4 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
 
 modelGenres = ru.model_genre()
 cursor = bdd.setUpCursor()
-print(recommendationItemBased(cursor, modelGenres, 11, 5))
+print(recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES)))
