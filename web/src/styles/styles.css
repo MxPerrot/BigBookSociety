@@ -63,8 +63,10 @@ nav >ul{
 nav a {
     color: var(--blanc);
     text-decoration: none;
-    padding: 30px;
-    display: inline-block
+    padding: 30px 30px 0px 30px;
+    margin-bottom: auto;
+    height: fit-content;
+    display: inline-block;
 }
 
 nav a:hover {
