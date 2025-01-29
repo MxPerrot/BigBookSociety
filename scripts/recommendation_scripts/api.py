@@ -21,11 +21,11 @@ app = FastAPI()
 async def read_items(q: Annotated[list[str] | None, Query()] = None):
     return recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluer(cursor, int(q[2])))
 
-@app.get("/get_book_item_based_tendance/{parameters}")
-async def root():
-    return recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluerTendance(cursor, 10))
+@app.get("/get_book_item_based_tendance/")
+async def read_items(q: Annotated[list[str] | None, Query()] = None):
+    return recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluerTendance(cursor, int(q[2])))
 
-@app.get("/get_book_item_based_decouverte/{parameters}")
-async def root():
-    return recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluerDecouverte(cursor, 10))
+@app.get("/get_book_item_based_decouverte/")
+async def read_items(q: Annotated[list[str] | None, Query()] = None):
+    return recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluerDecouverte(cursor, int(q[2])))
 
