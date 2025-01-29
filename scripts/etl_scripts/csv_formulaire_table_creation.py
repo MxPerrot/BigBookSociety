@@ -107,13 +107,21 @@ def main(results):
     # Fusion avec le csv déjà existant
     max_id_auteur1 = auteur1_df['id_auteur'].max()
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
-    auteur_df['nom'] = auteur_df['nom'].str.strip()
     
-    auteur_df.index = auteur_df.index+max_id_auteur1+1
-    auteur_df = auteur_df.reset_index(names=['id_auteur'])
-    auteur_df = pd.merge(auteur1_df, auteur_df, how='outer', on='nom')
-    print(auteur_df)
+
+    auteur_df['id_auteur'] = auteur_df.index+max_id_auteur1+1
+    # auteur_df = auteur_df.reset_index(names=['id_auteur'])
+
+
+    auteur_df = pd.merge(auteur_df, auteur1_df, how='outer', on='id_auteur')
+    for i in auteur_df:
+        if i["nom_x"] != NaN and i[nom_y] != NaN:
+            print(i)
+
     auteur_df = auteur_df.drop_duplicates('nom')
+
+    auteur_df = auteur_df.sort_values(by=['id_auteur'])
+
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
 
