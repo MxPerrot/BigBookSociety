@@ -222,8 +222,8 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
     # Revoie une liste des identifiants des livres recommandés
     return [tupl[0] for tupl in bestBooks]
 
-# Entrainement du modèle des genres
-modelGenres = ru.model_genre()
 # Met en place le curseur de la connexion à la base de données
 cursor = bdd.setUpCursor()
+# Entrainement du modèle des genres
+modelGenres = ru.model_genre(cursor)
 print(recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES)))

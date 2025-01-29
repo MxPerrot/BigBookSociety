@@ -60,21 +60,7 @@ def genre_expand(genre):
     res = re.split(r'[;,\s,-]+', genre)
     return res
 
-def model_genre():
-
-    # loading variables from .env file
-    load_dotenv() 
-
-    connection = psycopg2.connect(
-        database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
-        host=os.getenv("HOST"), 
-        port=os.getenv("PORT")
-    )
-
-    cursor = connection.cursor()
-
+def model_genre(cursor):
     cursor.execute("select id_livre,libelle_genre from sae._livre NATURAL JOIN sae._genre_livre NATURAL JOIN sae._genre;")
 
     record = cursor.fetchall()
