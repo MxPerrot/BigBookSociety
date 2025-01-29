@@ -54,6 +54,7 @@ def main(results):
                     if (el != '' and not(list2.isin([el]).any().any())) :
                         res.append(el)
         res = set(res)
+        res = [i.strip() for i in res]
         return res
 
     livre1_df = pd.read_csv('data/populate/livre.csv')
@@ -70,6 +71,7 @@ def main(results):
     langues_unique = filtrer_choix_multiples(langues)
     livres_preferes_unique = filtrer_livres_auteurs(livres_preferes, livre1_df["titre"])
     auteurs_preferes_unique = filtrer_livres_auteurs(auteurs_preferes, auteur1_df["nom"])
+
 
     ##### TABLES SIMPLES #####
 
@@ -108,10 +110,16 @@ def main(results):
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
 
     #TODO Séparer le grain (Faire en sorte que les auteurs déjà présent dans la bdd ne soit pas répétés.)
+    
 
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
-    auteur_df = pd.concat([auteur1_df, auteur_df])
+
+
+    # auteur_df = pd.concat([auteur1_df, auteur_df])
+    auteur_df = pd.merge(auteur_df, auteur1_df, on='id_auteur', how='inner')
+    print(auteur_df)
+
     
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
