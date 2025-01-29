@@ -106,6 +106,9 @@ def main(results):
     # Fusion avec le csv déjà existant
     max_id_auteur1 = auteur1_df['id_auteur'].max()
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
+
+    #TODO Séparer le grain (Faire en sorte que les auteurs déjà présent dans la bdd ne soit pas répétés.)
+
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
     auteur_df = pd.concat([auteur1_df, auteur_df])
