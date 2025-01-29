@@ -108,9 +108,31 @@ def main(results):
     # Fusion avec le csv déjà existant
     max_id_auteur1 = auteur1_df['id_auteur'].max()
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
+    auteur_df = auteur_df.dropna()
+    auteur_df["nom"] = auteur_df["nom"].str.lower()
+
+    auteur_minimised = auteur1_df
+    auteur_minimised["nom"] = auteur_minimised['nom'].str.lower()
+
+
 
     #TODO Séparer le grain (Faire en sorte que les auteurs déjà présent dans la bdd ne soit pas répétés.)
+
     
+    common_author_name = np.intersect1d(auteur_minimised['nom'], auteur_df['nom'])
+    #BUG certaines des entrées sont des FLOAT au lieu d'être des STR, probablement valeur NaN
+    #Tester avec des to_csv?
+
+    print(common_author_name)
+
+
+
+
+
+
+
+
+
 
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
