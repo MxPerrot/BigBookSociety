@@ -87,7 +87,7 @@ def main(results):
     livre_df = pd.DataFrame({'titre': list(livres_preferes_unique)})
     livre_df.index = livre_df.index+max_id_livre1+1
     livre_df = livre_df.reset_index(names=['id_livre'])
-    livre_df = pd.concat([livre1_df, livre_df])
+    livre_df = pd.merge(livre1_df, livre_df, how='left', on='titre')
     
     livre_df['nb_notes'] = livre_df['nb_notes'].astype('Int64') # force convert numerical values to int
     livre_df['nb_critiques'] = livre_df['nb_critiques'].astype('Int64') # force convert numerical values to int
@@ -99,17 +99,20 @@ def main(results):
     livre_df['nombre_pages'] = livre_df['nombre_pages'].astype('Int64') # force convert numerical values to int
     livre_df['isbn13'] = livre_df['isbn13'].astype('Int64') # force convert numerical values to int
     livre_df['id_editeur'] = livre_df['id_editeur'].astype('Int64') # force convert numerical values to int
-
+    livre_df['titre'] = livre_df['titre'].str.strip()
+    livre_df = livre_df.drop_duplicates('titre')
     livre_df.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
 
     # _auteur : id_auteur, nom
     # Fusion avec le csv déjà existant
     max_id_auteur1 = auteur1_df['id_auteur'].max()
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
+    auteur_df['nom'] = auteur_df['nom'].str.strip()
+    
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
-    auteur_df = pd.concat([auteur1_df, auteur_df])
-    
+    auteur_df = pd.merge(auteur1_df, auteur_df, how='left', on='nom')
+    auteur_df = auteur_df.drop_duplicates('nom')
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
 
@@ -228,6 +231,7 @@ def main(results):
                     else : 
                         el = el.strip()
                         el = el.capitalize()
+                        print(dic_mult)
                         id_mult = dic_mult[el]
                     res.append([i, id_mult])
              
