@@ -1,3 +1,31 @@
-h1{
-    color: red;
+/*Couleurs*/
+:root{
+    --col1 : #1E2026;
+    --blanc : #FFFFFF;
+    --col2 : #F2F2F2;
+    --col3 : #276BF2;
+    --col4 : #447EF2;
+    --col5 : #6393F2;
+}
+
+/*Style de base pour tous les éléments HTML*/
+body {
+    font-family: Poppins;
+    margin: 0;
+    padding: 0;
+    background-color: var(--col2);
+}
+
+header, footer {
+    background-color: var(--col3);
+    color: var(--blanc);
+    padding: 20px;
+    text-align: center;
+}
+
+nav >ul{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    list-style-type: none;
 }
