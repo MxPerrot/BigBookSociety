@@ -2,6 +2,7 @@
 :root{
     --col1 : #1E2026;
     --blanc : #FFFFFF;
+    --noir : #000000;
     --col2 : #F2F2F2;
     --col3 : #276BF2;
     --col4 : #447EF2;
@@ -9,18 +10,47 @@
 }
 
 /*Style de base pour tous les éléments HTML*/
+html {
+height: 100%;
+}
+
 body {
     font-family: Poppins;
     margin: 0;
     padding: 0;
     background-color: var(--col2);
+    height: 2000px;
 }
 
 header, footer {
     background-color: var(--col3);
     color: var(--blanc);
-    padding: 20px;
     text-align: center;
+}
+
+footer{
+    position: absolute;
+    bottom:0;
+    width: 100%;
+}
+
+header {
+    position: fixed;
+    height: 75px; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    z-index: 1000; 
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    margin-top: 75px;
+}
+
+
+ul{
+margin: 0;
 }
 
 nav >ul{
@@ -28,4 +58,16 @@ nav >ul{
     flex-direction: row;
     justify-content: space-around;
     list-style-type: none;
+}
+
+nav a {
+    color: var(--blanc);
+    text-decoration: none;
+    padding: 30px;
+    display: inline-block
+}
+
+nav a:hover {
+    background-color: var(--col5);
+    color: var(--noir);
 }
