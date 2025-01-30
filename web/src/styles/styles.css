@@ -89,3 +89,23 @@ footer {
     text-align: center;
     padding: 20px;
 }
+
+#background{
+    height: 100vh;
+    width: 100%;
+    object-fit: cover;
+    position: sticky;
+    left: 0px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+}
+
+.Slogan{
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--blanc);
+    text-align: center;
+    margin-top: 10%;
+}
