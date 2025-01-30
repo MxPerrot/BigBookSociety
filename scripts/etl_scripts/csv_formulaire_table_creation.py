@@ -83,13 +83,57 @@ def main(results):
     genre_df = genre_df.reset_index(names=['id_genre'])
     genre_df.to_csv(os.path.join(PATH_POPULATE,"genre_2.csv"), index=False)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # _livre : id_livre, titre
     # Fusion avec le csv déjà existant
     max_id_livre1 = livre1_df['id_livre'].max()
     livre_df = pd.DataFrame({'titre': list(livres_preferes_unique)})
+    # livre_df.index = livre_df.index+max_id_livre1+1
+    # livre_df = livre_df.reset_index(names=['id_livre'])
+
+    livre_df = livre_df.dropna()
+    livre_df["titre"] = livre_df["titre"].str.lower()
+    livre_df_titre = livre_df["titre"].dropna()
+
+    livre_minimised = livre1_df
+    livre_minimised["titre"] = livre_minimised['titre'].str.lower()
+    livre_minimised_titre = livre_minimised["titre"].dropna()
+    
+
+
+    common_book_name = np.intersect1d(livre_minimised_titre, livre_df_titre)
+
+    livre_df = livre_df.loc[~livre_df['titre'].isin(common_book_name)]
+
+
+
     livre_df.index = livre_df.index+max_id_livre1+1
     livre_df = livre_df.reset_index(names=['id_livre'])
-    livre_df = pd.concat([livre1_df, livre_df])
+
+    livre_df = livre_df.dropna(subset=["titre"]) 
+    livre1_df = livre1_df.dropna(subset=["titre"]) 
+
+
+    livre_df = pd.concat([livre_df,livre1_df])
+
+
+
+
+
     
     livre_df['nb_notes'] = livre_df['nb_notes'].astype('Int64') # force convert numerical values to int
     livre_df['nb_critiques'] = livre_df['nb_critiques'].astype('Int64') # force convert numerical values to int
@@ -103,6 +147,20 @@ def main(results):
     livre_df['id_editeur'] = livre_df['id_editeur'].astype('Int64') # force convert numerical values to int
 
     livre_df.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # _auteur : id_auteur, nom
     # Fusion avec le csv déjà existant
@@ -130,15 +188,9 @@ def main(results):
     auteur_df = auteur_df.dropna(subset=["nom"]) 
     auteur1_df = auteur1_df.dropna(subset=["nom"]) 
 
-    # auteur_df = pd.concat([auteur1_df, auteur_df])
-    # auteur_df = pd.merge(auteur_df, auteur1_df, on='id_auteur', how='cross')
-
 
     auteur_df = pd.concat([auteur_df,auteur1_df])
-    # d = {x : y  for x, y in auteur_df.groupby(['id_auteur']) if len(y) > 1}
-    # print(d)
-    # d = {x : y  for x, y in auteur_df.groupby(['nom_x','nom_y']) if len(y) > 1}
-    # print(d)
+
     
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
@@ -242,10 +294,10 @@ def main(results):
         list_multiple = list_multiple.str.lower()
         dic_mult = {}
         for i in dic.values :
-            if not(isinstance(i[3], float)) :
-                i[3] = i[3].strip()
-                i[3] = i[3].capitalize()
-                dic_mult[i[3]] = i[2]
+            if not(isinstance(i[1], float)) :
+                i[1] = i[1].strip()
+                #i[3] = i[3].capitalize()
+                dic_mult[i[1]] = i[0]
 
         res = []
         i = 1
@@ -262,7 +314,7 @@ def main(results):
                         id_mult = dic_mult['']
                     else : 
                         el = el.strip()
-                        el = el.capitalize()
+                        #el = el.capitalize()
                         id_mult = dic_mult[el]
                     res.append([i, id_mult])
              
