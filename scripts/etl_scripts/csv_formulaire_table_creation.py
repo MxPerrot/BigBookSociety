@@ -135,7 +135,6 @@ def main(results):
 
 
     auteur_df = pd.concat([auteur_df,auteur1_df])
-    print(auteur_df)
     # d = {x : y  for x, y in auteur_df.groupby(['id_auteur']) if len(y) > 1}
     # print(d)
     # d = {x : y  for x, y in auteur_df.groupby(['nom_x','nom_y']) if len(y) > 1}
@@ -205,6 +204,7 @@ def main(results):
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation(list, list_multiple, dic, spl=',') :
         dic_mult = {}
+
         for i in dic.values :
             i[1] = i[1].strip()
             i[1] = i[1].capitalize()
@@ -238,6 +238,8 @@ def main(results):
     # Fonction spéciale pour gérer les auteurs
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_auteur(list, list_multiple, dic, spl='\n') :
+        #TODO FAIRE UN PRINT
+        list_multiple = list_multiple.str.lower()
         dic_mult = {}
         for i in dic.values :
             if not(isinstance(i[3], float)) :
