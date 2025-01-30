@@ -110,41 +110,41 @@ def main(results):
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
     auteur_df = auteur_df.dropna()
     auteur_df["nom"] = auteur_df["nom"].str.lower()
+    auteur_df_nom = auteur_df["nom"].dropna()
 
     auteur_minimised = auteur1_df
     auteur_minimised["nom"] = auteur_minimised['nom'].str.lower()
-
-
-
-    #TODO Séparer le grain (Faire en sorte que les auteurs déjà présent dans la bdd ne soit pas répétés.)
-
+    auteur_minimised_nom = auteur_minimised["nom"].dropna()
     
-    common_author_name = np.intersect1d(auteur_minimised['nom'], auteur_df['nom'])
-    #BUG certaines des entrées sont des FLOAT au lieu d'être des STR, probablement valeur NaN
-    #Tester avec des to_csv?
-
-    print(common_author_name)
 
 
+    common_author_name = np.intersect1d(auteur_minimised_nom, auteur_df_nom)
 
-
-
-
-
+    auteur_df = auteur_df.loc[~auteur_df['nom'].isin(common_author_name)]
 
 
 
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
 
+    auteur_df = auteur_df.dropna(subset=["nom"]) 
+    auteur1_df = auteur1_df.dropna(subset=["nom"]) 
 
     # auteur_df = pd.concat([auteur1_df, auteur_df])
-    auteur_df = pd.merge(auteur_df, auteur1_df, on='id_auteur', how='inner')
-    print(auteur_df)
+    # auteur_df = pd.merge(auteur_df, auteur1_df, on='id_auteur', how='cross')
 
+
+    auteur_df = pd.concat([auteur_df,auteur1_df])
+    print(auteur_df)
+    # d = {x : y  for x, y in auteur_df.groupby(['id_auteur']) if len(y) > 1}
+    # print(d)
+    # d = {x : y  for x, y in auteur_df.groupby(['nom_x','nom_y']) if len(y) > 1}
+    # print(d)
     
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
+
+
 
     auteur_df.to_csv(os.path.join(PATH_POPULATE,"auteur.csv"), index=False)
     
