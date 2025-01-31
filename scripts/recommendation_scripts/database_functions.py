@@ -53,7 +53,7 @@ def getLivresUtilisateur(cursor, id_utilisateur):
 
     userData = cursor.fetchall()
 
-    # Si aucun livre n'est recupéré renvoie un -1, indiquateur de l'absence de données
+    # Si aucun livre n'est recupéré envoie un message d'erreur
     if len(userData) == 0:
         raise Exception("No books can be found for this user, either the database is operating incorrectly or this user doesn't have any book")
     
@@ -295,6 +295,10 @@ def getUtilisateursAEvaluer(cursor, nbUtilisateurEva):
     
     idUtilisateursAEvaluerRaw = cursor.fetchall()
 
+    # Si aucun utilisateur n'est recupéré envoie un message d'erreur
+    if len(idUtilisateursAEvaluerRaw) == 0:
+        raise Exception('No user to be found in the database, the database is likely empty, please insert data into the database before')
+
     # Reformate les données
     idUtilisateursAEvaluer = tuple([utilisateur[0] for utilisateur in idUtilisateursAEvaluerRaw])
 
@@ -318,9 +322,9 @@ def getIdLivresUtilisateur(cursor, id_utilisateur):
 
     userData = cursor.fetchall()
 
-    # Si aucun utilisateur n'a été récupéré renvoie un -1, indiquateur de données nulles
+    # Si aucun utilisateur n'a été récupéré envoie un message d'erreur
     if len(userData) == 0:
-        return -1
+        raise Exception("No books can be found for this user, either the database is operating incorrectly or this user doesn't have any book")
     
     # Reformate les données
     userIdBookList = [list(book)[0] for book in userData]
