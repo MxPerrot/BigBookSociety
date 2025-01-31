@@ -184,13 +184,11 @@ def main(results):
 
     auteur_df = auteur_df.loc[~auteur_df['nom'].isin(common_author_name)]
 
-
-    print(common_author_name)
     
     auteur_df = auteur_df.drop_duplicates(subset='nom')
 
     auteur_df = auteur_df.dropna(subset=["nom"]) 
-    auteur1_df = auteur1_df.dropna(subset=["nom"]) 
+    # auteur1_df = auteur1_df.dropna(subset=["nom"]) 
 
 
     auteur_df.index = auteur_df.index+max_id_auteur1+1
