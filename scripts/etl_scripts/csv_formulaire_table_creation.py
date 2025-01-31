@@ -109,7 +109,7 @@ def main(results):
     livre_df["titre"] = livre_df["titre"].str.lower()
     livre_df_titre = livre_df["titre"].dropna()
 
-    livre_minimised = livre1_df
+    livre_minimised = livre1_df.copy(deep=True)
     livre_minimised["titre"] = livre_minimised['titre'].str.lower()
     livre_minimised_titre = livre_minimised["titre"].dropna()
     
@@ -175,10 +175,9 @@ def main(results):
     auteur_df["nom"] = auteur_df["nom"].str.lower()
     auteur_df_nom = auteur_df["nom"].dropna()
 
-    auteur_minimised = auteur1_df
+    auteur_minimised = auteur1_df.copy(deep=True)
     auteur_minimised["nom"] = auteur_minimised['nom'].str.lower()
     auteur_minimised_nom = auteur_minimised["nom"].dropna()
-    
 
 
     common_author_name = np.intersect1d(auteur_minimised_nom, auteur_df_nom)
@@ -186,8 +185,8 @@ def main(results):
     auteur_df = auteur_df.loc[~auteur_df['nom'].isin(common_author_name)]
 
 
-
-
+    print(common_author_name)
+    
     auteur_df = auteur_df.drop_duplicates(subset='nom')
 
     auteur_df = auteur_df.dropna(subset=["nom"]) 
@@ -197,13 +196,14 @@ def main(results):
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
 
-
-
+    
     auteur_df = pd.concat([auteur_df,auteur1_df])
 
     
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
+
+
 
     auteur_df.to_csv(os.path.join(PATH_POPULATE,"auteur.csv"), index=False)
     
@@ -299,6 +299,7 @@ def main(results):
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_auteur(list, list_multiple, dic, spl='\n') :
         #TODO FAIRE UN PRINT
+        dic['nom'] = dic['nom'].str.lower()
         list_multiple = list_multiple.str.lower()
         dic_mult = {}
         for i in dic.values :
@@ -334,6 +335,7 @@ def main(results):
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_livre(list, list_multiple, dic, spl='\n') :
         dic_mult = {}
+        dic['titre'] = dic['titre'].str.lower()
         for i in dic.values :
             i[1] = i[1].strip()
             i[1] = i[1].capitalize()
