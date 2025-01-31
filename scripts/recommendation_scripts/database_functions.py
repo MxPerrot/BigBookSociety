@@ -364,7 +364,7 @@ def getBookIdSameAuthor(cursor, user_id, limit):
         """)
         livres = cursor.fetchall()
         for y in livres:
-            if (y not in liste_livre_lu) & (y not in liste_livre_recommender):
+            if (y[0] not in liste_livre_lu) & (y[0] not in liste_livre_recommender):
                 liste_livre_recommender.append(y)
 
     for y in range(len(liste_livre_recommender)):
