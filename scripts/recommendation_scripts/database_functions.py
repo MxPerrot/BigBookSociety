@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv, dotenv_values 
 import psycopg2
+import random as rd
 
 def setUpCursor():
     """
@@ -338,19 +339,6 @@ def getBookIdSameAuthor(cursor, user_id, limit):
     Récupère autre livre populaire de l'auteur avec id de livres différent
     Renvoie
     """
-    # loading variables from .env file
-    load_dotenv() 
-
-    connection = psycopg2.connect(
-        database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
-        host=os.getenv("HOST"), 
-        port=os.getenv("PORT")
-    )
-
-    cursor = connection.cursor()
-
 
     cursor.execute(f"""
     SELECT id_auteur,id_livre FROM sae._utilisateur 
@@ -383,4 +371,4 @@ def getBookIdSameAuthor(cursor, user_id, limit):
         liste_livre_recommender[y] = liste_livre_recommender[y][0]
 
 
-    return random.sample(liste_livre_recommender, limit)
+    return rd.sample(liste_livre_recommender, limit)

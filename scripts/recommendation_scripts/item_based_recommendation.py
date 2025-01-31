@@ -205,28 +205,31 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
     # Trie les livres par score puis prends les X avec les scores les plus élevés
     bestBooks = sorted(booksScores.items(), key=lambda x: x[1], reverse=True)[:nbRecommendations]
 
-    '''
-    # DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
-    for (key,value) in bestBooks:
-        cursor.execute(f"""
-        SELECT _livre.titre, _genre.libelle_genre
-        FROM _livre
-        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-        WHERE _livre.id_livre = {key};
-        """)
-        print(cursor.fetchall())
-    print(userBookDataFrame)
-    '''
-
     # Revoie une liste des identifiants des livres recommandés
     return [tupl[0] for tupl in bestBooks]
 
+'''
 # Met en place le curseur de la connexion à la base de données
 cursor = bdd.setUpCursor()
 # Entrainement du modèle des genres
 modelGenres = ru.model_genre(cursor)
-print(recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES)))
 
-print(list(bdd.getLivresAEvaluerTendance(cursor, 10)['id_livre'].unique()))
-print(list(bdd.getLivresAEvaluerDecouverte(cursor, 10)['id_livre'].unique()))
+print(recommendationItemBased(cursor, modelGenres, 131, 5, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES)))
+
+# DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
+cursor.execute(f"""
+    SELECT DISTINCT _livre.titre, _auteur.nom, _genre.libelle_genre
+    FROM _livre
+
+    LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+    LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
+
+    LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+    LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
+
+    WHERE _livre.id_livre IN {tuple(idLivresRecommandes)};
+""")
+
+livresRecommandes = cursor.fetchall()
+print(livresRecommandes)
+'''

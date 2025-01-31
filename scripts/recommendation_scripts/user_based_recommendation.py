@@ -82,7 +82,7 @@ def defineUserVect(book):
 #  Fonction principale
 # ----------------------------
 
-def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
+def recommendationUserBased(cursor, id_utilisateur_a_recommander, nbRecommendations):
     """
     Renvoie des livres parmi ceux lus par les utilisateurs les plus similaires à l'utilisateur à recommander donnée en paramètre
     """
@@ -184,10 +184,10 @@ def recommendationItemBased(cursor, id_utilisateur_a_recommander, nbRecommendati
     return livreRecommandes
 
 # Met en place le curseur de la connexion à la base de données
+'''
 cursor = bdd.setUpCursor()
 
 idLivresRecommandes = recommendationItemBased(cursor, 124, 5)
-
 
 # DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
 cursor.execute(f"""
@@ -205,3 +205,4 @@ cursor.execute(f"""
 
 livresRecommandes = cursor.fetchall()
 print(livresRecommandes)
+'''
