@@ -130,13 +130,14 @@ def in_series(user):
         """)
         serie = cursor.fetchall()
 
-        episode = int(serie[0][1])+1
+        if serie[0][1] is not None:
+            episode = int(serie[0][1])+1
 
-        cursor.execute(f"""
-        SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}';
-        """)
-        livre = cursor.fetchall()
-        liste_continuer_lecture.append(livre[0][0])
+            cursor.execute(f"""
+            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}';
+            """)
+            livre = cursor.fetchall()
+            liste_continuer_lecture.append(livre[0][0])
 
     return liste_continuer_lecture
 
