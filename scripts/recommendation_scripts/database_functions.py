@@ -156,9 +156,8 @@ def getLivresAEvaluerDecouverte(cursor, nbLivreEva):
     """
     Renvoie les données d'un nombre de livres pris parmi ceux moyennement populaires mais bien notés
     """
-    # TODO Recupère les identifiant des livres 
     cursor.execute(f"""
-        SELECT * FROM sae._livre 
+        SELECT _livre.id_livre FROM sae._livre 
         WHERE note_moyenne is not null 
         and nb_notes>1000 
         and nb_notes<50000 
@@ -331,3 +330,57 @@ def getIdLivresUtilisateur(cursor, id_utilisateur):
 
     # Renvoie les identifiants des livres
     return userIdBookList
+
+def getBookIdSameAuthor(cursor, user_id, limit):
+    """
+    Sélectionne les livres lus/aimé par l'utilisateur
+    Pour chaque regarde et sauvegarde l'auteur
+    Récupère autre livre populaire de l'auteur avec id de livres différent
+    Renvoie
+    """
+    # loading variables from .env file
+    load_dotenv() 
+
+    connection = psycopg2.connect(
+        database=os.getenv("DATABASE_NAME"), 
+        user=os.getenv("USERNAME"), 
+        password=os.getenv("PASSWORD"), 
+        host=os.getenv("HOST"), 
+        port=os.getenv("PORT")
+    )
+
+    cursor = connection.cursor()
+
+
+    cursor.execute(f"""
+    SELECT id_auteur,id_livre FROM sae._utilisateur 
+    NATURAL JOIN sae._livre_utilisateur 
+    NATURAL JOIN sae._auteur_livre
+    WHERE id_utilisateur = {user_id};
+    """)
+
+    record = cursor.fetchall()
+
+    liste_livre_lu = []
+
+    for i in record:
+        liste_livre_lu.append(i[1])
+
+    liste_livre_recommender = []
+
+    for i in record:
+        cursor.execute(f"""
+        SELECT id_livre FROM sae._auteur_livre
+        NATURAL JOIN sae._livre
+        WHERE id_auteur = {i[0]};
+        """)
+        livres = cursor.fetchall()
+        for y in livres:
+            if (y not in liste_livre_lu) & (y not in liste_livre_recommender):
+                liste_livre_recommender.append(y)
+
+    for y in range(len(liste_livre_recommender)):
+        liste_livre_recommender[y] = liste_livre_recommender[y][0]
+
+
+    return random.sample(liste_livre_recommender, limit)

@@ -168,4 +168,5 @@ def decouverte(limit):
 
     record = cursor.fetchall()
 
-print(decouverte(69))
+print(same_author(69, 5))
+print(in_series(9))
