@@ -137,7 +137,7 @@ def getLivresAEvaluerTendance(cursor, nbLivreEva):
         WHERE numero_episode = '1'
         AND b.note_moyenne IS NOT NULL
         AND b.nb_notes IS NOT NULL
-        ORDER BY random(), b.nb_notes DESC, b.note_moyenne DESC
+        ORDER BY b.nb_notes DESC, b.note_moyenne DESC
         LIMIT {nbLivreEva};
     """)
 
@@ -372,3 +372,36 @@ def getBookIdSameAuthor(cursor, user_id, limit):
 
 
     return rd.sample(liste_livre_recommender, limit)
+
+def getBookIdInSeries(cursor, user):
+    """
+    Sélectionne les livres lus/aimé par l'utilisateur
+    Pour chaque regarde si dans une série
+    Si oui récupère livre suivant dans série
+    Renvoie
+    """
+    cursor.execute(f"""
+    SELECT id_livre FROM sae._utilisateur NATURAL JOIN sae._livre_utilisateur NATURAL JOIN sae._episode_serie WHERE id_utilisateur = {user};
+    """)
+
+    record = cursor.fetchall()
+
+    liste_continuer_lecture = []
+    
+    for y in record:
+        cursor.execute(f"""
+        SELECT id_serie,numero_episode FROM sae._episode_serie WHERE id_livre = {y[0]};
+        """)
+        serie = cursor.fetchall()
+
+        
+        if serie[0][1] is not None and serie[0][1].isdigit():
+            episode = int(serie[0][1])+1
+
+            cursor.execute(f"""
+            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}';
+            """)
+            livre = cursor.fetchall()
+            liste_continuer_lecture.append(livre[0][0])
+
+    return liste_continuer_lecture

@@ -11,13 +11,16 @@ cursor = bdd.setUpCursor()
 # Entrainement du modèle des genres
 modelGenres = ru.model_genre(cursor)
 
-livresItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 5, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES))
-livresUserBased = ub.recommendationUserBased(cursor, UTILISATEUR_A_RECOMMANDER, 5)
-livresTendances = list(bdd.getLivresAEvaluerTendance(cursor, 10)['id_livre'].unique())
-livresDecouverte = list(bdd.getLivresAEvaluerDecouverte(cursor, 10)['id_livre'].unique())
-livresMemeAuteur = bdd.getBookIdSameAuthor(cursor, UTILISATEUR_A_RECOMMANDER, 5)
+livresItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES))
+livresUserBased = ub.recommendationUserBased(cursor, UTILISATEUR_A_RECOMMANDER, 2)
+livresTendances = list(bdd.getLivresAEvaluerTendance(cursor, 2)['id_livre'].unique())
+livresTendancesItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluerTendance(cursor, NOMBRE_LIVRES_TESTES))
+livresDecouverte = list(bdd.getLivresAEvaluerDecouverte(cursor, 2)['id_livre'].unique())
+livresDecouverteItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES))
+livresMemeAuteur = bdd.getBookIdSameAuthor(cursor, UTILISATEUR_A_RECOMMANDER, 2)
+livresMemeSerie = bdd.getBookIdInSeries(cursor, UTILISATEUR_A_RECOMMANDER)
 
-for i in [livresItemBased, livresUserBased, livresTendances, livresDecouverte, livresMemeAuteur]:
+for i in [livresItemBased, livresUserBased, livresTendances, livresTendancesItemBased, livresDecouverte, livresDecouverteItemBased, livresMemeAuteur, livresMemeSerie]:
     print("\n-----------------\n")
     # DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
     cursor.execute(f"""
