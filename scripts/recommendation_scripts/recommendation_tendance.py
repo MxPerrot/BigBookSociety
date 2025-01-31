@@ -135,7 +135,7 @@ def in_series(user):
             episode = int(serie[0][1])+1
 
             cursor.execute(f"""
-            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}';
+            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}' AND id_serie='{serie[0][0]}';
             """)
             livre = cursor.fetchall()
             liste_continuer_lecture.append(livre[0][0])
