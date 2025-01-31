@@ -226,4 +226,7 @@ def recommendationItemBased(cursor, modelGenres, id_utilisateur, nbRecommendatio
 cursor = bdd.setUpCursor()
 # Entrainement du modèle des genres
 modelGenres = ru.model_genre(cursor)
-print(recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES)))
+print(recommendationItemBased(cursor, modelGenres, 11, 5, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES)))
+
+print(list(bdd.getLivresAEvaluerTendance(cursor, 10)['id_livre'].unique()))
+print(list(bdd.getLivresAEvaluerDecouverte(cursor, 10)['id_livre'].unique()))
