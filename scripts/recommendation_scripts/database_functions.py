@@ -322,9 +322,9 @@ def getIdLivresUtilisateur(cursor, id_utilisateur):
 
     userData = cursor.fetchall()
 
-    # Si aucun utilisateur n'a été récupéré envoie un message d'erreur
+    # Si aucun utilisateur n'a été récupéré renvoie -1, indiquant qu'aucune donnée n'a été récupérée
     if len(userData) == 0:
-        raise Exception("No books can be found for this user, either the database is operating incorrectly or this user doesn't have any book")
+        return -1
     
     # Reformate les données
     userIdBookList = [list(book)[0] for book in userData]
