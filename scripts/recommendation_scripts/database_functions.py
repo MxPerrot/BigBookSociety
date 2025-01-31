@@ -55,7 +55,7 @@ def getLivresUtilisateur(cursor, id_utilisateur):
 
     # Si aucun livre n'est recupéré renvoie un -1, indiquateur de l'absence de données
     if len(userData) == 0:
-        return -1
+        raise Exception("No books can be found for this user, either the database is operating incorrectly or this user doesn't have any book")
     
     # Reformate les données
     userBookList = [list(book) for book in userData]
@@ -90,9 +90,9 @@ def getLivresFromIdList(cursor, idLivres):
 
     bookData = cursor.fetchall()
     
-    # Si aucun livre n'est recupéré renvoie un -1, indiquateur de l'absence de données
+    # Si aucun livre n'est recupéré envoie un message d'erreur
     if len(bookData) == 0:
-        return -1
+        raise Exception('No book found, either there is no book with those IDs or the Database is not operating correctly\nList of book ID : '+idLivres)
     
     # Reformate les données
     bookList = [list(book) for book in bookData]
@@ -113,6 +113,9 @@ def getLivresAEvaluer(cursor, nbLivreEva):
     """)
 
     idLivresAEvaluerRaw = cursor.fetchall()
+
+    if idLivresAEvaluerRaw == -1:
+        raise Exception("No books to be found in the database, the database is likely empty, please insert data into the database before")
 
     # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
@@ -139,6 +142,9 @@ def getLivresAEvaluerTendance(cursor, nbLivreEva):
 
     idLivresAEvaluerRaw = cursor.fetchall()
 
+    if idLivresAEvaluerRaw == -1:
+        raise Exception("No books to be found in the database, the database is likely empty, please insert data into the database before")
+
     # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
 
@@ -161,6 +167,9 @@ def getLivresAEvaluerDecouverte(cursor, nbLivreEva):
     """)
 
     idLivresAEvaluerRaw = cursor.fetchall()
+
+    if idLivresAEvaluerRaw == -1:
+        raise Exception("No books to be found in the database, the database is likely empty, please insert data into the database before")
 
     # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
@@ -211,9 +220,9 @@ def getUtilisateurById(cursor, id_utilisateur):
 
     utilisateur = cursor.fetchall()
 
-    # Si aucun utilisateur n'est recupéré renvoie un -1, indiquateur de l'absence de données
+    # Si aucun utilisateur n'est recupéré envoie un message d'erreur
     if len(utilisateur) == 0:
-        return -1
+        raise Exception('User not found, either there is no user with that ID or the Database is not operating correctly.\nUser ID : '+id_utilisateur)
 
     # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(utilisateur, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])
@@ -260,9 +269,10 @@ def getUtilisateursFromIdList(cursor, idUtilisateurs):
 
     userData = cursor.fetchall()
     
-    # Si aucun utilisateur n'est recupéré renvoie un -1, indiquateur de l'absence de données
+    # Si aucun utilisateur n'est recupéré envoie un message d'erreur
     if len(userData) == 0:
-        return -1
+        raise Exception('No user found, either there is no user with those IDs or the Database is not operating correctly\nList of user ID : '+idUtilisateurs)
+        
     
     # Reformate les données
     userList = [list(user) for user in userData]
