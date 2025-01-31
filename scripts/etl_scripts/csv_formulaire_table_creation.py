@@ -120,12 +120,16 @@ def main(results):
     livre_df = livre_df.loc[~livre_df['titre'].isin(common_book_name)]
 
 
+    livre_df = livre_df.drop_duplicates(subset='titre')
+
+    livre_df = livre_df.dropna(subset=["titre"]) 
+    livre1_df = livre1_df.dropna(subset=["titre"]) 
+
+
 
     livre_df.index = livre_df.index+max_id_livre1+1
     livre_df = livre_df.reset_index(names=['id_livre'])
 
-    livre_df = livre_df.dropna(subset=["titre"]) 
-    livre1_df = livre1_df.dropna(subset=["titre"]) 
 
 
     livre_df = pd.concat([livre_df,livre1_df])
@@ -145,6 +149,7 @@ def main(results):
     livre_df['nombre_pages'] = livre_df['nombre_pages'].astype('Int64') # force convert numerical values to int
     livre_df['isbn13'] = livre_df['isbn13'].astype('Int64') # force convert numerical values to int
     livre_df['id_editeur'] = livre_df['id_editeur'].astype('Int64') # force convert numerical values to int
+
 
     livre_df.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
 
@@ -182,11 +187,16 @@ def main(results):
 
 
 
-    auteur_df.index = auteur_df.index+max_id_auteur1+1
-    auteur_df = auteur_df.reset_index(names=['id_auteur'])
+
+    auteur_df = auteur_df.drop_duplicates(subset='nom')
 
     auteur_df = auteur_df.dropna(subset=["nom"]) 
     auteur1_df = auteur1_df.dropna(subset=["nom"]) 
+
+
+    auteur_df.index = auteur_df.index+max_id_auteur1+1
+    auteur_df = auteur_df.reset_index(names=['id_auteur'])
+
 
 
     auteur_df = pd.concat([auteur_df,auteur1_df])
@@ -194,8 +204,6 @@ def main(results):
     
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
-
-
 
     auteur_df.to_csv(os.path.join(PATH_POPULATE,"auteur.csv"), index=False)
     
