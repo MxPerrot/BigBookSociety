@@ -130,7 +130,7 @@ def in_series(user):
         """)
         serie = cursor.fetchall()
 
-        if serie[0][1] is not None:
+        if serie[0][1] is not None and type(serie[0][1])==int:
             episode = int(serie[0][1])+1
 
             cursor.execute(f"""
