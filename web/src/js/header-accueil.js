@@ -1,8 +1,21 @@
-const footerTemplate = document.createElement('template');
+const headerTemplate = document.createElement('template');
 
 
-footerTemplate.innerHTML = `
+headerTemplate.innerHTML = `
    <style>
+        /* Header */
+        header {
+            width: 100%;
+            height: 100px;
+            background-color: var(--col3);
+            color: var(--blanc);
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
         /* Navigation */
         nav {
             width: 100%;
@@ -41,37 +54,28 @@ footerTemplate.innerHTML = `
             color: var(--noir);
         }
 
-        /* Footer */
-        footer {
-            background-color: var(--col3);
-            color: var(--blanc);
-            text-align: center;
-        }
-
-        footer nav{
-            height: 150px;
-        }
-        
-        footer p {
-            margin-bottom: 0px;
+        #BigBook{
+            font-family: 'AbrilFatface';
+            font-size: 4.5rem;
         }
 
       </style>
 
-    <footer>
+    <header>
         <nav>
-            <ul>
-                <li><a href="#">Mention légales</a></li>
-                <li><a href="#">Conditions générales d'utilisation</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
+          <ul>
+              <li><a href="#">RECOMMENDATIONS</a></li>
+              <li><a href="#">MES LIVRES</a></li>
+              <li><a id="BigBook" href="#">BigBook   </a></li>
+              <li><a href="#">A PROPOS</a></li>
+              <li><a href="#">MON PROFIL</a></li>
+          </ul>
         </nav>
-        <p>© 2025  BigBook - Tous droits réservés</p>
-    </footer>
+    </header>
 `;
 
 
-class Footer extends HTMLElement {
+class Header extends HTMLElement {
     constructor() {
       super();
     }
@@ -79,8 +83,8 @@ class Footer extends HTMLElement {
     connectedCallback() {
       const shadowRoot = this.attachShadow({ mode: 'closed' });
   
-      shadowRoot.appendChild(footerTemplate.content);
+      shadowRoot.appendChild(headerTemplate.content);
     }
   }
   
-  customElements.define('footer-component', Footer);
+  customElements.define('header-accueil', Header);
