@@ -228,13 +228,14 @@ SELECT
     NULL::VARCHAR AS age,
     NULL::VARCHAR AS profession,
     NULL::VARCHAR AS situation_familiale,
-    NULL::INTEGER AS id_code_postal,
+    NULL::INTEGER AS code_postal,
     NULL::VARCHAR AS frequence_lecture,
     NULL::INTEGER AS vitesse_lecture,
     NULL::VARCHAR AS nb_livres_lus,
     NULL::VARCHAR[] AS genres_preferes,     -- Tableau de genres préférés
     NULL::VARCHAR[] AS formats_preferes,    -- Tableau de formats préférés
-    NULL::VARCHAR[] AS raisons_lecture,     -- Tableau des raisons de lecture
+    NULL::VARCHAR[] AS motivations_lecture, -- Tableau des raisons de lecture
+    NULL::VARCHAR[] AS raisons_achat,       -- Tableau des raisons de lecture
     NULL::VARCHAR[] AS langues_lecture,     -- Tableau des langues de lecture
     NULL::VARCHAR[] AS livres_preferes,     -- Tableau des livres préférés
     NULL::VARCHAR[] AS auteurs_preferes,    -- Tableau des auteurs préférés
