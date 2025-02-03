@@ -54,6 +54,7 @@ def main(results):
                     if (el != '' and not(list2.isin([el]).any().any())) :
                         res.append(el)
         res = set(res)
+        res = [i.strip() for i in res]
         return res
 
     livre1_df = pd.read_csv('data/populate/livre.csv')
@@ -71,6 +72,7 @@ def main(results):
     livres_preferes_unique = filtrer_livres_auteurs(livres_preferes, livre1_df["titre"])
     auteurs_preferes_unique = filtrer_livres_auteurs(auteurs_preferes, auteur1_df["nom"])
 
+
     ##### TABLES SIMPLES #####
 
     # _genre : id_genre, libelle_genre
@@ -81,13 +83,61 @@ def main(results):
     genre_df = genre_df.reset_index(names=['id_genre'])
     genre_df.to_csv(os.path.join(PATH_POPULATE,"genre_2.csv"), index=False)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # _livre : id_livre, titre
     # Fusion avec le csv déjà existant
     max_id_livre1 = livre1_df['id_livre'].max()
     livre_df = pd.DataFrame({'titre': list(livres_preferes_unique)})
+    # livre_df.index = livre_df.index+max_id_livre1+1
+    # livre_df = livre_df.reset_index(names=['id_livre'])
+
+    livre_df = livre_df.dropna()
+    livre_df["titre"] = livre_df["titre"].str.lower()
+    livre_df_titre = livre_df["titre"].dropna()
+
+    livre_minimised = livre1_df.copy(deep=True)
+    livre_minimised["titre"] = livre_minimised['titre'].str.lower()
+    livre_minimised_titre = livre_minimised["titre"].dropna()
+    
+
+
+    common_book_name = np.intersect1d(livre_minimised_titre, livre_df_titre)
+
+    livre_df = livre_df.loc[~livre_df['titre'].isin(common_book_name)]
+
+
+    livre_df = livre_df.drop_duplicates(subset='titre')
+
+    livre_df = livre_df.dropna(subset=["titre"]) 
+    livre1_df = livre1_df.dropna(subset=["titre"]) 
+
+
+
     livre_df.index = livre_df.index+max_id_livre1+1
     livre_df = livre_df.reset_index(names=['id_livre'])
-    livre_df = pd.concat([livre1_df, livre_df])
+
+
+
+    livre_df = pd.concat([livre_df,livre1_df])
+
+
+
+
+
     
     livre_df['nb_notes'] = livre_df['nb_notes'].astype('Int64') # force convert numerical values to int
     livre_df['nb_critiques'] = livre_df['nb_critiques'].astype('Int64') # force convert numerical values to int
@@ -100,18 +150,58 @@ def main(results):
     livre_df['isbn13'] = livre_df['isbn13'].astype('Int64') # force convert numerical values to int
     livre_df['id_editeur'] = livre_df['id_editeur'].astype('Int64') # force convert numerical values to int
 
+
     livre_df.to_csv(os.path.join(PATH_POPULATE,"livre.csv"), index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # _auteur : id_auteur, nom
     # Fusion avec le csv déjà existant
     max_id_auteur1 = auteur1_df['id_auteur'].max()
     auteur_df = pd.DataFrame({'nom': list(auteurs_preferes_unique)})
+    auteur_df = auteur_df.dropna()
+    auteur_df["nom"] = auteur_df["nom"].str.lower()
+    auteur_df_nom = auteur_df["nom"].dropna()
+
+    auteur_minimised = auteur1_df.copy(deep=True)
+    auteur_minimised["nom"] = auteur_minimised['nom'].str.lower()
+    auteur_minimised_nom = auteur_minimised["nom"].dropna()
+
+
+    common_author_name = np.intersect1d(auteur_minimised_nom, auteur_df_nom)
+
+    auteur_df = auteur_df.loc[~auteur_df['nom'].isin(common_author_name)]
+
+    
+    auteur_df = auteur_df.drop_duplicates(subset='nom')
+
+    auteur_df = auteur_df.dropna(subset=["nom"]) 
+    # auteur1_df = auteur1_df.dropna(subset=["nom"]) 
+
+
     auteur_df.index = auteur_df.index+max_id_auteur1+1
     auteur_df = auteur_df.reset_index(names=['id_auteur'])
-    auteur_df = pd.concat([auteur1_df, auteur_df])
+
+    
+    auteur_df = pd.concat([auteur_df,auteur1_df])
+
     
     auteur_df['nb_critiques'] = auteur_df['nb_critiques'].astype('Int64') # force convert numerical values to int
     auteur_df['nb_reviews'] = auteur_df['nb_reviews'].astype('Int64') # force convert numerical values to int
+
+
 
     auteur_df.to_csv(os.path.join(PATH_POPULATE,"auteur.csv"), index=False)
     
@@ -172,6 +262,7 @@ def main(results):
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation(list, list_multiple, dic, spl=',') :
         dic_mult = {}
+
         for i in dic.values :
             i[1] = i[1].strip()
             i[1] = i[1].capitalize()
@@ -205,12 +296,15 @@ def main(results):
     # Fonction spéciale pour gérer les auteurs
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_auteur(list, list_multiple, dic, spl='\n') :
+        #TODO FAIRE UN PRINT
+        dic['nom'] = dic['nom'].str.lower()
+        list_multiple = list_multiple.str.lower()
         dic_mult = {}
         for i in dic.values :
-            if not(isinstance(i[3], float)) :
-                i[3] = i[3].strip()
-                i[3] = i[3].capitalize()
-                dic_mult[i[3]] = i[2]
+            if not(isinstance(i[1], float)) :
+                i[1] = i[1].strip()
+                #i[3] = i[3].capitalize()
+                dic_mult[i[1]] = i[0]
 
         res = []
         i = 1
@@ -227,7 +321,7 @@ def main(results):
                         id_mult = dic_mult['']
                     else : 
                         el = el.strip()
-                        el = el.capitalize()
+                        #el = el.capitalize()
                         id_mult = dic_mult[el]
                     res.append([i, id_mult])
              
@@ -239,6 +333,7 @@ def main(results):
     # Gère les valeurs nulles, vides, null, espaces en trop
     def table_relation_livre(list, list_multiple, dic, spl='\n') :
         dic_mult = {}
+        dic['titre'] = dic['titre'].str.lower()
         for i in dic.values :
             i[1] = i[1].strip()
             i[1] = i[1].capitalize()
