@@ -241,7 +241,42 @@ SELECT
     NULL::VARCHAR[] AS methodes_procuration -- Tableau des méthodes de procuration
 ;
 
-
+-- Vue livres
+CREATE VIEW v_livre AS
+SELECT
+    -- Déclare les colonnes correspondant aux données du formulaire
+    NULL::VARCHAR AS titre,
+    NULL::INTEGER AS nb_notes,
+    NULL::INTEGER AS nb_critiques,
+    NULL::DECIMAL AS note_moyenne,
+    NULL::INTEGER AS nb_note_1,
+    NULL::INTEGER AS nb_note_2,
+    NULL::INTEGER AS nb_note_3,
+    NULL::INTEGER AS nb_note_4,
+    NULL::INTEGER AS nb_note_5,
+    NULL::INTEGER AS nombre_pages,
+    NULL::DATE AS date_publication,
+    NULL::VARCHAR AS titre_original,
+    NULL::VARCHAR AS isbn,
+    NULL::VARCHAR AS isbn13,
+    NULL::VARCHAR AS description,
+    
+    NULL::VARCHAR[] AS nom_serie,
+    NULL::INTEGER[] AS numero_episode,
+    NULL::VARCHAR[] AS nom_editeur,
+    
+    NULL::VARCHAR[] AS cadre_localisation,
+    NULL::INTEGER[] AS cadre_annee,
+    NULL::VARCHAR[] AS cadre_nom_pays,
+    
+    NULL::VARCHAR[] AS nom_prix,
+    NULL::INTEGER[] AS annee_prix,
+    
+    NULL::INTEGER[] AS id_auteurs,
+    
+    NULL::VARCHAR[] AS genres,
+    NULL::INTEGER[] AS votes_genres
+;
 
 
 
