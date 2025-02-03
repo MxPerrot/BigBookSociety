@@ -218,7 +218,6 @@ CREATE TABLE _episode_serie (
 
 -- TRIGGERS ET FONCTIONS
 
-
 -- Vue formulaire
 CREATE VIEW v_formulaire AS
 SELECT
@@ -240,9 +239,6 @@ SELECT
     NULL::VARCHAR[] AS auteurs_preferes,    -- Tableau des auteurs préférés
     NULL::VARCHAR[] AS methodes_procuration -- Tableau des méthodes de procuration
 ;
-
-
-
 
 
 -- PEUPLEMENT
