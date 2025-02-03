@@ -3,39 +3,6 @@ const headerTemplate = document.createElement('template');
 
 headerTemplate.innerHTML = `
    <style>
-        /* Couleurs */
-        :root {
-            --col1: #1E2026;
-            --blanc: #FFFFFF;
-            --noir: #000000;
-            --col2: #F2F2F2;
-            --col3: #276BF2;
-            --col4: #447EF2;
-            --col5: #6393F2;
-        }
-
-        /* Fonts */
-        @font-face {
-            font-family: 'Poppins';
-            src: url('../../fonts/Poppins-Regular.ttf') format('truetype');
-            font-weight: 400;
-            font-style: normal;
-        }
-
-        @font-face {
-            font-family: 'Poppins';
-            src: url('../../fonts/Poppins-Bold.ttf') format('truetype');
-            font-weight: 700;
-            font-style: normal;
-        }
-
-        @font-face {
-            font-family: 'AbrilFatface';
-            src: url('../../fonts/AbrilFatface-Regular.ttf') format('truetype');
-            font-weight: 400;
-            font-style: normal;
-        }
-
         /* Header */
         header {
             width: 100%;
