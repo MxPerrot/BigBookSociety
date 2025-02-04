@@ -134,6 +134,9 @@ footer nav{
 }
 
 .Slogan{
+    position: absolute;
+    top:2em;
+    left: 25;
     font-size: 3rem;
     font-weight: 700;
     color: var(--blanc);
