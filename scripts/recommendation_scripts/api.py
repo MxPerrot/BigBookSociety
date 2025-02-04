@@ -8,7 +8,7 @@ from typing import Annotated
 import json 
 
 cursor = bdd.setUpCursor()
-"""
+
 modelGenres = ru.model_genre(cursor)
 app = FastAPI()
 
