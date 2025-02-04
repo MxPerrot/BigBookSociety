@@ -101,10 +101,10 @@ headerTemplate.innerHTML = `
         <nav>
           <ul>
               <li><a href="../../index.html">RECOMMENDATIONS</a></li>
-              <li><a href="../src/html/meslivres.html">MES LIVRES</a></li>
+              <li><a href="../html/meslivres.html">MES LIVRES</a></li>
               <li><a id="BigBook" href="../../index.html">BigBook   </a></li>
-              <li><a href="../src/html/apropos.html">A PROPOS</a></li>
-              <li><a href="../src/html/profil.html">MON PROFIL</a></li>
+              <li><a href="../html/apropos.html">A PROPOS</a></li>
+              <li><a href="../html/profil.html">MON PROFIL</a></li>
           </ul>
         </nav>
     </header>
