@@ -101,7 +101,7 @@ headerTemplate.innerHTML = `
         <nav>
           <ul>
               <li><a href="#">RECOMMENDATIONS</a></li>
-              <li><a href="#">MES LIVRES</a></li>
+              <li><a href="../src/html/meslivres.html">MES LIVRES</a></li>
               <li><a id="BigBook" href="#">BigBook   </a></li>
               <li><a href="#">A PROPOS</a></li>
               <li><a href="#">MON PROFIL</a></li>

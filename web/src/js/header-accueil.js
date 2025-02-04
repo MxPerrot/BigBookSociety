@@ -83,10 +83,10 @@ headerTemplate.innerHTML = `
         <nav>
           <ul>
               <li><a href="#">RECOMMENDATIONS</a></li>
-              <li><a href="#">MES LIVRES</a></li>
-              <li><a id="BigBook" href="#">BigBook   </a></li>
-              <li><a href="#">A PROPOS</a></li>
-              <li><a href="#">MON PROFIL</a></li>
+              <li><a href="./src/html/meslivres.html">MES LIVRES</a></li>
+              <li><a id="BigBook" href="./index.html">BigBook   </a></li>
+              <li><a href="./src/html/apropos.html">A PROPOS</a></li>
+              <li><a href="./src/html/profil.html">MON PROFIL</a></li>
           </ul>
         </nav>
     </header>
@@ -99,22 +99,34 @@ class Header extends HTMLElement {
     }
 
     connectedCallback() {
-        // Attendre que le shadowRoot soit attaché avant d'ajouter l'écouteur de scroll
+     
         window.addEventListener("scroll", () => {
-            if (!this.shadowRoot) return; // 🔥 Sécurité pour éviter une erreur
+            if (!this.shadowRoot) return; 
             
-            const header = this.shadowRoot.querySelector("header"); // ✅ Sélectionne <header> à l'intérieur du Shadow DOM
-            if (!header) return; // 🔥 Vérification supplémentaire
+            const header = this.shadowRoot.querySelector("header"); 
+            if (!header) return; 
             
             const threshold = document.getElementById("background").getBoundingClientRect().bottom;
 
             if (threshold <= 0) {
-                header.classList.add("fixed-header"); // ✅ Ajoute la classe à <header>
+                header.classList.add("fixed-header"); 
             } else {
-                header.classList.remove("fixed-header"); // ✅ Supprime la classe si on remonte
+                header.classList.remove("fixed-header"); 
             }
+        });
+
+        this.shadowRoot.querySelectorAll("nav a").forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault(); 
+                const targetPage = link.getAttribute("href");
+
+                if (targetPage && targetPage !== "#") {
+                    window.location.href = targetPage; 
+                }
+            });
         });
     }
 }
 
 customElements.define('header-accueil', Header);
+

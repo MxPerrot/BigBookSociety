@@ -10,7 +10,16 @@
 }
 
 .card-img{
-    width: 350PX;
-    height: 400px;
+    width: 80PX;
+    height: 100px;
     margin: 10px;
+}
+
+.bouton-retirer{
+    background-color: var(--col1);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
 }
