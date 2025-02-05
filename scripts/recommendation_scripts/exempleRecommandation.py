@@ -2,25 +2,70 @@ import database_functions as bdd
 import item_based_recommendation as ib
 import user_based_recommendation as ub
 import recommendation_utilities as ru
+from time import process_time
 
 NOMBRE_LIVRES_TESTES = 1000
 UTILISATEUR_A_RECOMMANDER = 131
 
 # Met en place le curseur de la connexion à la base de données
 cursor = bdd.setUpCursor()
+
+
 # Entrainement du modèle des genres
+st = process_time()
 modelGenres = ru.model_genre(cursor)
+end = process_time()
+res = end - st
+print(f"Entrainement du model des genres : {res}")
 
+
+st = process_time()
 livresItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluer(cursor, NOMBRE_LIVRES_TESTES))
+end = process_time()
+res = end - st
+print(f"Item Based : {res}")
+st = process_time()
 livresUserBased = ub.recommendationUserBased(cursor, UTILISATEUR_A_RECOMMANDER, 2)
-livresTendances = list(bdd.getLivresAEvaluerTendance(cursor, 2)['id_livre'].unique())
-livresTendancesItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluerTendance(cursor, NOMBRE_LIVRES_TESTES))
-livresDecouverte = list(bdd.getLivresAEvaluerDecouverte(cursor, 2)['id_livre'].unique())
+end = process_time()
+res = end - st
+print(f"User Based : {res}")
+st = process_time()
 livresDecouverteItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES))
-livresMemeAuteur = bdd.getBookIdSameAuthor(cursor, UTILISATEUR_A_RECOMMANDER, 2)
+end = process_time()
+res = end - st
+print(f"Decouverte Item Based : {res}")
+st = process_time()
+livresTendances = list(bdd.getLivresAEvaluerTendance(cursor, 2)['id_livre'].unique())
+end = process_time()
+res = end - st
+print(f"Tendances : {res}")
+st = process_time()
+livresTendancesItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluerTendance(cursor, NOMBRE_LIVRES_TESTES))
+end = process_time()
+res = end - st
+print(f"Tendances + hybride item based : {res}")
+st = process_time()
+livresDecouverte = list(bdd.getLivresAEvaluerDecouverte(cursor, 2)['id_livre'].unique())
+end = process_time()
+res = end - st
+print(f"Decouverte : {res}")
+st = process_time()
+livresDecouverteItemBased = ib.recommendationItemBased(cursor, modelGenres, UTILISATEUR_A_RECOMMANDER, 2, bdd.getLivresAEvaluerDecouverte(cursor, NOMBRE_LIVRES_TESTES))
+end = process_time()
+res = end - st
+print(f"Decouverte + hybride item based : {res}")
+st = process_time()
+#livresMemeAuteur = bdd.getBookIdSameAuthor(cursor, UTILISATEUR_A_RECOMMANDER, 2) # TODO: FIXME
+end = process_time()
+res = end - st
+print(f"Même auteur : {res}")
+st = process_time()
 livresMemeSerie = bdd.getBookIdInSeries(cursor, UTILISATEUR_A_RECOMMANDER)
+end = process_time()
+res = end - st
+print(f"Même série : {res}")
 
-for i in [livresItemBased, livresUserBased, livresTendances, livresTendancesItemBased, livresDecouverte, livresDecouverteItemBased, livresMemeAuteur, livresMemeSerie]:
+for i in [livresItemBased, livresUserBased, livresTendances, livresTendancesItemBased, livresDecouverte, livresDecouverteItemBased,  livresMemeSerie]: # TODO livresMemeAuteur, MANQUANT CAR BUGGE
     print("\n-----------------\n")
     # DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
     cursor.execute(f"""
