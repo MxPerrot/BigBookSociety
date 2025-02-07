@@ -70,7 +70,7 @@ y=0
 for i in [livresItemBased, livresUserBased, livresTendances, livresTendancesItemBased, livresDecouverte, livresDecouverteItemBased,  livresMemeAuteur, livresMemeSerie]: # TODO livresMemeAuteur, MANQUANT CAR BUGGE
     print("\n-----------------\n")
     print(liste_libelle[y])
-    y=+1
+    y=y+1
     # DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
     cursor.execute(f"""
         SELECT DISTINCT _livre.titre, _auteur.nom
