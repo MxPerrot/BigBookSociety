@@ -55,7 +55,7 @@ end = process_time()
 res = end - st
 print(f"Decouverte + hybride item based : {res}")
 st = process_time()
-#livresMemeAuteur = bdd.getBookIdSameAuthor(cursor, UTILISATEUR_A_RECOMMANDER, 2) # TODO: FIXME
+livresMemeAuteur = bdd.getBookIdSameAuthor(cursor, UTILISATEUR_A_RECOMMANDER, 2) # TODO: FIXME
 end = process_time()
 res = end - st
 print(f"Même auteur : {res}")
@@ -65,8 +65,12 @@ end = process_time()
 res = end - st
 print(f"Même série : {res}")
 
-for i in [livresItemBased, livresUserBased, livresTendances, livresTendancesItemBased, livresDecouverte, livresDecouverteItemBased,  livresMemeSerie]: # TODO livresMemeAuteur, MANQUANT CAR BUGGE
+liste_libelle = ["livresItemBased", "livresUserBased", "livresTendances","livresTendancesItemBased", "livresDecouverte", "livresDecouverteItemBased", "livresMemeAuteur", "livresMemeSerie"]
+y=0
+for i in [livresItemBased, livresUserBased, livresTendances, livresTendancesItemBased, livresDecouverte, livresDecouverteItemBased,  livresMemeAuteur, livresMemeSerie]: # TODO livresMemeAuteur, MANQUANT CAR BUGGE
     print("\n-----------------\n")
+    print(liste_libelle[y])
+    y=+1
     # DEBUG : Recupère les infos des livres recommandés pour verifier leur cohérence
     cursor.execute(f"""
         SELECT DISTINCT _livre.titre, _auteur.nom
