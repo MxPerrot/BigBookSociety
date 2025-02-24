@@ -73,6 +73,25 @@
               </svg>
     </main>
 
+    <p id="result"></p>
+
+    <script>
+        async function getBooks() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/get_decouverte/10');
+                const data = await response.json();
+
+                // Convertir l'objet JSON en texte brut
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des livres:", error);
+            }
+        }
+
+        // Charger les livres au chargement de la page
+        window.onload = getBooks;
+    </script>
+
     <footer-component></footer-component>
 </body>
 </html>

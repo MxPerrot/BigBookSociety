@@ -6,11 +6,20 @@ import database_functions as bdd
 import recommendation_utilities as ru
 from typing import Annotated
 import json 
+from fastapi.middleware.cors import CORSMiddleware
 
 cursor = bdd.setUpCursor()
 
 modelGenres = ru.model_genre(cursor)
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #https://fastapi.tiangolo.com/tutorial/first-steps/
 
