@@ -47,7 +47,7 @@ async def get_decouverte(limit):
     book_id_list = bdd.getLivresAEvaluerDecouverte(cursor, limit)
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-
+  
 @app.get("/get_tendance/{limit}")
 async def get_tendance(limit):
     book_id_list = bdd.getLivresAEvaluerTendance(cursor, limit)
@@ -66,6 +66,28 @@ async def get_meme_auteur(q: Annotated[list[str] | None, Query()] = None):
 async def get_in_serie(q: Annotated[list[str] | None, Query()] = None):
     book_id_list = bdd.getBookIdInSeries(cursor, int(q[0]))
     books_infos = getLivresInformation(cursor,book_id_list)
+    return books_infos
+
+@app.get("/get_next_books/{id}")
+async def get_next_books(id):
+
+    cursor.execute(f"""
+        SELECT _episode_serie.id_serie
+        FROM _episode_serie
+        WHERE _episode_serie.id_livre = {id};
+    """)
+
+    serieData = cursor.fetchall()
+
+    cursor.execute(f"""
+        SELECT _episode_serie.id_livre
+        FROM _episode_serie
+        WHERE _episode_serie.id_serie = {serieData[0][0]};
+    """)
+
+    bookData = cursor.fetchall()
+    books_infos = getLivresInformation(cursor,bookData)
+
     return books_infos
 
 
@@ -116,7 +138,7 @@ def getLivresInformation(cursor,idLivres):
     """)
 
     bookData = cursor.fetchall()
-
+    
     cursor.execute(f"""
         SELECT _genre.libelle_genre, _genre_livre.nb_votes
         FROM _genre_livre

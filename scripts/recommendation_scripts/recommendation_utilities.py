@@ -4,7 +4,7 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import re
-import gensim
+from gensim.models import Word2Vec
 import itertools
 
 def compareValeur(nomValeur, elemX, elemY):
@@ -77,7 +77,7 @@ def model_genre(cursor):
 
     livre = livre.groupby('Livre')['Genre'].apply(list).reset_index(name='Genre')
 
-    model1 = gensim.models.Word2Vec(livre['Genre'], min_count=1,vector_size=100, window=5)
+    model1 = Word2Vec(livre['Genre'], min_count=1,vector_size=100, window=5)
 
     return model1
 
