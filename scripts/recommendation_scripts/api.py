@@ -6,16 +6,29 @@ import database_functions as bdd
 import recommendation_utilities as ru
 from typing import Annotated
 import json 
+from fastapi.middleware.cors import CORSMiddleware
 
 cursor = bdd.setUpCursor()
 
 modelGenres = ru.model_genre(cursor)
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 #https://fastapi.tiangolo.com/tutorial/first-steps/
 
 
 #q1 = user, q2 = nbrecommendation, q3 = limite
+
+#/get_book_item_based/?q=40&q=10&q=10
+
+
 @app.get("/get_book_item_based/")
 async def get_book_item_based(q: Annotated[list[str] | None, Query()] = None):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluer(cursor, int(q[2])))
