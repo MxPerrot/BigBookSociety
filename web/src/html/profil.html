@@ -15,15 +15,15 @@
     <main>
         <div class="profile-container">
             <div class="profile-header">
-                <img src="../../public/img/goat.jpg" alt="Profile Picture" class="profile-img">
+                <img src="../../public/img/goat.jpg" alt="Profile Picture" class="profile-img" id="profile-img">
+                <input type="file" id="profile-img-input" style="display: none;" accept="image/*" onchange="changeProfileImage(event)">
+                <button class="edit-button" onclick="document.getElementById('profile-img-input').click()">modifier la photo</button>
                 <h1 class="profile-name">John Doe</h1>
                 <button class="edit-button" onclick="editProfileName()">modifier</button>
-                <p class="profile-email">john.doe@example.com</p>
-                <button class="edit-button" onclick="editProfileEmail()">modifier</button>
                 <p class="profile-dob">Date de naissance: 01/01/1990</p>
                 <button class="edit-button" onclick="editProfileDob()">modifier</button>
-                <p class="profile-address">Adresse: 123 Rue Exemple, Paris</p>
-                <button class="edit-button" onclick="editProfileAddress()">modifier</button>
+                <p class="profile-languages">Langues: Français, Anglais</p>
+                <button class="edit-button" onclick="editProfileLanguages()">modifier</button>
             </div>
         </div> 
     </main>

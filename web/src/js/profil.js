@@ -6,14 +6,6 @@ function editProfileName() {
     }
 }
 
-function editProfileEmail() {
-    const emailElement = document.querySelector('.profile-email');
-    const newEmail = prompt('Enter new email:', emailElement.textContent);
-    if (newEmail) {
-        emailElement.textContent = newEmail;
-    }
-}
-
 function editProfileDob() {
     const dobElement = document.querySelector('.profile-dob');
     const newDob = prompt('Enter new date of birth:', dobElement.textContent.replace('Date de naissance: ', ''));
@@ -22,11 +14,11 @@ function editProfileDob() {
     }
 }
 
-function editProfileAddress() {
-    const addressElement = document.querySelector('.profile-address');
-    const newAddress = prompt('Enter new address:', addressElement.textContent.replace('Adresse: ', ''));
-    if (newAddress) {
-        addressElement.textContent = 'Adresse: ' + newAddress;
+function editProfileLanguages() {
+    const languagesElement = document.querySelector('.profile-languages');
+    const newLanguages = prompt('Enter new languages:', languagesElement.textContent.replace('Langues: ', ''));
+    if (newLanguages) {
+        languagesElement.textContent = 'Langues: ' + newLanguages;
     }
 }
 
