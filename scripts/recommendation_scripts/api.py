@@ -68,6 +68,28 @@ async def get_in_serie(q: Annotated[list[str] | None, Query()] = None):
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
+@app.get("/get_next_books/{id}")
+async def get_next_books(id):
+
+    cursor.execute(f"""
+        SELECT _episode_serie.id_serie
+        FROM _episode_serie
+        WHERE _episode_serie.id_livre = {id};
+    """)
+
+    serieData = cursor.fetchall()
+
+    cursor.execute(f"""
+        SELECT _episode_serie.id_livre
+        FROM _episode_serie
+        WHERE _episode_serie.id_serie = {serieData[0][0]};
+    """)
+
+    bookData = cursor.fetchall()
+    books_infos = getLivresInformation(cursor,bookData)
+
+    return books_infos
+
 
 
 # @app.get("/get_book_by_id/{id}")
