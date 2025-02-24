@@ -4,30 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/styles.css">
-    <link rel="stylesheet" href="../styles/styleprofil.css">
+    <link rel="stylesheet" href="../styles/styleapropos.css">
     <script src="../js/header.js" type="text/javascript"></script>
-    <script src="../js/profil.js" type="text/javascript"></script>
     <script src="../js/footer.js" type="text/javascript" defer></script>
-    <title>PROFIL</title>
+    <title>A PROPOS</title>
 </head>
 <body>
     <header-component></header-component>
     <main>
-        <div class="profile-container">
-            <div class="profile-header">
-                <img src="../../public/img/logo.png" alt="Profile Picture" class="profile-img" id="profile-img">
-                <input type="file" id="profile-img-input" style="display: none;" accept="image/*" onchange="changeProfileImage(event)">
-                <button class="edit-button" onclick="document.getElementById('profile-img-input').click()">Changer la photo</button>
-                <h1 class="profile-name">John Doe</h1>
-                <button class="edit-button" onclick="editProfileName()">modifier</button>
-                <p class="profile-email">john.doe@example.com</p>
-                <button class="edit-button" onclick="editProfileEmail()">modifier</button>
-                <p class="profile-dob">Date de naissance: 01/01/1990</p>
-                <button class="edit-button" onclick="editProfileDob()">modifier</button>
-                <p class="profile-address">Adresse: 123 Rue Exemple, Paris</p>
-                <button class="edit-button" onclick="editProfileAddress()">modifier</button>
+        <div class="apropos-container">
+            <h1>A PROPOS</h1>
+            <p>Teams WIZARDS On est là pour les choquer !!</p>
+            <div class="team-section">
+                <h2>Our Team</h2>
+                <div class="team-member">
+                    <img src="../../public/img/goat.jpg" alt="Member 1" class="team-img">
+                    <h3>Florian Normand</h3>
+                    <p>Role: Dev Fullstack</p>
+                    <p>John is responsible for overseeing the project and ensuring everything runs smoothly.</p>
+                </div>
+                <div class="team-member">
+                    <img src="../../public/img/goat.jpg" alt="Member 2" class="team-img">
+                    <h3>Jane Smith</h3>
+                    <p>Role: Lead Developer</p>
+                    <p>Jane leads the development team and is responsible for the technical direction of the project.</p>
+                </div>
+                <!-- Add more team members as needed -->
             </div>
-        </div> 
+        </div>
     </main>
     <footer-component></footer-component>
 </body>
