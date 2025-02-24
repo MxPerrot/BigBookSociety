@@ -405,3 +405,57 @@ def getBookIdInSeries(cursor, user):
             liste_continuer_lecture.append(livre[0][0])
 
     return liste_continuer_lecture
+
+def ajoutClause(recherche,ajoutWhere):
+    if ajoutWhere:
+        recherche += "WHERE "
+        ajoutWhere=False
+    else:
+        recherche += "AND "
+    return (recherche,ajoutWhere)
+
+def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
+    chaineRecherche = """
+        SELECT DISTINCT _livre.id_livre         
+        FROM _livre
+        INNER JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        INNER JOIN _auteur_livre ON _livre.id_livre = _genre_livre.id_livre
+    """
+
+    ajoutWhere = False
+
+    if titre != None:
+        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+        chaineRecherche += f"titre LIKE '%{titre}%' "
+
+    if auteurs != None:
+        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+        chaineRecherche += f"id_auteur IN {auteurs} "
+
+    if genres != None:
+        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+        if type(genres) != int:
+            chaineRecherche += f"id_genre IN {genres} "
+        else:
+            chaineRecherche += f"id_genre IN ({genres}) "
+
+    if minNote != None:
+        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+        chaineRecherche += f"note_moyenne >= {minNote} "
+
+    if maxNote != None:
+        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+        chaineRecherche += f"note_moyenne <= {maxNote} "
+
+    chaineRecherche += ";"
+
+    cursor.execute(chaineRecherche)
+    rawBookData = cursor.fetchall()
+
+    # Reformate les données
+    bookIdList = [list(book)[0] for book in rawBookData]
+
+    return bookIdList
+
+cursor = setUpCursor()
+print(rechercheLivre(cursor,genres=(418,1),minNote=2,maxNote=3))
