@@ -14,16 +14,30 @@ function editProfileEmail() {
     }
 }
 
-function addBook() {
-    const bookList = document.querySelector('.book-list');
-    const bookTitle = prompt('Enter book title:');
-    if (bookTitle) {
-        const listItem = document.createElement('li');
-        listItem.textContent = bookTitle;
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove';
-        removeButton.onclick = () => listItem.remove();
-        listItem.appendChild(removeButton);
-        bookList.appendChild(listItem);
+function editProfileDob() {
+    const dobElement = document.querySelector('.profile-dob');
+    const newDob = prompt('Enter new date of birth:', dobElement.textContent.replace('Date de naissance: ', ''));
+    if (newDob) {
+        dobElement.textContent = 'Date de naissance: ' + newDob;
+    }
+}
+
+function editProfileAddress() {
+    const addressElement = document.querySelector('.profile-address');
+    const newAddress = prompt('Enter new address:', addressElement.textContent.replace('Adresse: ', ''));
+    if (newAddress) {
+        addressElement.textContent = 'Adresse: ' + newAddress;
+    }
+}
+
+function changeProfileImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgElement = document.getElementById('profile-img');
+            imgElement.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
     }
 }
