@@ -4,13 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="../styles/styleprofil.css">
     <script src="../js/header.js" type="text/javascript"></script>
+    <script src="../js/profil.js" type="text/javascript"></script>
     <script src="../js/footer.js" type="text/javascript" defer></script>
     <title>PROFIL</title>
 </head>
 <body>
     <header-component></header-component>
-    <main>  </main>
+    <main>
+        <div class="profile-container">
+            <div class="profile-header">
+                <img src="../../public/img/logo.png" alt="Profile Picture" class="profile-img">
+                <h1 class="profile-name">John Doe</h1>
+                <button class="edit-button" onclick="editProfileName()">Edit</button>
+                <p class="profile-email">john.doe@example.com</p>
+                <button class="edit-button" onclick="editProfileEmail()">Edit</button>
+            </div>
+            <div class="profile-books">
+                <h2>My Books</h2>
+                <ul class="book-list">
+                    <!-- List of books will be dynamically added here -->
+                </ul>
+                <button class="add-book-button" onclick="addBook()">Add Book</button>
+            </div>
+        </div> 
+    </main>
     <footer-component></footer-component>
 </body>
 </html>
