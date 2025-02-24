@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from item_based_recommendation import recommendationItemBased
 from user_based_recommendation import recommendationUserBased
 import database_functions as bdd
@@ -103,7 +103,11 @@ async def get_next_books(id):
 
     return books_infos
 
-
+@app.get("/search_books/")
+async def search_books(title:str=None, authors:tuple=None, genres:tuple=None, minNote:int=None, maxNote:int=None):
+    book_id_list = bdd.rechercheLivre(cursor, title, authors, genres, minNote, maxNote) 
+    books_infos = getLivresInformation(cursor,book_id_list)
+    return books_infos
 
 # @app.get("/get_book_by_id/{id}")
 # async def get_book_by_id(id):
@@ -123,7 +127,7 @@ async def get_next_books(id):
 
 
 def getLivresInformation(cursor,idLivres):
-    idLivres = tuple(idLivres)
+    idLivres = bdd.turnIterableIntoSqlList(idLivres)
 
     cursor.execute(f"""
         SELECT 
@@ -147,59 +151,62 @@ def getLivresInformation(cursor,idLivres):
         
         FROM _livre
         LEFT JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-        WHERE _livre.id_livre IN (1);
+        WHERE _livre.id_livre IN ({idLivres});
     """)
 
     bookData = cursor.fetchall()
+
+    if len(bookData) == 0:
+        raise HTTPException('No book found, either there is no book with those IDs or the Database is not operating correctly\nList of book ID : '+idLivres)
     
     cursor.execute(f"""
-        SELECT _genre.libelle_genre, _genre_livre.nb_votes
+        SELECT _genre_livre.id_livre, _genre.libelle_genre, _genre_livre.nb_votes
         FROM _genre_livre
         INNER JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-        WHERE _genre_livre.id_livre IN (1);
+        WHERE _genre_livre.id_livre IN ({idLivres});
     """)
 
     genreData = cursor.fetchall()
 
+    print(genreData)
+
     cursor.execute(f"""
-        SELECT _auteur.nom
+        SELECT _auteur_livre.id_livre, _auteur.nom
         FROM _auteur_livre
         INNER JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-        WHERE _auteur_livre.id_livre IN (1);
+        WHERE _auteur_livre.id_livre IN ({idLivres});
     """)
 
     authorData = cursor.fetchall()
 
     cursor.execute(f"""
-        SELECT _serie.nom_serie, _episode_serie.numero_episode
+        SELECT _episode_serie.id_livre, _serie.nom_serie, _episode_serie.numero_episode
         FROM _episode_serie
         INNER JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
-        WHERE _episode_serie.id_livre IN (1);
+        WHERE _episode_serie.id_livre IN ({idLivres});
     """)
 
     seriesData = cursor.fetchall()
 
     cursor.execute(f"""
-        SELECT _pays.nom, _cadre.localisation, _cadre.annee
+        SELECT _cadre_livre.id_livre, _pays.nom, _cadre.localisation, _cadre.annee
         FROM _cadre_livre
         LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
         LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-        WHERE _cadre_livre.id_livre IN (1);
+        WHERE _cadre_livre.id_livre IN ({idLivres});
     """)
 
     settingData = cursor.fetchall()
 
     cursor.execute(f"""
-        SELECT _prix.nom_prix, _prix.annee_prix
+        SELECT _prix_livre.id_livre, _prix.nom_prix, _prix.annee_prix
         FROM _prix_livre
         LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-        WHERE _prix_livre.id_livre IN (1);
+        WHERE _prix_livre.id_livre IN ({idLivres});
     """)
 
     priceData = cursor.fetchall()
 
-    if len(bookData) == 0:
-        raise Exception('No book found, either there is no book with those IDs or the Database is not operating correctly\nList of book ID : '+idLivres)
 
     bookList = [list(book) for book in bookData]
     genreList = [list(genre) for genre in genreData]
@@ -212,6 +219,8 @@ def getLivresInformation(cursor,idLivres):
         book_json = []
 
         for i in range(len(bookList)):
+            bookId = bookList[i][0]
+            #FIXME Prevoir le cas où l'une de ces données manque / est Null ou NoneType
             book_json.append({
                 "id_livre": bookList[i][0], 
                 "titre": bookList[i][1],
@@ -231,30 +240,30 @@ def getLivresInformation(cursor,idLivres):
                 "description": bookList[i][15],
             })
 
-            if len(bookList[0]) >= 16:
+            if len(bookList[i]) >= 16:
                 book_json[i]["nom_editeur"] = bookList[i][16]
 
-            if len(genreList) >= 2:
-                book_json[i]["libelle_genre"] = genreList[i][0]
-                book_json[i]["nb_votes"] = genreList[i][1]
+            if len(genreList) != 0:
+                book_json[i]["libelle_genre"] = [genre[1] for genre in genreList if genre[0] == bookId]
+                book_json[i]["nb_votes"] = [genre[2] for genre in genreList if genre[0] == bookId]
 
-            if len(authorList) >= 1:
-                book_json[i]["nom_auteur"] = authorList[i][0]
+            if len(authorList) != 0:
+                book_json[i]["nom_auteur"] = [author[1] for author in authorList if author[0] == bookId]
 
-            if len(seriesList) >= 2:
-                book_json[i]["nom_serie"] = seriesList[i][0]
-                book_json[i]["numero_episode"] = seriesList[i][1]
+            if len(seriesList) != 0:
+                book_json[i]["nom_serie"] = [series[1] for series in seriesList if series[0] == bookId]
+                book_json[i]["numero_episode"] = [series[2] for series in seriesList if series[0] == bookId]
 
             if len(settingList) != 0:
-                book_json[i]["nom"] = settingList[i][0]
-                book_json[i]["localisation"] = settingList[i][1]
-                book_json[i]["annee"] = settingList[i][2]
+                book_json[i]["nom"] = [setting[1] for setting in settingList if setting[0] == bookId]
+                book_json[i]["localisation"] = [setting[2] for setting in settingList if setting[0] == bookId]
+                book_json[i]["annee"] = [setting[3] for setting in settingList if setting[0] == bookId]
 
             if len(priceList) != 0:
-                book_json[i]["nom_prix"] = priceList[i][0]
-                book_json[i]["annee_prix"] = priceList[i][1]
+                book_json[i]["nom_prix"] = [price[1] for price in priceList if price[0] == bookId]
+                book_json[i]["annee_prix"] = [price[2] for price in priceList if price[0] == bookId]
 
         return json.dumps(book_json)
     return 0
 
-print(getLivresInformation(cursor, [1]))
+print(getLivresInformation(cursor, [1,350]))

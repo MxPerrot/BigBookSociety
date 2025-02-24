@@ -24,6 +24,19 @@ def setUpCursor():
 
     return cursor
 
+def turnIterableIntoSqlList(iterable):
+    first = True
+    chaineListe = ""
+    print(iterable)
+    for elem in iterable:
+        if first:
+            chaineListe += str(elem)
+            first = False
+        else:
+            chaineListe += ", "+str(elem)
+    print(chaineListe)
+    return chaineListe
+
 def getLivresUtilisateur(cursor, id_utilisateur):
     """
     Renvoie les données des livres lus par l'utilisateur donné en paramètre
@@ -418,11 +431,11 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
     chaineRecherche = """
         SELECT DISTINCT _livre.id_livre         
         FROM _livre
-        INNER JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        INNER JOIN _auteur_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _auteur_livre ON _livre.id_livre = _genre_livre.id_livre
     """
 
-    ajoutWhere = False
+    ajoutWhere = True
 
     if titre != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
@@ -434,10 +447,8 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
 
     if genres != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
-        if type(genres) != int:
-            chaineRecherche += f"id_genre IN {genres} "
-        else:
-            chaineRecherche += f"id_genre IN ({genres}) "
+        genres = turnIterableIntoSqlList(genres)
+        chaineRecherche += f"id_genre IN ({genres}) "
 
     if minNote != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
@@ -448,7 +459,6 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
         chaineRecherche += f"note_moyenne <= {maxNote} "
 
     chaineRecherche += ";"
-
     cursor.execute(chaineRecherche)
     rawBookData = cursor.fetchall()
 
@@ -458,4 +468,4 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
     return bookIdList
 
 cursor = setUpCursor()
-print(rechercheLivre(cursor,genres=(418,1),minNote=2,maxNote=3))
+print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
