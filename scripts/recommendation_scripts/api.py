@@ -47,7 +47,7 @@ async def get_decouverte(limit):
     book_id_list = bdd.getLivresAEvaluerDecouverte(cursor, limit)
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-
+  
 @app.get("/get_tendance/{limit}")
 async def get_tendance(limit):
     book_id_list = bdd.getLivresAEvaluerTendance(cursor, limit)
@@ -138,7 +138,7 @@ def getLivresInformation(cursor,idLivres):
     """)
 
     bookData = cursor.fetchall()
-
+    
     cursor.execute(f"""
         SELECT _genre.libelle_genre, _genre_livre.nb_votes
         FROM _genre_livre

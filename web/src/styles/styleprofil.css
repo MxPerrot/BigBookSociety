@@ -1,0 +1,94 @@
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.profile-name {
+    font-size: 2em;
+    margin: 0;
+}
+
+.profile-email {
+    font-size: 1em;
+    color: #666;
+}
+
+.profile-bio {
+    margin-top: 20px;
+}
+
+.profile-bio h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.profile-bio p {
+    font-size: 1em;
+    color: #333;
+}
+
+.edit-button, .add-book-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.edit-button:hover, .add-book-button:hover {
+    background-color: #0056b3;
+}
+
+.profile-books {
+    margin-top: 20px;
+}
+
+.book-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.book-list li {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.book-list li button {
+    margin-left: 10px;
+}
+
+.edit-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}
