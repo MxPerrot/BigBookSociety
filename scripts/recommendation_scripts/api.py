@@ -8,9 +8,7 @@ from typing import Annotated
 import json 
 from fastapi.middleware.cors import CORSMiddleware
 
-cursor = bdd.setUpCursor()
 
-modelGenres = ru.model_genre(cursor)
 app = FastAPI()
 
 app.add_middleware(
@@ -20,6 +18,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+cursor = bdd.setUpCursor()
+
+modelGenres = ru.model_genre(cursor)
 
 #https://fastapi.tiangolo.com/tutorial/first-steps/
 
