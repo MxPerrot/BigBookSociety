@@ -30,27 +30,27 @@ app.add_middleware(
 
 
 @app.get("/get_book_item_based/")
-async def get_book_item_based(q: Annotated[list[str] | None, Query()] = None):
-    book_id_list = recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluer(cursor, int(q[2])))
+async def get_book_item_based(user: int, nbrecommendation: int,limit: int):
+    book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluer(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 @app.get("/get_book_item_based_tendance/")
-async def get_book_item_based_tendance(q: Annotated[list[str] | None, Query()] = None):
-    book_id_list = recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluerTendance(cursor, int(q[2])))
+async def get_book_item_based_tendance(user: int, nbrecommendation: int,limit: int):
+    book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerTendance(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 @app.get("/get_book_item_based_decouverte/")
-async def get_book_item_based_decouverte(q: Annotated[list[str] | None, Query()] = None):
-    book_id_list = recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluerDecouverte(cursor, int(q[2])))
+async def get_book_item_based_decouverte(user: int, nbrecommendation: int,limit: int):
+    book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerDecouverte(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 #q1 = user, q2 = nbrecommendation
 @app.get("/get_book_user_based/")
-async def get_book_user_based(q: Annotated[list[str] | None, Query()] = None):
-    book_id_list = recommendationUserBased(cursor, int(q[0]), int(q[1]))
+async def get_book_user_based(user: int, nbrecommendation: int):
+    book_id_list = recommendationUserBased(cursor, int(user), int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
@@ -69,15 +69,15 @@ async def get_tendance(limit):
 
 #q1 = user, q2 = nbrecommendation
 @app.get("/get_meme_auteur/")
-async def get_meme_auteur(q: Annotated[list[str] | None, Query()] = None):
-    book_id_list = bdd.getBookIdSameAuthor(cursor, int(q[0]),int(q[1]))
+async def get_meme_auteur(user: int = 0, nbrecommendation: int = 10):
+    book_id_list = bdd.getBookIdSameAuthor(cursor, int(user),int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 #q1 = user
-@app.get("/get_in_serie/")
-async def get_in_serie(q: Annotated[list[str] | None, Query()] = None):
-    book_id_list = bdd.getBookIdInSeries(cursor, int(q[0]))
+@app.get("/get_in_serie/{user}")
+async def get_in_serie(user):
+    book_id_list = bdd.getBookIdInSeries(cursor, int(user))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
