@@ -103,6 +103,16 @@ async def get_next_books(id):
 
     return books_infos
 
+@app.get("/get_genres/")
+async def get_genres():
+    genre_list = bdd.getGenres(cursor)
+    return json.dumps(genre_list)
+
+@app.get("/get_authors/")
+async def get_authors():
+    author_list = bdd.getAuthors(cursor)
+    return json.dumps(author_list)
+
 @app.get("/search_books/")
 async def search_books(title:str=None, authors:tuple=None, genres:tuple=None, minNote:int=None, maxNote:int=None):
     book_id_list = bdd.rechercheLivre(cursor, title, authors, genres, minNote, maxNote) 
@@ -272,4 +282,4 @@ def getLivresInformation(cursor,idLivres):
         return json.dumps(book_json)
     return 0
 
-print(getLivresInformation(cursor, [1,350]))
+#print(getLivresInformation(cursor, [1,350]))

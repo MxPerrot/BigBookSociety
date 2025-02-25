@@ -427,6 +427,32 @@ def ajoutClause(recherche,ajoutWhere):
         recherche += "AND "
     return (recherche,ajoutWhere)
 
+def getGenres(cursor):
+    cursor.execute(f"""
+    SELECT id_genre, libelle_genre 
+    FROM _genre;
+    """)
+
+    genresRaw = cursor.fetchall()
+
+    # Reformate les données
+    genres = [list(genre) for genre in genresRaw]
+
+    return genres
+
+def getAuthors(cursor):
+    cursor.execute(f"""
+    SELECT _auteur.id_auteur, _auteur.nom 
+    FROM _auteur;
+    """)
+
+    authorsRaw = cursor.fetchall()
+
+    # Reformate les données
+    authors = [list(author) for author in authorsRaw]
+
+    return authors
+
 def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
     chaineRecherche = """
         SELECT DISTINCT _livre.id_livre         
@@ -468,4 +494,5 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
     return bookIdList
 
 cursor = setUpCursor()
-print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
+#print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
+#print(getGenres(cursor))
