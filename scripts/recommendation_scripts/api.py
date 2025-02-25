@@ -126,7 +126,7 @@ async def search_author(nom):
     authorInfo = bdd.rechercheAuteur(cursor, nom)
 
     if len(authorInfo) == 0:
-        raise HTTPException('No author found matching this name, either there is no author matching this name or the Database is not operating correctly')
+        return json.dumps([])
     author_json = []
     for author in authorInfo:
 
@@ -193,7 +193,7 @@ def getLivresInformation(cursor,idLivres):
     bookData = cursor.fetchall()
 
     if len(bookData) == 0:
-        raise HTTPException('No book found, either there is no book with those IDs or the Database is not operating correctly\nList of book ID : '+idLivres)
+        return json.dumps([])
     
     cursor.execute(f"""
         SELECT _genre_livre.id_livre, _genre.libelle_genre, _genre_livre.nb_votes
