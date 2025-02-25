@@ -1,0 +1,101 @@
+/**
+ * This programs is responsible for managing datalist-like html elements.
+ * 
+ * It now supports genres, and later will support searching for authors as well.
+ * 
+ */
+
+
+async function getGenres() {
+    /**
+     * This function returns the list of genres using the API
+     * 
+     */
+
+    try {
+        // Requête à l'API
+        const response = await fetch("http://127.0.0.1:8000/get_genres/");
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération des genres : ${response.status}`);
+        }
+        const genres = eval(await response.json());
+        
+        // Formater genre
+        // e.g. "[[1, \"40k\"], [2, \"a%C5%9Fk\"], [3, \"academic\"]]" --> ["40k","a%C5%9Fk","academic"]
+        
+        const genresArray = genres.map(genre => genre[1]);
+
+        console.log(genresArray)
+
+        return genresArray;
+        
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des genres :", error);
+    }
+}
+
+// get genres
+const options = getGenres(); 
+// get input element
+const input = document.getElementById("datalist-input");
+// get datalist options element
+const optionsContainer = document.getElementById("datalist-options");
+
+
+// Add Event Listener to input for search
+input.addEventListener("input", async () => {
+    // Make the search not case sensitive
+    const value = input.value.toLowerCase();
+
+    // Clear previous options
+    optionsContainer.innerHTML = "";
+
+    if (value) {
+        const allOptions = await options;
+
+        // Filter and prioritize:
+        // 1. Exact match
+        // 2. Starts with the search term
+        // 3. Contains the search term elsewhere
+        const filteredOptions = allOptions
+            .filter(option => option && option.toLowerCase().includes(value)) // Exclude non-matching genres
+            .map(option => ({
+                text: option,
+                priority: option.toLowerCase() === value ? 0 :
+                          option.toLowerCase().startsWith(value) ? 1 : 2
+            }))
+            .sort((a, b) => a.priority - b.priority) // Sort based on priority
+            .map(option => option.text);
+
+        // Display options in dropdown menu
+        if (filteredOptions.length) {
+            optionsContainer.style.display = "block";
+
+            filteredOptions.forEach(option => {
+                const div = document.createElement("div");
+                div.textContent = option;
+
+                // Add event listener to select an option
+                div.addEventListener("click", () => {
+                    input.value = option;
+                    optionsContainer.style.display = "none";
+                });
+
+                optionsContainer.appendChild(div);
+            });
+        } else {
+            optionsContainer.style.display = "none";
+        }
+    } else {
+        optionsContainer.style.display = "none";
+    }
+});
+
+
+// Hide the options container when the user clicks on the options button
+document.addEventListener("click", (e) => {
+    if (!input.contains(e.target) && !optionsContainer.contains(e.target)) {
+        optionsContainer.style.display = "none";
+    }
+});

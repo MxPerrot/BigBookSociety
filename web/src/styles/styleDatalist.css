@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+}
+.datalist-container {
+    position: relative;
+    width: 250px;
+}
+.datalist-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.datalist-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+.datalist-options div {
+    padding: 8px;
+    cursor: pointer;
+}
+.datalist-options div:hover {
+    background: #f0f0f0;
+}
