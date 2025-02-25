@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="../styles/stylerechercher.css">
+    <script src="../js/header.js" type="text/javascript"></script>
+    <script src="../js/rechercher.js" type="text/javascript" defer></script>
+    <script src="../js/footer.js" type="text/javascript" defer></script>
+    <title>RECHERCHER</title>
+</head>
+<body>
+    <header-component></header-component>
+    <main>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Rechercher des livres..." oninput="filterBooks()">
+            <select id="genre-select" onchange="filterBooks()">
+                <option value="">Tous les genres</option>
+                <option value="fiction">Fiction</option>
+                <option value="non-fiction">Non-Fiction</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="science-fiction">Science Fiction</option>
+                <option value="mystery">Mystery</option>
+                <option value="biography">Biography</option>
+                <!-- Add more genres as needed -->
+            </select>
+            <div class="slider-container">
+                <label id="rating-range">Intervalle des notes:</label>
+                <div class="range-slider">
+                    <input type="range" id="min-rating" min="0" max="5" step="0.1" value="0" oninput="updateRatingRange()">
+                    <input type="range" id="max-rating" min="0" max="5" step="0.1" value="5" oninput="updateRatingRange()">
+                </div>
+                <span id="rating-range">0 - 5</span>
+            </div>
+        </div>
+        <div class="results-container" id="results-container">
+        </div>
+    </main>
+    <footer-component></footer-component>
+</body>
+</html>
