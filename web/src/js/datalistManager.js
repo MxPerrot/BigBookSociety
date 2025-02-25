@@ -3,13 +3,18 @@
  * 
  * It now supports genres, and later will support searching for authors as well.
  * 
+ * TODO:
+ * - Add support for authors
+ * - Directly integer the html template as a js function that will enable implementing
+ *   it as just calling a function and giving it a div id to choose location
+ * - Make it easily choosable wether to search for authors or genres or other things to come.
+ * - Make it easy to implement new features (variables to choose from other than authors/genres)
  */
 
 
 async function getGenres() {
     /**
      * This function returns the list of genres using the API
-     * 
      */
 
     try {
