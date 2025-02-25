@@ -221,19 +221,25 @@ def getLivresInformation(cursor,idLivres):
         for i in range(len(bookList)):
             bookId = bookList[i][0]
             #FIXME Prevoir le cas où l'une de ces données manque / est Null ou NoneType
+            notMoy = bookList[i][4]
+            if notMoy != None:
+                notMoy = float(notMoy)
+            datePubli = bookList[i][11]
+            if datePubli != None:
+                datePubli = str(datePubli)
             book_json.append({
-                "id_livre": bookList[i][0], 
+                "id_livre": bookId, 
                 "titre": bookList[i][1],
                 "nb_notes": bookList[i][2], 
                 "nb_critiques": bookList[i][3],
-                "note_moyenne": float(bookList[i][4]),
+                "note_moyenne": notMoy,
                 "nb_note_1_etoile": bookList[i][5],
                 "nb_note_2_etoile": bookList[i][6],
                 "nb_note_3_etoile": bookList[i][7],
                 "nb_note_4_etoile": bookList[i][8],
                 "nb_note_5_etoile": bookList[i][9],
                 "nombre_pages": bookList[i][10], 
-                "date_publication": str(bookList[i][11]), 
+                "date_publication": datePubli, 
                 "titre_original": bookList[i][12],
                 "isbn": bookList[i][13],
                 "isbn13": bookList[i][14],
