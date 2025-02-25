@@ -118,6 +118,8 @@ async def get_authors():
 @app.get("/search_books/")
 async def search_books(title:str=None, authors:tuple=None, genres:tuple=None, minNote:int=None, maxNote:int=None):
     book_id_list = bdd.rechercheLivre(cursor, title, authors, genres, minNote, maxNote) 
+    if len(book_id_list) < 1:
+        return json.dumps([])
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
@@ -203,8 +205,6 @@ def getLivresInformation(cursor,idLivres):
     """)
 
     genreData = cursor.fetchall()
-
-    print(genreData)
 
     cursor.execute(f"""
         SELECT _auteur_livre.id_livre, _auteur.nom
