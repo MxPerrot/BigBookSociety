@@ -119,6 +119,30 @@ async def search_books(title:str=None, authors:tuple=None, genres:tuple=None, mi
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
+@app.get("/search_author/{nom}")
+async def search_author(nom):
+    authorInfo = bdd.rechercheAuteur(cursor, nom)
+
+    if len(authorInfo) == 0:
+        raise HTTPException('No author found matching this name, either there is no author matching this name or the Database is not operating correctly')
+    author_json = []
+    for author in authorInfo:
+
+        noteMoy = author[4]
+        if noteMoy != None:
+            noteMoy = float(noteMoy)
+
+        author_json.append({
+                "id_auteur": author[0],
+                "nom": author[1],
+                "origine": author[2],
+                "sexe": author[3],
+                "note_moyenne": noteMoy,
+                "genre_ecrit": author[5]
+            })
+    
+    return json.dumps(author_json)
+
 # @app.get("/get_book_by_id/{id}")
 # async def get_book_by_id(id):
 #     return recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluerDecouverte(cursor, int(q[2])))
@@ -231,9 +255,9 @@ def getLivresInformation(cursor,idLivres):
         for i in range(len(bookList)):
             bookId = bookList[i][0]
             #FIXME Prevoir le cas où l'une de ces données manque / est Null ou NoneType
-            notMoy = bookList[i][4]
-            if notMoy != None:
-                notMoy = float(notMoy)
+            noteMoy = bookList[i][4]
+            if noteMoy != None:
+                noteMoy = float(noteMoy)
             datePubli = bookList[i][11]
             if datePubli != None:
                 datePubli = str(datePubli)
@@ -242,7 +266,7 @@ def getLivresInformation(cursor,idLivres):
                 "titre": bookList[i][1],
                 "nb_notes": bookList[i][2], 
                 "nb_critiques": bookList[i][3],
-                "note_moyenne": notMoy,
+                "note_moyenne": noteMoy,
                 "nb_note_1_etoile": bookList[i][5],
                 "nb_note_2_etoile": bookList[i][6],
                 "nb_note_3_etoile": bookList[i][7],

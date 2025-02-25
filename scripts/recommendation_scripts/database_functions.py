@@ -493,6 +493,23 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
 
     return bookIdList
 
+def rechercheAuteur(cursor, nom):
+    cursor.execute(f"""
+        SELECT DISTINCT _auteur.id_auteur, nom, origine, sexe, note_moyenne, libelle_genre
+        FROM _auteur
+        LEFT JOIN _auteur_genre ON _auteur_genre.id_auteur = _auteur.id_auteur
+        LEFT JOIN _genre ON _genre.id_genre = _auteur_genre.id_genre
+        WHERE nom LIKE '%{nom}%';
+    """)
+    
+    rawAuthorData = cursor.fetchall()
+    
+    # Reformate les données
+    authors = [list(author) for author in rawAuthorData]
+
+    return authors
+
 cursor = setUpCursor()
 #print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
 #print(getGenres(cursor))
+#print(rechercheAuteur(cursor,"martin"))
