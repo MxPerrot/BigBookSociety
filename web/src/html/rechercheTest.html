@@ -6,6 +6,8 @@
     <title>Recherche</title>
     <script src="/libs/js/jquery-3.7.1.min.js" defer></script>
     <script src="../js/rechercheTest.js" type="text/javascript" defer></script>
+    <link rel="stylesheet" href="/web/src/styles/styleDatalist.css">
+    <script src="/web/src/js/datalistManager.js" defer></script>
 </head>
 <body>
     <input type="text" id="searchbar"><br>
@@ -13,5 +15,13 @@
     <input type="text" id="genreIdBar"><br>
     <button id="sendsearch">Rechercher</button>
     <p id="result"></p>
+    <div class="datalist-container">
+        <input type="text" id="author-input" class="datalist-input" placeholder="Rechercher...">
+        <div id="author-options" class="datalist-options"></div>
+    </div>
+    <div class="datalist-container">
+        <input type="text" id="genre-input" class="datalist-input" placeholder="Rechercher...">
+        <div id="genre-options" class="datalist-options"></div>
+    </div>
 </body>
 </html>

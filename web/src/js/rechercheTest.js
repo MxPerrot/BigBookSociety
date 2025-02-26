@@ -6,16 +6,16 @@ let genreBar = $("#genreIdBar")
 
 async function search() {
     let first = true
-    let adress = "http://127.0.0.1:8000/search_books/?"
+    let adress = "http://127.0.0.1:8000/search_books/"
     let title = searchbar.val()
     if (title != "") {
-        adress += "title="+title
+        adress += "?title="+title
         first = false
     }
     let author = authorBar.val()
     if (author != "") {
         if (first) {
-            adress += "authors="+author
+            adress += "?authors="+author
             first = false
         } else {
             adress += "&authors="+author
@@ -24,7 +24,7 @@ async function search() {
     let genres = genreBar.val()
     if (genres != "") {
         if (first) {
-            adress += "genres="+genres
+            adress += "?genres="+genres
             first = false
         } else {
             adress += "&genres="+genres
@@ -38,7 +38,7 @@ async function search() {
 
         console.log(data)
     } catch (error) {
-        console.error("Test")
+        console.error("Erreur")
     }
 }
 
