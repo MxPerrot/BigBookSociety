@@ -22,6 +22,19 @@
     border-radius: 0.25rem;
     overflow: hidden;
   }
+  .media-element >div {
+    height: 200px;
+    margin: 5px;
+  }
+
+  .media-element > div>h3 {
+    padding-top: 10px;
+  }
+
+  .media-element > div>h3,p {
+    padding-left: 15px;
+  }
+
   .media-element > img {
     width: 100%;
     aspect-ratio: 16 / 9;

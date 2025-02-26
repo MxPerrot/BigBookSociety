@@ -34,7 +34,6 @@ function fetchBooks() {
                   <p><strong>ISBN :</strong> ${isbn}</p>
                   <p><strong>Genre :</strong> ${genre}</p>
                 </div>
-                <hr>
               </div>
             `;
 
