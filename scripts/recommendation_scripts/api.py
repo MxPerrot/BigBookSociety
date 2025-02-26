@@ -116,8 +116,8 @@ async def get_authors():
     return json.dumps(author_list)
 
 @app.get("/search_books/")
-async def search_books(title:str=None, authors:tuple=None, genres:tuple=None, minNote:int=None, maxNote:int=None):
-    book_id_list = bdd.rechercheLivre(cursor, title, authors, genres, minNote, maxNote) 
+async def search_books(pageNum:int=1, title:str=None, authors:tuple=None, genres:tuple=None, minNote:int=None, maxNote:int=None):
+    book_id_list = bdd.rechercheLivre(cursor, pageNum, title, authors, genres, minNote, maxNote) 
     if len(book_id_list) < 1:
         return json.dumps([])
     books_infos = getLivresInformation(cursor,book_id_list)
@@ -305,7 +305,7 @@ def getLivresInformation(cursor,idLivres):
                 book_json[i]["nom_prix"] = [price[1] for price in priceList if price[0] == bookId]
                 book_json[i]["annee_prix"] = [price[2] for price in priceList if price[0] == bookId]
 
-        return json.dumps(book_json)
+        return book_json
     return 0
 
 #print(getLivresInformation(cursor, [1,350]))

@@ -453,7 +453,7 @@ def getAuthors(cursor):
 
     return authors
 
-def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
+def rechercheLivre(cursor, pageNum=1, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
     chaineRecherche = """
         SELECT DISTINCT _livre.id_livre         
         FROM _livre
@@ -484,7 +484,10 @@ def rechercheLivre(cursor, titre=None, auteurs=None, genres=None, minNote=None, 
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
         chaineRecherche += f"note_moyenne <= {maxNote} "
 
-    chaineRecherche += ";"
+    # https://www.geeksforgeeks.org/can-we-use-contains-in-postgresql/
+    # to add description to search, use Full text 
+
+    chaineRecherche += f"LIMIT 10 OFFSET {10*(pageNum-1)};"
     cursor.execute(chaineRecherche)
     rawBookData = cursor.fetchall()
 
