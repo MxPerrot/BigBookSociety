@@ -4,9 +4,9 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2
 import random as rd
 
-def setUpCursor():
+def setUpConnection():
     """
-    Connects to the Database and returns the cursor
+    Connects to the Database
     """
     # loading variables from .env file
     load_dotenv() 
@@ -18,6 +18,14 @@ def setUpCursor():
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
+
+    return connection
+
+
+def setUpCursor(connection):
+    """
+    Returns the cursor
+    """
 
     cursor = connection.cursor()
     cursor.execute("SET SCHEMA 'sae';")

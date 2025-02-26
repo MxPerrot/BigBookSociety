@@ -24,7 +24,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-cursor = bdd.setUpCursor()
+connection = bdd.setUpConnection()
+cursor = bdd.setUpCursor(connection)
 
 modelGenres = ru.model_genre(cursor)
 
