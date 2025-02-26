@@ -465,53 +465,69 @@ def getAuthors(cursor):
 
     return authors
 
-def rechercheLivre(cursor, pageNum=1, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
-    chaineRecherche = """
-        SELECT DISTINCT _livre.id_livre         
+def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
+    baseQuery = """
+        SELECT DISTINCT _livre.id_livre, _livre.titre
         FROM _livre
         LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
         LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
+        WHERE 1=1
     """
-
-    ajoutWhere = True
-
-    if titre != None:
-        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
-        chaineRecherche += f"LOWER(titre) LIKE '%{titre.lower()}%' "
     
-    if auteurs != None:
-        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+    # General filters
+    if auteurs:
         auteurs = turnIterableIntoSqlList(auteurs)
-        chaineRecherche += f"id_auteur IN ({auteurs}) "
+        baseQuery += f" AND id_auteur IN ({auteurs}) "
     
-    if genres != None:
-        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
+    if genres:
         genres = turnIterableIntoSqlList(genres)
-        chaineRecherche += f"id_genre IN ({genres}) "
-
-    if minNote != None:
-        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
-        chaineRecherche += f"note_moyenne >= {minNote} "
-
-    if maxNote != None:
-        (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
-        chaineRecherche += f"note_moyenne <= {maxNote} "
-
-    # https://www.geeksforgeeks.org/can-we-use-contains-in-postgresql/
-    # to add description to search, use Full text 
-
-    chaineRecherche += f"""
-        LIMIT 10 OFFSET {10*(pageNum-1)};
-    """
-
-    print(chaineRecherche)
-    cursor.execute(chaineRecherche)
+        baseQuery += f" AND id_genre IN ({genres}) "
+    
+    if minNote is not None:
+        baseQuery += f" AND note_moyenne >= {minNote} "
+    
+    if maxNote is not None:
+        baseQuery += f" AND note_moyenne <= {maxNote} "
+    
+    if titre:
+        # Query for exact matches (priority 1)
+        queryExact = f"""
+            SELECT id_livre, titre, 1 AS priority
+            FROM ({baseQuery}) AS filtered_books
+            WHERE LOWER(titre) = LOWER('{titre}')
+        """
+        # Query for titles starting with the given string (priority 2), excluding exact matches
+        queryStartsWith = f"""
+            SELECT id_livre, titre, 2 AS priority
+            FROM ({baseQuery}) AS filtered_books
+            WHERE LOWER(titre) LIKE LOWER('{titre}%')
+              AND LOWER(titre) <> LOWER('{titre}')
+        """
+        finalQuery = f"""
+            ({queryExact})
+            UNION ALL
+            ({queryStartsWith})
+            ORDER BY priority
+            LIMIT {paginTaille} OFFSET {paginTaille * (pageNum - 1)}
+        """
+    else:
+        finalQuery = baseQuery + f" ORDER BY _livre.id_livre LIMIT {paginTaille} OFFSET {paginTaille * (pageNum - 1)}"
+    
+    print(finalQuery)  # Debug output
+    cursor.execute(finalQuery)
     rawBookData = cursor.fetchall()
-
-    # Reformate les données
-    bookIdList = [list(book)[0] for book in rawBookData]
-
+    
+    # Extract list of book IDs
+    bookIdList = [row[0] for row in rawBookData]
     return bookIdList
+
+
+
+
+
+
+
+
 
 def rechercheAuteur(cursor, nom):
     cursor.execute(f"""
