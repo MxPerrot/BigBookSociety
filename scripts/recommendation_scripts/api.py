@@ -26,16 +26,12 @@ modelGenres = ru.model_genre(cursor)
 #https://fastapi.tiangolo.com/tutorial/first-steps/
 
 
-#q1 = user, q2 = nbrecommendation, q3 = limite
-
-#/get_book_item_based/?q=40&q=10&q=10
-
-
 @app.get("/get_book_item_based/")
 async def get_book_item_based(user:int, nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluer(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
+
 
 @app.get("/get_book_item_based_tendance/")
 async def get_book_item_based_tendance(user:int, nbrecommendation:int=10, limit:int=1000):
@@ -43,26 +39,20 @@ async def get_book_item_based_tendance(user:int, nbrecommendation:int=10, limit:
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
+
 @app.get("/get_book_item_based_decouverte/")
 async def get_book_item_based_decouverte(user:int, nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerDecouverte(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-#q1 = user, q2 = nbrecommendation
+
 @app.get("/get_book_user_based/")
 async def get_book_user_based(user:int, nbrecommendation:int=10):
     book_id_list = recommendationUserBased(cursor, int(user), int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-"""
-@app.get("/get_decouverte/{limit}")
-async def get_decouverte(limit):
-    book_id_list = bdd.getLivresAEvaluerDecouverte(cursor, limit)
-    books_infos = getLivresInformation(cursor,book_id_list)
-    return books_infos
-"""
 
 @app.get("/get_tendance/{limit}")
 async def get_tendance(limit:int):
@@ -70,14 +60,14 @@ async def get_tendance(limit:int):
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-#q1 = user, q2 = nbrecommendation
+
 @app.get("/get_meme_auteur/")
 async def get_meme_auteur(user:int, nbrecommendation:int=10):
     book_id_list = bdd.getBookIdSameAuthor(cursor, int(user),int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-#q1 = user
+
 @app.get("/get_in_serie/{user}")
 async def get_in_serie(user:int):
     book_id_list = bdd.getBookIdInSeries(cursor, int(user))
@@ -147,22 +137,6 @@ async def search_author(nom:str):
             })
     
     return author_json
-
-# @app.get("/get_book_by_id/{id}")
-# async def get_book_by_id(id):
-#     return recommendationItemBased(cursor, modelGenres, int(q[0]), int(q[1]), bdd.getLivresAEvaluerDecouverte(cursor, int(q[2])))
-
-
-
-
-# --titre
-# serie
-# --description
-# --nom auteur
-# --edition
-# --nbr de pages
-# --date de sortie
-# eventuellement prix
 
 
 def getLivresInformation(cursor,idLivres):
@@ -257,7 +231,6 @@ def getLivresInformation(cursor,idLivres):
 
         for i in range(len(bookList)):
             bookId = bookList[i][0]
-            #FIXME Prevoir le cas où l'une de ces données manque / est Null ou NoneType
             noteMoy = bookList[i][4]
             if noteMoy != None:
                 noteMoy = float(noteMoy)
