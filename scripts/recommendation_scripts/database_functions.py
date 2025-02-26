@@ -137,12 +137,10 @@ def getLivresAEvaluer(cursor, nbLivreEva):
     # Renvoie les données des livres
     return getLivresFromIdList(cursor, idLivresAEvaluer)
 
-
-def getLivresAEvaluerTendance(cursor, nbLivreEva):
+def getIdLivresTendance(cursor, nbLivreEva):
     """
-    Renvoie les données d'un nombre de livres pris parmi les plus populaires
+    Renvoie les ids d'un nombre de livres pris parmi les plus populaires
     """
-    # TODO Recupère les identifiant des livres 
     cursor.execute(f"""
         SELECT b.id_livre
         FROM sae._livre b
@@ -161,6 +159,14 @@ def getLivresAEvaluerTendance(cursor, nbLivreEva):
 
     # Reformate les données
     idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
+
+    return idLivresAEvaluer
+
+def getLivresAEvaluerTendance(cursor, nbLivreEva):
+    """
+    Renvoie les données d'un nombre de livres pris parmi les plus populaires
+    """
+    idLivresAEvaluer = getIdLivresTendance(cursor, nbLivreEva)
 
     # Renvoie les données des livres
     return getLivresFromIdList(cursor, idLivresAEvaluer)
