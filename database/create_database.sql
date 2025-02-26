@@ -50,6 +50,7 @@ CREATE TABLE _livre (
     id_editeur INTEGER REFERENCES _editeur(id_editeur)
 );
 
+CREATE INDEX idx_titre_livre ON _livre(titre);
 
 CREATE TABLE _genre (
     id_genre SERIAL PRIMARY KEY,
@@ -495,3 +496,5 @@ WbImport
 -table=_utilisateur_raison_achat
 -delimiter=','
 -header=true;
+
+SELECT setval('_utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) FROM _utilisateur));
