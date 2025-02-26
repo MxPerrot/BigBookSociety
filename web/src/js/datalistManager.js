@@ -12,36 +12,35 @@
  */
 
 
-async function getGenres() {
+async function getData(fetch_url) {
     /**
      * This function returns the list of genres using the API
      */
 
     try {
         // Requête à l'API
-        const response = await fetch("http://127.0.0.1:8000/get_genres/");
+        const response = await fetch(fetch_url);
         if (!response.ok) {
-            throw new Error(`Erreur lors de la récupération des genres : ${response.status}`);
+            throw new Error(`Erreur lors de la récupération des données : ${response.status}`);
         }
-        const genres = eval(await response.json());
+        const data = eval(await response.json());
         
         // Formater genre
         // e.g. "[[1, \"40k\"], [2, \"a%C5%9Fk\"], [3, \"academic\"]]" --> ["40k","a%C5%9Fk","academic"]
         
-        const genresArray = genres.map(genre => genre[1]);
+        const dataArray = data.map(genre => genre[1]);
 
-        console.log(genresArray)
-
-        return genresArray;
+        return dataArray;
         
 
     } catch (error) {
-        console.error("Erreur lors de la récupération des genres :", error);
+        console.error("Erreur lors de la récupération des données :", error);
     }
 }
 
+
 // get genres
-const options = getGenres(); 
+const options = getData("http://127.0.0.1:8000/get_genres/"); 
 // get input element
 const input = document.getElementById("datalist-input");
 // get datalist options element
