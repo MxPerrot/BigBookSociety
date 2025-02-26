@@ -113,7 +113,7 @@ async def get_authors():
     return json.dumps(author_list)
 
 @app.get("/search_books/")
-async def search_books(pageNum:int=1, title:str=None, authors:tuple=None, genres:tuple=None, minNote:int=None, maxNote:int=None):
+async def search_books(pageNum:int=1, title:str=None, authors:Annotated[list[int]|None,Query()]=None, genres:Annotated[list[int]|None,Query()]=None, minNote:int=None, maxNote:int=None):
     book_id_list = bdd.rechercheLivre(cursor, pageNum, title, authors, genres, minNote, maxNote) 
     if len(book_id_list) < 1:
         return json.dumps([])

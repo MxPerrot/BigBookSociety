@@ -1,11 +1,29 @@
 let searchbar = $("#searchbar")
 let button = $("#sendsearch")
 let result = $("#result")
+let authorBar = $("#authorIdBar")
+let genreBar = $("#genreIdBar")
 
 async function search() {
+    let first = true
+    let adress = "http://127.0.0.1:8000/search_books/?"
     let title = searchbar.val()
+    if (title != "") {
+        adress += "title="+title
+        first = false
+    }
+    let author = authorBar.val()
+    if (author != "") {
+        if (first) {
+            adress += "authors="+author
+            first = false
+        } else {
+            adress += "&authors="+author
+        }
+    }
+    console.log(adress)
     try {
-        const result = await fetch("http://127.0.0.1:8000/search_books/?title="+title)
+        const result = await fetch(adress)
         const data = await result.json()
 
         console.log(data)

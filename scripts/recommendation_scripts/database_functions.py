@@ -478,11 +478,12 @@ def rechercheLivre(cursor, pageNum=1, titre=None, auteurs=None, genres=None, min
     if titre != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
         chaineRecherche += f"titre LIKE '%{titre}%' "
-
+    
     if auteurs != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
-        chaineRecherche += f"id_auteur IN {auteurs} "
-
+        auteurs = turnIterableIntoSqlList(auteurs)
+        chaineRecherche += f"id_auteur IN ({auteurs}) "
+    
     if genres != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
         genres = turnIterableIntoSqlList(genres)
@@ -502,6 +503,8 @@ def rechercheLivre(cursor, pageNum=1, titre=None, auteurs=None, genres=None, min
     chaineRecherche += f"""
         LIMIT 10 OFFSET {10*(pageNum-1)};
     """
+
+    print(chaineRecherche)
     cursor.execute(chaineRecherche)
     rawBookData = cursor.fetchall()
 
