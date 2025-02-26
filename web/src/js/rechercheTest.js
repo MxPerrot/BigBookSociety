@@ -33,10 +33,27 @@ async function search() {
     
     console.log(adress)
     try {
-        const result = await fetch(adress)
-        const data = await result.json()
+        const rawData = await fetch(adress)
+        const data = await rawData.json()
 
         console.log(data)
+
+        // Create an ordered list <ol> with the title of the book in the html document
+        let list = document.createElement("ol")
+        data.forEach(book => {
+            let li = document.createElement("li")
+            li.appendChild(document.createTextNode(book.titre))
+            // add image with book.isbn as src
+            // li.innerHTML += `<img src="https://covers.openlibrary.org/b/isbn/${book.isbn}-S.jpg" alt="Book Cover">`
+            list.appendChild(li)
+        })
+
+        // Clear the previous result and add the new one
+        result.html("");
+        result.append(list); 
+
+
+        
     } catch (error) {
         console.error("Erreur")
     }
