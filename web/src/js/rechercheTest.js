@@ -21,6 +21,16 @@ async function search() {
             adress += "&authors="+author
         }
     }
+    let genres = genreBar.val()
+    if (genres != "") {
+        if (first) {
+            adress += "genres="+genres
+            first = false
+        } else {
+            adress += "&genres="+genres
+        }
+    }
+    
     console.log(adress)
     try {
         const result = await fetch(adress)

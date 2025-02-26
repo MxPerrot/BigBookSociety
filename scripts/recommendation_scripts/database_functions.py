@@ -470,14 +470,14 @@ def rechercheLivre(cursor, pageNum=1, titre=None, auteurs=None, genres=None, min
         SELECT DISTINCT _livre.id_livre         
         FROM _livre
         LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _auteur_livre ON _livre.id_livre = _genre_livre.id_livre
+        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
     """
 
     ajoutWhere = True
 
     if titre != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
-        chaineRecherche += f"titre LIKE '%{titre}%' "
+        chaineRecherche += f"LOWER(titre) LIKE '%{titre.lower()}%' "
     
     if auteurs != None:
         (chaineRecherche, ajoutWhere) = ajoutClause(chaineRecherche,ajoutWhere)
