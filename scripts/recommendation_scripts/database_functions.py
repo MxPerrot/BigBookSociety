@@ -27,14 +27,12 @@ def setUpCursor():
 def turnIterableIntoSqlList(iterable):
     first = True
     chaineListe = ""
-    print(iterable)
     for elem in iterable:
         if first:
             chaineListe += str(elem)
             first = False
         else:
             chaineListe += ", "+str(elem)
-    print(chaineListe)
     return chaineListe
 
 def getLivresUtilisateur(cursor, id_utilisateur):
@@ -493,7 +491,9 @@ def rechercheLivre(cursor, pageNum=1, titre=None, auteurs=None, genres=None, min
     # https://www.geeksforgeeks.org/can-we-use-contains-in-postgresql/
     # to add description to search, use Full text 
 
-    chaineRecherche += f"LIMIT 10 OFFSET {10*(pageNum-1)};"
+    chaineRecherche += f"""
+        LIMIT 10 OFFSET {10*(pageNum-1)};
+    """
     cursor.execute(chaineRecherche)
     rawBookData = cursor.fetchall()
 
@@ -518,7 +518,7 @@ def rechercheAuteur(cursor, nom):
 
     return authors
 
-cursor = setUpCursor()
+#cursor = setUpCursor()
 #print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
 #print(getGenres(cursor))
 #print(rechercheAuteur(cursor,"martin"))
