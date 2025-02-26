@@ -311,7 +311,7 @@ def register_user(username: str, email: str, password: str, sexe: str):
     try:
         cursor.execute("INSERT INTO _utilisateur(nom_utilisateur, mail_utilisateur, mot_de_passe_hashed, sexe) VALUES (%s, %s, %s, %s) RETURNING id_utilisateur", (username, email, hashed_pw, sexe))
         user_id = cursor.fetchone()[0]
-        cursor.commit()
+        connection.commit()
         # cursor.commit()
         return {"message": "User created successfully", "user_id": user_id}
     except psycopg2.IntegrityError:
