@@ -115,3 +115,89 @@ document.addEventListener("click", (e) => {
         genresContainer.style.display = "none";
     }
 });
+
+/*
+$(document).ready(function() {
+    // Function to retrieve data via jQuery's AJAX
+    function getData(fetch_url) {
+        return $.getJSON(fetch_url)
+            .then(function(data) {
+                // Format data: extract the second element from each sub-array
+                return $.map(data, function(item) {
+                    return item[1];
+                });
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.error("Erreur lors de la récupération des données :", textStatus);
+            });
+    }
+
+    // Fetch genres once and store the promise
+    var optionsPromise = getData("http://127.0.0.1:8000/get_genres/");
+
+    // jQuery selectors for input and options container elements
+    var $input = $("#datalist-input");
+    var $optionsContainer = $("#datalist-options");
+
+    // Listen for input events on the input element
+    $input.on("input", function() {
+        var value = $(this).val().toLowerCase();
+        // Clear previous options
+        $optionsContainer.empty();
+
+        if (value) {
+            optionsPromise.then(function(allOptions) {
+                // Filter and prioritize:
+                // 1. Exact match
+                // 2. Starts with the search term
+                // 3. Contains the search term elsewhere
+                var filteredOptions = $.map(allOptions, function(option) {
+                    if (option && option.toLowerCase().includes(value)) {
+                        return {
+                            text: option,
+                            priority: option.toLowerCase() === value ? 0 :
+                                      option.toLowerCase().startsWith(value) ? 1 : 2
+                        };
+                    }
+                });
+
+                // Sort options by priority
+                filteredOptions.sort(function(a, b) {
+                    return a.priority - b.priority;
+                });
+
+                // Extract sorted text options
+                var sortedOptions = $.map(filteredOptions, function(item) {
+                    return item.text;
+                });
+
+                // Display options in the dropdown if any exist
+                if (sortedOptions.length) {
+                    $optionsContainer.show();
+                    $.each(sortedOptions, function(index, option) {
+                        var $div = $("<div></div>").text(option);
+                        $div.on("click", function() {
+                            $input.val(option);
+                            $optionsContainer.hide();
+                        });
+                        $optionsContainer.append($div);
+                    });
+                } else {
+                    $optionsContainer.hide();
+                }
+            });
+        } else {
+            $optionsContainer.hide();
+        }
+    });
+
+    // Hide the options container when clicking outside the input and options container
+    $(document).on("click", function(e) {
+        if (!$(e.target).closest($input).length && !$(e.target).closest($optionsContainer).length) {
+            $optionsContainer.hide();
+        }
+    });
+});
+
+
+*/
