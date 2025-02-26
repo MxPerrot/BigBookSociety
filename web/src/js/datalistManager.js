@@ -40,15 +40,24 @@ async function getData(fetch_url) {
 
 
 // get genres
-const options = getData("http://127.0.0.1:8000/get_genres/"); 
+const genres = getData("http://127.0.0.1:8000/get_genres/"); 
 // get input element
-const input = document.getElementById("datalist-input");
+const inputGenres = document.getElementById("genre-input");
 // get datalist options element
-const optionsContainer = document.getElementById("datalist-options");
+const genresContainer = document.getElementById("genres-options");
 
+// get genres
+const authors = getData("http://127.0.0.1:8000/get_authors/"); 
+// get input element
+const inputAuthors = document.getElementById("author-input");
+// get datalist options element
+const authorsContainer = document.getElementById("authors-options");
 
 // Add Event Listener to input for search
-input.addEventListener("input", async () => {
+inputGenres.addEventListener("inputGenres", openSugestion(inputGenres, genresContainer))
+inputAuthors.addEventListener("inputAuthors", openSugestion(inputAuthors, authorsContainer))
+    
+async function openSugestion(input, optionsContainer) {
     // Make the search not case sensitive
     const value = input.value.toLowerCase();
 
@@ -94,12 +103,15 @@ input.addEventListener("input", async () => {
     } else {
         optionsContainer.style.display = "none";
     }
-});
+};
 
 
 // Hide the options container when the user clicks on the options button
 document.addEventListener("click", (e) => {
-    if (!input.contains(e.target) && !optionsContainer.contains(e.target)) {
+    if (!inputAuthors.contains(e.target) && !authorsContainer.contains(e.target)) {
         optionsContainer.style.display = "none";
+    }
+    if (!inputGenres.contains(e.target) && !genresContainer.contains(e.target)) {
+        genresContainer.style.display = "none";
     }
 });
