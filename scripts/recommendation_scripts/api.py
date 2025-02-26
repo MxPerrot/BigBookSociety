@@ -32,59 +32,60 @@ modelGenres = ru.model_genre(cursor)
 
 
 @app.get("/get_book_item_based/")
-async def get_book_item_based(user: int, nbrecommendation: int,limit: int):
+async def get_book_item_based(user:int, nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluer(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 @app.get("/get_book_item_based_tendance/")
-async def get_book_item_based_tendance(user: int, nbrecommendation: int,limit: int):
+async def get_book_item_based_tendance(user:int, nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerTendance(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 @app.get("/get_book_item_based_decouverte/")
-async def get_book_item_based_decouverte(user: int, nbrecommendation: int,limit: int):
+async def get_book_item_based_decouverte(user:int, nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerDecouverte(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 #q1 = user, q2 = nbrecommendation
 @app.get("/get_book_user_based/")
-async def get_book_user_based(user: int, nbrecommendation: int):
+async def get_book_user_based(user:int, nbrecommendation:int=10):
     book_id_list = recommendationUserBased(cursor, int(user), int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-
+"""
 @app.get("/get_decouverte/{limit}")
 async def get_decouverte(limit):
     book_id_list = bdd.getLivresAEvaluerDecouverte(cursor, limit)
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-  
+"""
+
 @app.get("/get_tendance/{limit}")
-async def get_tendance(limit):
-    book_id_list = bdd.getLivresAEvaluerTendance(cursor, limit)
+async def get_tendance(limit:int):
+    book_id_list = bdd.getIdLivresTendance(cursor, limit)
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 #q1 = user, q2 = nbrecommendation
 @app.get("/get_meme_auteur/")
-async def get_meme_auteur(user: int = 0, nbrecommendation: int = 10):
+async def get_meme_auteur(user:int, nbrecommendation:int=10):
     book_id_list = bdd.getBookIdSameAuthor(cursor, int(user),int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 #q1 = user
 @app.get("/get_in_serie/{user}")
-async def get_in_serie(user):
+async def get_in_serie(user:int):
     book_id_list = bdd.getBookIdInSeries(cursor, int(user))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 @app.get("/get_next_books/{id}")
-async def get_next_books(id):
+async def get_next_books(id:int):
 
     cursor.execute(f"""
         SELECT _episode_serie.id_serie
@@ -124,7 +125,7 @@ async def search_books(pageNum:int=1, title:str=None, authors:tuple=None, genres
     return books_infos
 
 @app.get("/search_author/{nom}")
-async def search_author(nom):
+async def search_author(nom:str):
     authorInfo = bdd.rechercheAuteur(cursor, nom)
 
     if len(authorInfo) == 0:
@@ -145,7 +146,7 @@ async def search_author(nom):
                 "genre_ecrit": author[5]
             })
     
-    return json.dumps(author_json)
+    return author_json
 
 # @app.get("/get_book_by_id/{id}")
 # async def get_book_by_id(id):
