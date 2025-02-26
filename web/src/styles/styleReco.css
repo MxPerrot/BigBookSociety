@@ -1,5 +1,6 @@
 .media-container {
     position: relative;
+    color:white;
   }
   .media-scroller,
   .media-group {
@@ -107,3 +108,5 @@
   .media-scroller:hover .navigation-indicators {
     opacity: 1;
   }
+
+
