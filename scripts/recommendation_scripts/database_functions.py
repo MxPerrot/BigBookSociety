@@ -474,7 +474,7 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
         WHERE 1=1
     """
     
-    # General filters
+    # Add general filters if present
     if auteurs:
         auteurs = turnIterableIntoSqlList(auteurs)
         baseQuery += f" AND id_auteur IN ({auteurs}) "
@@ -490,36 +490,46 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
         baseQuery += f" AND note_moyenne <= {maxNote} "
     
     if titre:
-        # Query for exact matches (priority 1)
-        queryExact = f"""
-            SELECT id_livre, titre, 1 AS priority
-            FROM ({baseQuery}) AS filtered_books
-            WHERE LOWER(titre) = LOWER('{titre}')
-        """
-        # Query for titles starting with the given string (priority 2), excluding exact matches
-        queryStartsWith = f"""
-            SELECT id_livre, titre, 2 AS priority
-            FROM ({baseQuery}) AS filtered_books
-            WHERE LOWER(titre) LIKE LOWER('{titre}%')
-              AND LOWER(titre) <> LOWER('{titre}')
-        """
-        finalQuery = f"""
-            ({queryExact})
-            UNION ALL
-            ({queryStartsWith})
+        # Create a CTE that combines:
+        #  - an exact match (priority 1)
+        #  - a "starts with" match (priority 2)
+        combinedQuery = f"""
+            WITH combined AS (
+                SELECT id_livre, titre, 1 AS priority 
+                FROM ({baseQuery}) AS filtered_books
+                WHERE LOWER(titre) = LOWER('{titre}')
+                UNION ALL
+                SELECT id_livre, titre, 2 AS priority 
+                FROM ({baseQuery}) AS filtered_books
+                WHERE LOWER(titre) LIKE LOWER('{titre}%')
+                UNION ALL
+                SELECT id_livre, titre, 3 AS priority
+                FROM ({baseQuery}) AS filtered_books
+                WHERE LOWER(titre) LIKE LOWER('%{titre}%')
+            )
+            SELECT id_livre, titre, MIN(priority) AS priority
+            FROM combined
+            GROUP BY id_livre, titre
             ORDER BY priority
             LIMIT {paginTaille} OFFSET {paginTaille * (pageNum - 1)}
         """
+        finalQuery = combinedQuery
     else:
         finalQuery = baseQuery + f" ORDER BY _livre.id_livre LIMIT {paginTaille} OFFSET {paginTaille * (pageNum - 1)}"
     
-    print(finalQuery)  # Debug output
+    print(finalQuery)  # For debugging
     cursor.execute(finalQuery)
     rawBookData = cursor.fetchall()
-    
-    # Extract list of book IDs
+    print("--------------------------------")
+    print(rawBookData) # For debugging
+    # Extract the list of book IDs
     bookIdList = [row[0] for row in rawBookData]
+    print("--------------------------------")
+    print(bookIdList) # For debugging
     return bookIdList
+
+
+
 
 
 
