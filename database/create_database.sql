@@ -521,4 +521,4 @@ NATURAL JOIN _procuration
 NATURAL JOIN _utilisateur_raison_achat
 NATURAL JOIN _raison_achat;
 
-CREATE ROLE 'user' LOGIN;
+--CREATE ROLE utilisateur;
