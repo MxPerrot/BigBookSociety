@@ -498,3 +498,27 @@ WbImport
 -header=true;
 
 SELECT setval('_utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) FROM _utilisateur));
+
+CREATE VIEW _info_utilisateur AS SELECT * FROM _utilisateur 
+NATURAL JOIN _format_utilisateur
+NATURAL JOIN _format
+
+NATURAL JOIN _utilisateur_auteur
+NATURAL JOIN _auteur
+
+NATURAL JOIN _utilisateur_genre
+NATURAL JOIN _genre
+
+NATURAL JOIN _utilisateur_langue
+NATURAL JOIN _langue
+
+NATURAL JOIN _utilisateur_motivation
+NATURAL JOIN _motivation
+
+NATURAL JOIN _utilisateur_procuration
+NATURAL JOIN _procuration
+
+NATURAL JOIN _utilisateur_raison_achat
+NATURAL JOIN _raison_achat;
+
+CREATE ROLE 'user' LOGIN;
