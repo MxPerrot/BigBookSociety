@@ -91,6 +91,9 @@ CREATE TABLE _utilisateur (
     frequence_lecture VARCHAR,
     vitesse_lecture INTEGER,
     nb_livres_lus VARCHAR,
+    
+    nom_utilisateur VARCHAR,
+    mot_de_passe_hashed VARCHAR,
     id_code_postal INTEGER REFERENCES _code_postal(id_code_postal)
 );
 
@@ -519,6 +522,8 @@ NATURAL JOIN _utilisateur_procuration
 NATURAL JOIN _procuration
 
 NATURAL JOIN _utilisateur_raison_achat
-NATURAL JOIN _raison_achat;
+NATURAL JOIN _raison_achat
+
+WHERE nom_utilisateur = USER;
 
 --CREATE ROLE utilisateur;
