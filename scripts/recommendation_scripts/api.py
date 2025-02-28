@@ -30,11 +30,103 @@ cursor = bdd.setUpCursor(connection)
 modelGenres = ru.model_genre(cursor)
 
 #https://fastapi.tiangolo.com/tutorial/first-steps/
+    
+
+
+
+
+
+
+
+
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode(), salt).decode()
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+
+
+@app.post("/register")
+def register_user(username: str, email: str, password: str, sexe: str):
+    hashed_pw = hash_password(password)
+    # conn = get_db_connection()
+    # cur = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO _utilisateur(nom_utilisateur, mail_utilisateur, mot_de_passe_hashed, sexe) VALUES (%s, %s, %s, %s) RETURNING id_utilisateur", (username, email, hashed_pw, sexe))
+        user_id = cursor.fetchone()[0]
+        connection.commit()
+        # cursor.commit()
+        return {"message": "User created successfully", "user_id": user_id}
+    except psycopg2.IntegrityError:
+        # cursor.rollback()
+        raise HTTPException(status_code=400, detail="Username or email already exists")
+    # finally:
+        # cur.close()
+        # conn.close()
+
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+def create_access_token(username: str):
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode = {"sub": username, "exp": expire}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload["sub"] # Returns username if token is valid
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+@app.post("/token")
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    # conn = get_db_connection()
+    # cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT nom_utilisateur, mot_de_passe_hashed FROM _utilisateur WHERE nom_utilisateur = %s", (form_data.username,))
+    user = cursor.fetchone()
+    # cursor.close()
+    # conn.close()
+    print(user)
+    if not user or not verify_password(form_data.password, user[1]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    token = create_access_token(user[0])
+    return {"access_token": token, "token_type": "bearer"}
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    username = verify_token(token)
+
+    # conn = get_db_connection()
+    # cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT id_utilisateur, nom_utilisateur, mail_utilisateur FROM _utilisateur WHERE nom_utilisateur = %s", (username,))
+    user = cursor.fetchone()
+    # cur.close()
+    # conn.close()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
+@app.get("/users/me")
+def read_users_me(current_user: dict = Depends(get_current_user)):
+    return {"id": current_user[0], "username": current_user[1], "email": current_user[2]}
+
+
 
 
 @app.get("/get_book_item_based/")
-async def get_book_item_based(user:int, nbrecommendation:int=10, limit:int=1000):
-    book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluer(cursor, int(limit)))
+async def get_book_item_based(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
+    book_id_list = recommendationItemBased(cursor, modelGenres, int(current_user[0]), int(nbrecommendation), bdd.getLivresAEvaluer(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
@@ -289,90 +381,3 @@ def getLivresInformation(cursor,idLivres):
     return 0
 
 #print(getLivresInformation(cursor, [1,350]))
-
-
-
-
-
-
-def hash_password(password: str) -> str:
-    salt = bcrypt.gensalt()
-    return bcrypt.hashpw(password.encode(), salt).decode()
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
-
-
-@app.post("/register")
-def register_user(username: str, email: str, password: str, sexe: str):
-    hashed_pw = hash_password(password)
-    # conn = get_db_connection()
-    # cur = conn.cursor()
-    try:
-        cursor.execute("INSERT INTO _utilisateur(nom_utilisateur, mail_utilisateur, mot_de_passe_hashed, sexe) VALUES (%s, %s, %s, %s) RETURNING id_utilisateur", (username, email, hashed_pw, sexe))
-        user_id = cursor.fetchone()[0]
-        connection.commit()
-        # cursor.commit()
-        return {"message": "User created successfully", "user_id": user_id}
-    except psycopg2.IntegrityError:
-        # cursor.rollback()
-        raise HTTPException(status_code=400, detail="Username or email already exists")
-    # finally:
-        # cur.close()
-        # conn.close()
-
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-def create_access_token(username: str):
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"sub": username, "exp": expire}
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
-def verify_token(token: str):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload["sub"] # Returns username if token is valid
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-@app.post("/token")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    # conn = get_db_connection()
-    # cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT nom_utilisateur, mot_de_passe_hashed FROM _utilisateur WHERE nom_utilisateur = %s", (form_data.username,))
-    user = cursor.fetchone()
-    # cursor.close()
-    # conn.close()
-    print(user)
-    if not user or not verify_password(form_data.password, user["hashed_password"]):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
-
-    token = create_access_token(user["username"])
-    return {"access_token": token, "token_type": "bearer"}
-
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    username = verify_token(token)
-
-    # conn = get_db_connection()
-    # cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT id_utilisateur, nom_utilisateur, mail_utilisateur FROM _utilisateur WHERE nom_utilisateur = %s", (username,))
-    user = cursor.fetchone()
-    # cur.close()
-    # conn.close()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return user
-
-@app.get("/users/me")
-def read_users_me(current_user: dict = Depends(get_current_user)):
-    return {"id": current_user["id"], "username": current_user["username"], "email": current_user["email"]}

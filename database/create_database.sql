@@ -526,4 +526,8 @@ NATURAL JOIN _raison_achat
 
 WHERE nom_utilisateur = USER;
 
---CREATE ROLE utilisateur;
+SELECT * FROM _info_utilisateur;
+
+--GRANT CONNECT ON DATABASE pg_dgoupil TO USER;
+
+--GRANT SELECT ON _info_utilisateur TO USER;
