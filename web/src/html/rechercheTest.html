@@ -5,23 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recherche</title>
     <script src="/libs/js/jquery-3.7.1.min.js" defer></script>
-    <script src="../js/rechercheTest.js" type="text/javascript" defer></script>
+    <script src="/web/src/js/datalist.js" type="text/javascript" defer></script>
+    <script src="/web/src/js/afficherLivres.js" type="text/javascript" defer></script>
+    <script src="/web/src/js/rechercheTest.js" type="text/javascript" defer></script>
     <link rel="stylesheet" href="/web/src/styles/styleDatalist.css">
-    <script src="/web/src/js/datalistManager.js" defer></script>
+    <link rel="stylesheet" href="/web/src/styles/styleListeLivres.css">
 </head>
+
 <body>
     <input type="text" id="searchbar"><br>
-    <input type="text" id="authorIdBar"><br>
-    <input type="text" id="genreIdBar"><br>
+    <div id="datalist-1"></div>
+    <div id="datalist-2"></div>
     <button id="sendsearch">Rechercher</button>
-    <p id="result"></p>
-    <div class="datalist-container">
-        <input type="text" id="author-input" class="datalist-input" placeholder="Rechercher...">
-        <div id="author-options" class="datalist-options"></div>
-    </div>
-    <div class="datalist-container">
-        <input type="text" id="genre-input" class="datalist-input" placeholder="Rechercher...">
-        <div id="genre-options" class="datalist-options"></div>
+
+    <div id="result" class="book-list">
+
     </div>
 </body>
 </html>

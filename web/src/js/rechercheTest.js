@@ -1,64 +1,69 @@
 let searchbar = $("#searchbar")
 let button = $("#sendsearch")
-let result = $("#result")
-let authorBar = $("#authorIdBar")
-let genreBar = $("#genreIdBar")
+var result = $("#result")
+let author_container_id = "authorIdBar"
+let genre_container_id = "genreIdBar"
+let author_input_id = author_container_id + "-input"
+let genre_input_id = genre_container_id + "-input"
 
-async function search() {
+console.log("RESULT = ", result)
+
+async function search_book(url, title_input, author_input, genre_input, result_container) {
+    console.log("RESULT SB = ", result_container)
     let first = true
-    let adress = "http://127.0.0.1:8000/search_books/"
-    let title = searchbar.val()
-    if (title != "") {
-        adress += "?title="+title
+
+    // Titre
+    let title = title_input.val()
+    if (title) {
+        url += "?title="+title
         first = false
     }
-    let author = authorBar.val()
-    if (author != "") {
+
+    // Auteur
+    let author = getSelectedID(author_input);
+    if (author) {
         if (first) {
-            adress += "?authors="+author
+            url += "?authors="+author
             first = false
         } else {
-            adress += "&authors="+author
+            url += "&authors="+author
         }
     }
-    let genres = genreBar.val()
-    if (genres != "") {
+
+    // Genres
+    let genres = getSelectedID(genre_input);
+    if (genres) {
         if (first) {
-            adress += "?genres="+genres
+            url += "?genres="+genres
             first = false
         } else {
-            adress += "&genres="+genres
+            url += "&genres="+genres
         }
     }
     
-    console.log(adress)
+    console.log(url)
     try {
-        const rawData = await fetch(adress)
+        const rawData = await fetch(url)
         const data = await rawData.json()
 
         console.log(data)
 
-        // Create an ordered list <ol> with the title of the book in the html document
-        let list = document.createElement("ol")
-        data.forEach(book => {
-            let li = document.createElement("li")
-            li.appendChild(document.createTextNode(book.titre))
-            // add image with book.isbn as src
-            // li.innerHTML += `<img src="https://covers.openlibrary.org/b/isbn/${book.isbn}-S.jpg" alt="Book Cover">`
-            list.appendChild(li)
-        })
-
-        // Clear the previous result and add the new one
-        result.html("");
-        result.append(list); 
-
-
+        afficherLivres(data, result_container);
         
     } catch (error) {
         console.error("Erreur")
     }
 }
 
-$(document).ready(function() {
-    button.click(search)
-})
+button.on("click", function() {
+    search_book(
+        "http://127.0.0.1:8000/search_books/",
+        searchbar,
+        $(`#${author_input_id}`),
+        $(`#${genre_input_id}`),
+        result
+    );
+});
+
+createDatalist("datalist-1",author_container_id,"Auteur","http://127.0.0.1:8000/get_authors/")
+createDatalist("datalist-2",genre_container_id,"Genres","http://127.0.0.1:8000/get_genres/")
