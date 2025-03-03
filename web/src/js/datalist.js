@@ -68,17 +68,17 @@ function createDatalist(container_id, id, label, url) {
 
     // Add Event Listener to input for search
     $input.on("input", async function () {
-    const value = $input.val().toLowerCase().trim(); // Get input value and normalize
+        const value = $input.val().toLowerCase().trim(); // Get input value and normalize
 
-    // Clear previous options
-    $optionsContainer.empty();
+        // Clear previous options
+        $optionsContainer.empty();
 
-    if (value) {
-        const allOptions = await options; // Wait for options to resolve
+        if (value) {
+            const allOptions = await options; // Wait for options to resolve
 
-        if (!Array.isArray(allOptions)) {
-            console.error("Expected an array but got:", allOptions);
-            return;
+            if (!Array.isArray(allOptions)) {
+                console.error("Expected an array but got:", allOptions);
+                return;
             }
 
             // Filter and prioritize results
