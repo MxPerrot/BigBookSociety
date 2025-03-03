@@ -25,6 +25,8 @@
   .media-element >div {
     height: 200px;
     margin: 5px;
+    display: flex;
+    flex-direction: row;
   }
 
   .media-element > div>h3 {

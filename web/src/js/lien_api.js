@@ -26,13 +26,19 @@ function fetchBooks() {
             const auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
             const genre = book.libelle_genre && book.libelle_genre.length > 0 ? book.libelle_genre.join(", ") : "Genre inconnu";
 
+            const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` : "placeholder.jpg";
+
             groupHTML += `
               <div class="media-element">
                 <div>
-                  <h3>${titre}</h3>
-                  <p><strong>Auteur :</strong> ${auteur}</p>
-                  <p><strong>ISBN :</strong> ${isbn}</p>
-                  <p><strong>Genre :</strong> ${genre}</p>
+                  <div class="Livres">
+                    <h3>${titre}</h3>
+                    <p><strong>Auteur :</strong> ${auteur}</p>
+                    <p><strong>Genre :</strong> ${genre}</p>
+                  </div>
+                  <div class="isbn">
+                    <img src="${coverUrl}" alt="Couverture du livre ${titre}" />
+                  </div>
                 </div>
               </div>
             `;
