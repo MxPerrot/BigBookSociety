@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/web/src/js/login_register_temp.js" type="text/javascript" defer></script>
     <title>Login</title>
 </head>
+
 <body>
     <h2>Login</h2>
     <form action="http://127.0.0.1:8000/token" method="POST">
@@ -17,15 +20,7 @@
         <button type="submit">Login</button>
     </form>
 
-    <script>
-        const url = "http://127.0.0.1:8000/users/me"
-        async function getMyData(url) {
-            const result = await fetch(url);
-            console.log(result.json())
-        }
-
-
-        getMyData(url)
-    </script>
+    
 </body>
+
 </html>
