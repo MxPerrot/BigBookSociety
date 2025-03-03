@@ -126,6 +126,7 @@ function createDatalist(container_id, id, label, url) {
 
 // Function to get selected ID
 function getSelectedID(input_element) {
+    // FIXME : returns id even after field is cleared
     return input_element.attr("data-selected-id") || null;
 }
 
