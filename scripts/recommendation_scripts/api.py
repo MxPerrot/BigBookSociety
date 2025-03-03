@@ -85,7 +85,7 @@ def register_user(username: str, email: str, password: str, sexe: str):
         # cur.close()
         # conn.close()
 
-SECRET_KEY = "5312SDFSOPKEZ213FSDIOJ"
+SECRET_KEY = "5312SDFSOPKEZ213FSDIOJ" #FIXME URGENT TODO IMPORTANT: GENERATE & PLACE IN .env FILE
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
