@@ -1,135 +1,139 @@
 .media-container {
-    position: relative;
-    color:white;
-  }
-  .media-scroller,
-  .media-group {
-    display: grid;
-    gap: 0.25rem;
-    grid-auto-flow: column;
-  }
-  .media-scroller {
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    padding: 0 3rem;
-    scroll-padding-inline: 3rem;
-  }
-  .media-group {
-    grid-auto-columns: 1fr;
-  }
-  .media-element {
-    border-radius: 0.25rem;
-    overflow: hidden;
-    color:var(--col2);
-    margin:5px;
-    width: fit-content;
-  }
-  .media-element >div {
-    height: 300px;
-    display: flex;
-    flex-direction: column;
-  }
+  position: relative;
+  color: white;
+}
 
-  .isbn>img{
-    height: 200px;
-    width: 130px;
-  }
+.media-scroller {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 0 3rem;
+  scroll-padding-inline: 3rem;
+  position: relative;
+}
 
-  h3 , p{
-    padding: 0;
-    margin: 0;
-    font-size: x-small;
-  }
-.Livres{
+.media-group {
+  display: flex;
+  flex-direction: row;
+}
+
+.media-element {
+  border-radius: 0.25rem;
+  overflow: hidden;
+  color: var(--col2);
+  margin: 5px;
+  width: fit-content;
+}
+
+.isbn > img {
+  height: 200px;
+  width: 130px;
+}
+
+h3, p {
+  padding: 0;
+  margin: 0;
+  font-size: x-small;
+}
+
+.Livres {
   display: flex;
   flex-direction: column;
 }
 
-  .media-element > img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-  .next,
-  .previous {
-    display: none;
-    align-items: center;
-    z-index: 10;
-    position: absolute;
-    width: 3rem;
-    padding: 1rem;
-    background: rgb(0 0 0 / 0);
-    opacity: 0;
-  }
-  .previous {
-    left: 0;
-    top: 0;
-    bottom: 0;
-  }
-  .next {
-    right: 0;
-    top: 0;
-    bottom: 0;
-  }
-  .media-group:first-child :where(.next, .previous) {
-    display: flex;
-  }
-  .media-scroller:hover :where(.next, .previous) {
-    opacity: 1;
-  }
-  :where(.next, .previous):hover {
-    background: rgb(0 0 0 / 0.3);
-  }
-  :where(.next, .previous) > svg {
-    transition: transform 75ms linear;
-    transform: scale(1);
-  }
-  :where(.next, .previous):hover > svg {
-    transform: scale(1.2);
-  }
-  .media-group:target :where(.next, .previous) {
-    display: flex;
-  }
-  .media-scroller:has(:target:not(:first-child))
-    .media-group:first-of-type
-    .next {
-    display: none;
-  }
+.media-element > img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
 
-  .navigation-indicators {
-    opacity: 0;
-    position: absolute;
-    display: flex;
-    gap: 3px;
-    top: -1rem;
-    right: 2rem;
-  }
-  .navigation-indicators > * {
-    width: 1rem;
-    height: 2px;
-    background: white;
-    opacity: 0.5;
-  }
-  .media-scroller:has(.media-group:target)
-    .navigation-indicators
-    > *:nth-child(1) {
-    opacity: 0.5;
-  }
-  .navigation-indicators > *:nth-child(1),
-  .media-group:nth-child(1):target ~ .navigation-indicators > *:nth-child(1) {
-    opacity: 1;
-  }
-  .media-group:nth-child(2):target ~ .navigation-indicators > *:nth-child(2) {
-    opacity: 1;
-  }
-  .media-group:nth-child(3):target ~ .navigation-indicators > *:nth-child(3) {
-    opacity: 1;
-  }
-  .media-group:nth-child(4):target ~ .navigation-indicators > *:nth-child(4) {
-    opacity: 1;
-  }
-  .media-scroller:hover .navigation-indicators {
-    opacity: 1;
-  }
+/* Positionnement des boutons next/previous */
+.previous,
+.next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  padding: 1rem;
+  background: rgba(255, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+}
 
+.previous {
+  left: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
+.next {
+  right: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.media-scroller:hover :where(.next, .previous) {
+  opacity: 1;
+}
+
+.previous:hover,
+.next:hover {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.previous svg,
+.next svg {
+  fill: white;
+  transition: transform 75ms linear;
+  transform: scale(1);
+}
+
+.previous:hover svg,
+.next:hover svg {
+  transform: scale(1.2);
+}
+
+/* Retirer les boutons next/previous sur les premiers et derniers éléments du carousel */
+.media-group:first-child .next {
+  display: flex;
+}
+
+.media-group:last-child .previous {
+  display: flex;
+}
+
+.navigation-indicators {
+  opacity: 0;
+  position: absolute;
+  display: flex;
+  gap: 3px;
+  top: -1rem;
+  right: 2rem;
+}
+
+.navigation-indicators > * {
+  width: 1rem;
+  height: 2px;
+  background: white;
+  opacity: 0.5;
+}
+
+.media-scroller:has(.media-group:target) .navigation-indicators > *:nth-child(1) {
+  opacity: 0.5;
+}
+
+.media-group:nth-child(1):target ~ .navigation-indicators > *:nth-child(1),
+.media-group:nth-child(2):target ~ .navigation-indicators > *:nth-child(2),
+.media-group:nth-child(3):target ~ .navigation-indicators > *:nth-child(3),
+.media-group:nth-child(4):target ~ .navigation-indicators > *:nth-child(4) {
+  opacity: 1;
+}
+
+.media-scroller:hover .navigation-indicators {
+  opacity: 1;
+}
