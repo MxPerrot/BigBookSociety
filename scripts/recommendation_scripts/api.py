@@ -180,8 +180,8 @@ async def get_tendance(limit:int):
 
 
 @app.get("/get_meme_auteur/")
-async def get_meme_auteur(user:int, nbrecommendation:int=10):
-    book_id_list = bdd.getBookIdSameAuthor(cursor, int(user),int(nbrecommendation))
+async def get_meme_auteur(current_user: dict = Depends(get_current_user), nbrecommendation:int=10):
+    book_id_list = bdd.getBookIdSameAuthor(cursor, int(current_user[0]),int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
