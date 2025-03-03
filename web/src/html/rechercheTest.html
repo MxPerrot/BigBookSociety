@@ -8,18 +8,26 @@
     <script src="/web/src/js/datalist.js" type="text/javascript" defer></script>
     <script src="/web/src/js/afficherLivres.js" type="text/javascript" defer></script>
     <script src="/web/src/js/rechercheTest.js" type="text/javascript" defer></script>
-    <link rel="stylesheet" href="/web/src/styles/styleDatalist.css">
+    <link rel="stylesheet" href="/web/src/styles/styles.css">
     <link rel="stylesheet" href="/web/src/styles/styleListeLivres.css">
+    <link rel="stylesheet" href="/web/src/styles/styleRechercher2.css">
 </head>
 
 <body>
-    <input type="text" id="searchbar"><br>
-    <div id="datalist-1"></div>
-    <div id="datalist-2"></div>
-    <button id="sendsearch">Rechercher</button>
+    <br>
+    <div id="rechercheLivres" class="search-book">
 
-    <div id="result" class="book-list">
-
+        <div class="search-book-form">
+            <div class="search-book-form-input">
+                <input type="text" id="searchbar" class="datalist-input" placeholder="Titre">
+            </div>
+            <div id="datalist-1" class="search-book-form-input"></div>
+            <div id="datalist-2" class="search-book-form-input"></div>
+            <button id="sendsearch" class="confirm-button"><img src="/web/public/icons/search.svg" alt="Rechercher"/></button>
+        </div>
+        <div id="slider-range"></div>
+        <div id="result" class="book-list"></div>
+        
     </div>
 </body>
 </html>
