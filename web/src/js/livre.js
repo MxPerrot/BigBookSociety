@@ -19,8 +19,8 @@ function fetchBookById(id) {
                 bookContainer.innerHTML = `
                      <img src="${coverUrl}" alt="Couverture du livre "  class="card-img" />
                     <div class="card-content">
-                        <h2 class="card-title"> Titre: ${book[0].titre || "Titre non disponible" }</h2>
-                        <h3 class="card-author">Auteur: ${book[0].nom_auteur || "Auteur inconnu"}</h3>
+                        <h2 class="card-title"> ${book[0].titre || "Titre non disponible" }</h2>
+                        <h3 class="card-author"> De ${book[0].nom_auteur || "Auteur inconnu"}</h3>
                         <p class="card-description"> Description: ${book[0].description || "Description non disponible"}</p>
                         <h4 class="card-editeur">Edition: ${book[0].editeur || "Éditeur inconnu"}</h4>
                         <h4 class="card-pages">Pages: ${book[0].nombre_pages || "Nombre de pages inconnu"}</h4>
