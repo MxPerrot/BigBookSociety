@@ -20,7 +20,6 @@
 
 .media-element {
   border-radius: 0.25rem;
-  overflow: hidden;
   color: var(--col2);
   margin: 5px;
   width: fit-content;
