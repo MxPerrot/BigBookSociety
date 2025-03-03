@@ -31,6 +31,11 @@ modelGenres = ru.model_genre(cursor)
 
 #https://fastapi.tiangolo.com/tutorial/first-steps/
 
+@app.get("/get_book_data_by_id/{id}")
+async def get_book_data_by_id(id:int):
+    book_infos = getLivresInformation(cursor,[id])
+    return book_infos
+
 
 @app.get("/get_book_item_based/")
 async def get_book_item_based(user:int, nbrecommendation:int=10, limit:int=1000):
