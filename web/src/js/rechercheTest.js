@@ -6,10 +6,8 @@ let genre_container_id = "genreIdBar"
 let author_input_id = author_container_id + "-input"
 let genre_input_id = genre_container_id + "-input"
 
-console.log("RESULT = ", result)
 
 async function search_book(url, title_input, author_input, genre_input, result_container) {
-    console.log("RESULT SB = ", result_container)
     let first = true
 
     // Titre
@@ -40,19 +38,11 @@ async function search_book(url, title_input, author_input, genre_input, result_c
             url += "&genres="+genres
         }
     }
-    
-    console.log(url)
-    try {
         const rawData = await fetch(url)
-        const data = await rawData.json()
-
-        console.log(data)
+        const data = await rawData.json() // FIXME: sometimes need to be parsed (JSON.parse(...))
 
         afficherLivres(data, result_container);
         
-    } catch (error) {
-        console.error("Erreur")
-    }
 }
 
 button.on("click", function() {

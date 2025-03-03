@@ -103,8 +103,6 @@ function createDatalist(container_id, id, label, url) {
                     $div.on("click", function () {
                         $input.val(option.text); // Set input to the name
                         $input.attr("data-selected-id", option.id); // Store the ID
-                        console.log("REGISTERED OPTION : ID=" + option.id + ", Name=" + option.text);
-                        console.log("VERIF :" + $input.attr("data-selected-id"))
                         $optionsContainer.hide();
                     });
 
@@ -128,7 +126,6 @@ function createDatalist(container_id, id, label, url) {
 
 // Function to get selected ID
 function getSelectedID(input_element) {
-    console.log("TRYING TO GET " + input_element.attr("data-selected-id"))
     return input_element.attr("data-selected-id") || null;
 }
 
