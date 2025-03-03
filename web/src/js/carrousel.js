@@ -24,20 +24,24 @@ function fetchBooks() {
             const titre = book.titre || "Titre non disponible";
             const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
             const auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
-            const genre = book.libelle_genre && book.libelle_genre.length > 0 ? book.libelle_genre.join(", ") : "Genre inconnu";
-
-            const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` : "placeholder.jpg";
+            const genre = book.libelle_genre && book.libelle_genre.length > 0 ? 
+            book.libelle_genre[0].includes(',') ? book.libelle_genre[0].split(',')[0] : book.libelle_genre[0] : 
+            "Genre inconnu";
+          
+            const coverUrl = (isbn !== "Aucun ISBN disponible") 
+            ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` 
+            : "public/img/couverture.jpg";
 
             groupHTML += `
               <div class="media-element">
                 <div>
-                  <div class="Livres">
-                    <h3>${titre}</h3>
-                    <p><strong>Auteur :</strong> ${auteur}</p>
-                    <p><strong>Genre :</strong> ${genre}</p>
-                  </div>
                   <div class="isbn">
                     <img src="${coverUrl}" alt="Couverture du livre ${titre}" />
+                  </div>
+                  <div class="Livres">
+                    <h3>${titre}</h3>
+                    <p>${auteur}</p>
+                    <p>${genre}</p>
                   </div>
                 </div>
               </div>

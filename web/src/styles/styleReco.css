@@ -11,7 +11,6 @@
   .media-scroller {
     overflow-x: hidden;
     scroll-behavior: smooth;
-    grid-auto-columns: 100%;
     padding: 0 3rem;
     scroll-padding-inline: 3rem;
   }
@@ -21,24 +20,30 @@
   .media-element {
     border-radius: 0.25rem;
     overflow: hidden;
-    background-color: var(--col5);
-    color:var(--col1);
+    color:var(--col2);
     margin:5px;
+    width: fit-content;
   }
   .media-element >div {
-    height: 200px;
-    margin: 5px;
+    height: 300px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
   }
 
-  .media-element > div>h3 {
-    padding-top: 10px;
+  .isbn>img{
+    height: 200px;
+    width: 130px;
   }
 
-  .media-element > div>h3,p {
-    padding-left: 15px;
+  h3 , p{
+    padding: 0;
+    margin: 0;
+    font-size: x-small;
   }
+.Livres{
+  display: flex;
+  flex-direction: column;
+}
 
   .media-element > img {
     width: 100%;
