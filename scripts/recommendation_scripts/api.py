@@ -43,6 +43,8 @@ def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt).decode()
 
+# print(hash_password("boulangerie"))
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
 
@@ -65,7 +67,7 @@ def register_user(username: str, email: str, password: str, sexe: str):
         # cur.close()
         # conn.close()
 
-SECRET_KEY = "your_secret_key"
+SECRET_KEY = "5312SDFSOPKEZ213FSDIOJ"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -132,22 +134,22 @@ async def get_book_item_based(current_user: dict = Depends(get_current_user), nb
 
 
 @app.get("/get_book_item_based_tendance/")
-async def get_book_item_based_tendance(user:int, nbrecommendation:int=10, limit:int=1000):
-    book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerTendance(cursor, int(limit)))
+async def get_book_item_based_tendance(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
+    book_id_list = recommendationItemBased(cursor, modelGenres, int(current_user[0]), int(nbrecommendation), bdd.getLivresAEvaluerTendance(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 
 @app.get("/get_book_item_based_decouverte/")
-async def get_book_item_based_decouverte(user:int, nbrecommendation:int=10, limit:int=1000):
-    book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluerDecouverte(cursor, int(limit)))
+async def get_book_item_based_decouverte(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
+    book_id_list = recommendationItemBased(cursor, modelGenres, int(current_user[0]), int(nbrecommendation), bdd.getLivresAEvaluerDecouverte(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
 
 @app.get("/get_book_user_based/")
-async def get_book_user_based(user:int, nbrecommendation:int=10):
-    book_id_list = recommendationUserBased(cursor, int(user), int(nbrecommendation))
+async def get_book_user_based(current_user: dict = Depends(get_current_user), nbrecommendation:int=10):
+    book_id_list = recommendationUserBased(cursor, int(current_user[0]), int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
@@ -166,9 +168,9 @@ async def get_meme_auteur(user:int, nbrecommendation:int=10):
     return books_infos
 
 
-@app.get("/get_in_serie/{user}")
-async def get_in_serie(user:int):
-    book_id_list = bdd.getBookIdInSeries(cursor, int(user))
+@app.get("/get_in_serie/")
+async def get_in_serie(current_user: dict = Depends(get_current_user)):
+    book_id_list = bdd.getBookIdInSeries(cursor, int(current_user[0]))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
