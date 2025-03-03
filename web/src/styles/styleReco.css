@@ -59,19 +59,17 @@ h3, p {
   height: 3rem;
   padding: 1rem;
   background: rgba(255, 0, 0, 0.3);
-  opacity: 0;
   transition: opacity 0.3s ease, background 0.3s ease;
   cursor: pointer;
 }
 
 .previous {
-  left: -2rem;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .next {
-  right: -2rem;
+  right: 0.1rem;
   top: 50%;
   transform: translateY(-50%);
 }

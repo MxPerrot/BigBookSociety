@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", fetchBooks);
 
-function fetchBooks() {
-  const url = "http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=10&limit=10";
+function fetchBooks(url) {
 
   fetch(url)
     .then(response => response.text())
@@ -34,7 +33,7 @@ function fetchBooks() {
               "Genre inconnu";
 
             const coverUrl = (isbn !== "Aucun ISBN disponible") 
-              ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` 
+              ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
               : "public/img/couverture.jpg";
 
             const bookHTML = `
@@ -93,3 +92,6 @@ function shiftCarousel(scroller, direction) {
     scroller.removeChild(lastElement); // Supprime l'original
   }
 }
+
+
+fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=10&limit=10");
