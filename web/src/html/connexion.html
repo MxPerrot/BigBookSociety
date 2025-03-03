@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="../styles/styleconnexion.css">
+    <script src="../js/header.js" type="text/javascript"></script>
+    <script src="../js/footer.js" type="text/javascript" defer></script>
+    <title>Connexion</title>
+</head>
+<body>
+    <header-component></header-component>
+    <main>
+        <div class="login-container">
+            <h2>Connexion</h2>
+            <form action="/login" method="post">
+                <div class="input-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Se connecter</button>
+            </form>
+            <p class="register-message">Pas encore inscrit? <a href="./inscription.html">Inscrivez-vous ici</a></p>
+        </div>
+    </main>
+    <footer-component></footer-component>
+</body>
+</html>
