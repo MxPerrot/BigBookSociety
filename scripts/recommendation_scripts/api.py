@@ -12,6 +12,7 @@ import psycopg2.extras
 import jwt
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+import re
 
 
 app = FastAPI()
@@ -52,6 +53,23 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 @app.post("/register")
 def register_user(username: str, email: str, password: str, sexe: str):
     hashed_pw = hash_password(password)
+
+    EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+
+    try:
+        if not EMAIL_REGEX.match(email):
+            raise Exception("Unvalid Email")
+    except :
+        raise HTTPException(status_code=400, detail="Not an Email") 
+
+    verif_sex=["Femme","Homme","Je ne souhaite pas le préciser"]
+
+    try:
+        if not sexe not in verif_sex:
+            raise Exception("Unvalid Sexe")
+    except :
+        raise HTTPException(status_code=400, detail="Not a sexe") 
+
     # conn = get_db_connection()
     # cur = conn.cursor()
     try:
