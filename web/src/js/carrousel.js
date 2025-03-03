@@ -94,4 +94,4 @@ function shiftCarousel(scroller, direction) {
 }
 
 
-fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=10&limit=10");
+fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=15");
