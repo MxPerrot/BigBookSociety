@@ -49,7 +49,7 @@ def getLivresUtilisateur(cursor, id_utilisateur):
     """
     # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
     # Execute la requete SQL
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _utilisateur 
         INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
@@ -68,8 +68,8 @@ def getLivresUtilisateur(cursor, id_utilisateur):
         LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
         LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
                 
-        WHERE _utilisateur.id_utilisateur = {id_utilisateur};
-    """)
+        WHERE _utilisateur.id_utilisateur = %s;
+    """,(id_utilisateur,))
 
     userData = cursor.fetchall()
 
@@ -88,7 +88,7 @@ def getLivresFromIdList(cursor, idLivres):
     Renvoie les données des livres dont les identifiants sont présents dans la liste mise en paramètre
     """
     # Execute la requête
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
         FROM _livre
 
@@ -105,8 +105,8 @@ def getLivresFromIdList(cursor, idLivres):
         LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
         LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
 
-        WHERE _livre.id_livre IN {idLivres}
-    """)
+        WHERE _livre.id_livre IN %s
+    """,(idLivres,))
 
     bookData = cursor.fetchall()
     
@@ -125,12 +125,12 @@ def getLivresAEvaluer(cursor, nbLivreEva):
     Renvoie les données d'un nombre mis en paramètre de livres pris au hasard
     """
     # Recupère les identifiant des livres pris au hasard
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _livre.id_livre
         FROM _livre
         ORDER BY random()
-        LIMIT {nbLivreEva};
-    """)
+        LIMIT %s;
+    """,(nbLivreEva,))
 
     idLivresAEvaluerRaw = cursor.fetchall()
 
@@ -147,7 +147,7 @@ def getIdLivresTendance(cursor, nbLivreEva):
     """
     Renvoie les ids d'un nombre de livres pris parmi les plus populaires
     """
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT b.id_livre
         FROM sae._livre b
         INNER JOIN sae._episode_serie s ON b.id_livre = s.id_livre
@@ -155,8 +155,8 @@ def getIdLivresTendance(cursor, nbLivreEva):
         AND b.note_moyenne IS NOT NULL
         AND b.nb_notes IS NOT NULL
         ORDER BY b.nb_notes DESC, b.note_moyenne DESC
-        LIMIT {nbLivreEva};
-    """)
+        LIMIT %s;
+    """,(nbLivreEva,))
 
     idLivresAEvaluerRaw = cursor.fetchall()
 
@@ -182,14 +182,14 @@ def getLivresAEvaluerDecouverte(cursor, nbLivreEva):
     """
     Renvoie les données d'un nombre de livres pris parmi ceux moyennement populaires mais bien notés
     """
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _livre.id_livre FROM sae._livre 
         WHERE note_moyenne is not null 
         and nb_notes>1000 
         and nb_notes<50000 
         ORDER BY random(), note_moyenne DESC 
-        LIMIT {nbLivreEva};
-    """)
+        LIMIT %s;
+    """,(nbLivreEva,))
 
     idLivresAEvaluerRaw = cursor.fetchall()
 
@@ -207,7 +207,7 @@ def getUtilisateurById(cursor, id_utilisateur):
     """
     Renvoie les données de l'utilisateur correspondant à l'identifiant donné en paramètre
     """
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT 
             _utilisateur.id_utilisateur, 
             _utilisateur.sexe, 
@@ -240,8 +240,8 @@ def getUtilisateurById(cursor, id_utilisateur):
         LEFT JOIN _format_utilisateur ON _utilisateur.id_utilisateur = _format_utilisateur.id_utilisateur
         LEFT JOIN _format ON _format_utilisateur.id_format = _format.id_format
         
-        WHERE _utilisateur.id_utilisateur = {id_utilisateur}
-    """)
+        WHERE _utilisateur.id_utilisateur = %s
+    """,(id_utilisateur,))
 
     utilisateur = cursor.fetchall()
 
@@ -256,7 +256,7 @@ def getUtilisateursFromIdList(cursor, idUtilisateurs):
     """
     Renvoie les données des utilisateur dont l'identifiant correspond à l'un de ceux dans la liste mise en paramètre
     """
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT 
             _utilisateur.id_utilisateur, 
             _utilisateur.sexe, 
@@ -289,8 +289,8 @@ def getUtilisateursFromIdList(cursor, idUtilisateurs):
         LEFT JOIN _format_utilisateur ON _utilisateur.id_utilisateur = _format_utilisateur.id_utilisateur
         LEFT JOIN _format ON _format_utilisateur.id_format = _format.id_format
 
-        WHERE _utilisateur.id_utilisateur IN {idUtilisateurs}
-    """)
+        WHERE _utilisateur.id_utilisateur IN %s
+    """,(idUtilisateurs,))
 
     userData = cursor.fetchall()
     
@@ -311,12 +311,12 @@ def getUtilisateursAEvaluer(cursor, nbUtilisateurEva):
     Renvoie les données d'un nombre mis en paramètres d'utilisateurs pris au hasard
     """
     # Recupère les identifiant d'utilisateurs pris au hasard
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _utilisateur.id_utilisateur
         FROM _utilisateur
         ORDER BY random()
-        LIMIT {nbUtilisateurEva};
-    """)
+        LIMIT %s;
+    """,(nbUtilisateurEva,))
     
     idUtilisateursAEvaluerRaw = cursor.fetchall()
 
@@ -336,14 +336,14 @@ def getIdLivresUtilisateur(cursor, id_utilisateur):
     Renvoie les identifiants des livres préférés de l'utilisateur mis en paramètre
     """
     # Execute la requête
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT DISTINCT _livre.id_livre
         FROM _utilisateur 
         INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
         INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
 
-        WHERE _utilisateur.id_utilisateur = {id_utilisateur};
-    """)
+        WHERE _utilisateur.id_utilisateur = %s;
+    """,(id_utilisateur,))
 
     userData = cursor.fetchall()
 
@@ -365,12 +365,12 @@ def getBookIdSameAuthor(cursor, user_id, limit):
     Renvoie
     """
 
-    cursor.execute(f"""
+    cursor.execute("""
     SELECT id_auteur,id_livre FROM sae._utilisateur 
     NATURAL JOIN sae._livre_utilisateur 
     NATURAL JOIN sae._auteur_livre
-    WHERE id_utilisateur = {user_id};
-    """)
+    WHERE id_utilisateur = %s;
+    """, (user_id,))
 
     record = cursor.fetchall()
 
@@ -382,11 +382,11 @@ def getBookIdSameAuthor(cursor, user_id, limit):
     liste_livre_recommender = []
 
     for i in record:
-        cursor.execute(f"""
+        cursor.execute("""
         SELECT id_livre FROM sae._auteur_livre
         NATURAL JOIN sae._livre
-        WHERE id_auteur = {i[0]};
-        """)
+        WHERE id_auteur = %s;
+        """, (i[0],))
         livres = cursor.fetchall()
         for y in livres:
             if (y[0] not in liste_livre_lu) & (y[0] not in liste_livre_recommender):
@@ -405,27 +405,27 @@ def getBookIdInSeries(cursor, user):
     Si oui récupère livre suivant dans série
     Renvoie
     """
-    cursor.execute(f"""
-    SELECT id_livre FROM sae._utilisateur NATURAL JOIN sae._livre_utilisateur NATURAL JOIN sae._episode_serie WHERE id_utilisateur = {user};
-    """)
+    cursor.execute("""
+    SELECT id_livre FROM sae._utilisateur NATURAL JOIN sae._livre_utilisateur NATURAL JOIN sae._episode_serie WHERE id_utilisateur = %s;
+    """, (user,))
 
     record = cursor.fetchall()
 
     liste_continuer_lecture = []
     
     for y in record:
-        cursor.execute(f"""
-        SELECT id_serie,numero_episode FROM sae._episode_serie WHERE id_livre = {y[0]};
-        """)
+        cursor.execute("""
+        SELECT id_serie,numero_episode FROM sae._episode_serie WHERE id_livre = %s;
+        """, (y[0],))
         serie = cursor.fetchall()
 
         
         if serie[0][1] is not None and serie[0][1].isdigit():
             episode = int(serie[0][1])+1
 
-            cursor.execute(f"""
-            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}' AND id_serie='{serie[0][0]}';
-            """)
+            cursor.execute("""
+            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '%s' AND id_serie='%s';
+            """, (episode,serie[0][0]))
             livre = cursor.fetchall()
             liste_continuer_lecture.append(livre[0][0])
 
@@ -540,13 +540,14 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
 
 
 def rechercheAuteur(cursor, nom):
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT DISTINCT _auteur.id_auteur, nom, origine, sexe, note_moyenne, libelle_genre
         FROM _auteur
         LEFT JOIN _auteur_genre ON _auteur_genre.id_auteur = _auteur.id_auteur
         LEFT JOIN _genre ON _genre.id_genre = _auteur_genre.id_genre
-        WHERE nom LIKE '%{nom}%';
-    """)
+        WHERE nom LIKE '%%%s%%';
+    """,(nom,))
+    # This chain is because we need to wrap the %s to insert the string with the joker %, we need to double it to make it work
     
     rawAuthorData = cursor.fetchall()
     
