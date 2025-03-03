@@ -58,17 +58,17 @@ def register_user(username: str, email: str, password: str, sexe: str):
 
     try:
         if not EMAIL_REGEX.match(email):
-            raise Exception("Unvalid Email")
+            raise Exception("Mail invalide")
     except :
-        raise HTTPException(status_code=400, detail="Not an Email") 
+        raise HTTPException(status_code=400, detail="Mail invalide") 
 
     verif_sex=["Femme","Homme","Je ne souhaite pas le préciser"]
 
     try:
         if not sexe not in verif_sex:
-            raise Exception("Unvalid Sexe")
+            raise Exception("Sexe invalide")
     except :
-        raise HTTPException(status_code=400, detail="Not a sexe") 
+        raise HTTPException(status_code=400, detail="Sexe invalide") 
 
     # conn = get_db_connection()
     # cur = conn.cursor()
