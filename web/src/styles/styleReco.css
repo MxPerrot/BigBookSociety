@@ -21,6 +21,9 @@
   .media-element {
     border-radius: 0.25rem;
     overflow: hidden;
+    background-color: var(--col5);
+    color:var(--col1);
+    margin:5px;
   }
   .media-element >div {
     height: 200px;
