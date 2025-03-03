@@ -480,7 +480,7 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
         parameterList.append(auteurs)
     
     if genres:
-        baseQuery += " AND id_genre ANY(%s) "
+        baseQuery += " AND id_genre = ANY(%s) "
         parameterList.append(genres)
     
     if minNote is not None:
@@ -503,11 +503,11 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
                 UNION ALL
                 SELECT id_livre, titre, 2 AS priority 
                 FROM ({baseQuery}) AS filtered_books
-                WHERE LOWER(titre) LIKE LOWER('%s%%')
+                WHERE LOWER(titre) LIKE LOWER(CONCAT(%s,'%%'))
                 UNION ALL
                 SELECT id_livre, titre, 3 AS priority
                 FROM ({baseQuery}) AS filtered_books
-                WHERE LOWER(titre) LIKE LOWER('%%%s%%')
+                WHERE LOWER(titre) LIKE LOWER(CONCAT('%%',%s,'%%'))
             )
             SELECT id_livre, titre, MIN(priority) AS priority
             FROM combined
@@ -534,16 +534,6 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
     print("--------------------------------")
     print(bookIdList) # For debugging
     return bookIdList
-
-
-
-
-
-
-
-
-
-
 
 
 def rechercheAuteur(cursor, nom):
