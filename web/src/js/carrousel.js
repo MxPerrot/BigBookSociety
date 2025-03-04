@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", fetchBooks);
 
 function fetchBooks(url) {
-
   fetch(url)
     .then(response => response.text())
     .then(data => {
@@ -25,6 +24,7 @@ function fetchBooks(url) {
 
         if (Array.isArray(books) && books.length > 0) {
           books.forEach(book => {
+            const id = book.id_livre || "ID non disponible";
             const titre = book.titre || "Titre non disponible";
             const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
             const auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
@@ -37,7 +37,7 @@ function fetchBooks(url) {
               : "public/img/couverture.jpg";
 
             const bookHTML = `
-              <div class="media-element">
+              <div class="media-element" data-id="${id}">
                 <div>
                   <div class="isbn">
                     <img src="${coverUrl}" alt="Couverture du livre ${titre}" />
@@ -55,6 +55,7 @@ function fetchBooks(url) {
           });
 
           setupInfiniteScroll(scroller);
+          addClickEventToBooks(); // Appel de la fonction pour ajouter l'événement click
         } else {
           scroller.innerHTML = "<p>Aucun livre trouvé.</p>";
         }
@@ -91,6 +92,22 @@ function shiftCarousel(scroller, direction) {
     scroller.prepend(lastElement.cloneNode(true)); // Clone le dernier élément et l'ajoute au début
     scroller.removeChild(lastElement); // Supprime l'original
   }
+}
+
+// Fonction pour ajouter l'événement de clic sur chaque élément du carrousel
+function addClickEventToBooks() {
+  const books = document.querySelectorAll(".media-element");
+  
+  books.forEach(book => {
+    book.addEventListener("click", (e) => {
+      const id = book.getAttribute('data-id'); // Récupère l'ID à partir de l'attribut data-id
+      if (id) {
+        window.location.href = `src/html/livres.html?id=${id}`; // Redirection avec l'ID du livre
+      } else {
+        console.error("ID non trouvé pour ce livre.");
+      }
+    });
+  });
 }
 
 
