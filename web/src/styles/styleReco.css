@@ -3,6 +3,10 @@
   color: white;
 }
 
+h2{
+  color: white;
+}
+
 .media-scroller {
   display: flex;
   gap: 0.25rem;
