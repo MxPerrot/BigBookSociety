@@ -64,7 +64,9 @@ function fetchBooks(url, containerId) {
           scroller.appendChild(fragment);
           
           setupInfiniteScroll(scroller);
-          addClickEventToBooks(containerId); // Passer containerId pour ajouter l'événement de clic
+
+          // Appeler cette fonction après l'ajout des livres pour les rendre cliquables (lien pour la page de détail du livre)
+          addClickEventToBooks();
         } else {
           scroller.innerHTML = "<p>Aucun livre trouvé.</p>";
         }
@@ -77,6 +79,7 @@ function fetchBooks(url, containerId) {
     });
 }
 
+// Permet de se déplacer à l'infini dans le caroussel, peu importe le sens
 function setupInfiniteScroll(scroller) {
   const prevButton = scroller.closest('.recommendation-section').querySelector(".previous");
   const nextButton = scroller.closest('.recommendation-section').querySelector(".next");
@@ -86,8 +89,17 @@ function setupInfiniteScroll(scroller) {
     return;
   }
 
-  prevButton.addEventListener("click", () => shiftCarousel(scroller, "prev"));
-  nextButton.addEventListener("click", () => shiftCarousel(scroller, "next"));
+
+  // Attribuer la fonction addClickEventToBooks (lien pour les détails d'un livre) quand on se déplace dans le caroussel
+  prevButton.addEventListener("click", () => {
+    shiftCarousel(scroller, "prev");
+    addClickEventToBooks();
+  });
+  
+  nextButton.addEventListener("click", () => {
+    shiftCarousel(scroller, "next");
+    addClickEventToBooks(); 
+  });
 }
 
 function shiftCarousel(scroller, direction) {
@@ -103,26 +115,19 @@ function shiftCarousel(scroller, direction) {
   }
 }
 
-// Fonction pour ajouter l'événement de clic sur chaque élément du carrousel
-function addClickEventToBooks(containerId) {
-  const scroller = document.querySelector(`#${containerId} .media-scroller`);
-
-  if (!scroller) {
-    console.error("Erreur : Élément .media-scroller introuvable !");
-    return;
-  }
-
-  scroller.addEventListener("click", (event) => {
-    let bookElement = event.target.closest(".media-element");
-
-    if (bookElement) {
-      const id = bookElement.getAttribute("data-id");
+// Lien entre les livres du carrousel et la page de détail du livre
+function addClickEventToBooks() {
+  const books = document.querySelectorAll(".media-element");
+  
+  books.forEach(book => {
+    book.addEventListener("click", (e) => {
+      const id = book.getAttribute('data-id');
       if (id) {
         window.location.href = `src/html/livres.html?id=${id}`;
       } else {
         console.error("ID non trouvé pour ce livre.");
       }
-    }
+    });
   });
 }
 
