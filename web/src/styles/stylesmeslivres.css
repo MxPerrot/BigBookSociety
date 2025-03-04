@@ -1,25 +1,60 @@
-.card{
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 10px;
-    background-color: var(--col2);
+.books-container {
     display: flex;
-    flex-direction: row;
-
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
 }
 
-.card-img{
-    width: 80PX;
-    height: 100px;
-    margin: 10px;
+.card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 200px;
+    text-align: center;
 }
 
-.bouton-retirer{
-    background-color: var(--col1);
-    color: white;
+.card-img {
+    width: 100%;
+    height: auto;
+}
+
+.card-content {
+    padding: 10px;
+}
+
+.card-title {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.card-author {
+    font-size: 1em;
+    color: #666;
+    margin: 5px 0;
+}
+
+.card-description,
+.card-editeur,
+.card-pages,
+.card-datesortie {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0;
+}
+
+.bouton-retirer {
+    background-color: #ff4d4d;
+    color: #fff;
     border: none;
-    border-radius: 5px;
-    padding: 5px;
-    margin: 5px;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.bouton-retirer:hover {
+    background-color: #ff1a1a;
 }
