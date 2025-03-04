@@ -2,7 +2,6 @@ function fetchBooks(url, containerId) {
   fetch(url)
     .then(response => response.text())
     .then(data => {
-      console.log("Réponse brute de l'API : ", data);
 
       if (data.startsWith("'") && data.endsWith("'")) {
         data = data.slice(1, -1);
@@ -10,7 +9,6 @@ function fetchBooks(url, containerId) {
 
       try {
         const books = JSON.parse(data);
-        console.log("Réponse analysée (books) : ", books);
         
         const container = document.querySelector(`#${containerId} .media-container`);
         if (!container) {
