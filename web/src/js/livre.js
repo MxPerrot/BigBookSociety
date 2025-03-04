@@ -1,8 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const bookId = 522821;
-    fetchBookById(bookId);
-});
+    const params = new URLSearchParams(window.location.search);
+    const bookId = params.get("id");
 
+    if (bookId) {
+        fetchBookById(bookId);
+    } else {
+        console.error("Aucun ID de livre trouvé dans l'URL.");
+        document.querySelector(".card").innerHTML = "<p>Aucun livre trouvé.</p>";
+    }
+});
 function fetchBookById(id) {
     const url = `http://127.0.0.1:8000/get_book_data_by_id/${id}`;
     
@@ -13,7 +19,7 @@ function fetchBookById(id) {
             
             if (book) {
                 const bookContainer = document.querySelector(".card");
-                const isbn = book[0].isbn || "Aucun ISBN disponible";
+                const isbn = book[0].isbn13 || book[0].isbn || "Aucun ISBN disponible";
                 const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` : "placeholder.jpg";
                 
                 bookContainer.innerHTML = `

@@ -96,19 +96,27 @@ function shiftCarousel(scroller, direction) {
 
 // Fonction pour ajouter l'événement de clic sur chaque élément du carrousel
 function addClickEventToBooks() {
-  const books = document.querySelectorAll(".media-element");
-  
-  books.forEach(book => {
-    book.addEventListener("click", (e) => {
-      const id = book.getAttribute('data-id'); // Récupère l'ID à partir de l'attribut data-id
+  const scroller = document.querySelector(".media-scroller");
+
+  if (!scroller) {
+    console.error("Erreur : Élément .media-scroller introuvable !");
+    return;
+  }
+
+  scroller.addEventListener("click", (event) => {
+    let bookElement = event.target.closest(".media-element");
+
+    if (bookElement) {
+      const id = bookElement.getAttribute("data-id"); // Récupère l'ID depuis l'élément cliqué
       if (id) {
         window.location.href = `src/html/livres.html?id=${id}`; // Redirection avec l'ID du livre
       } else {
         console.error("ID non trouvé pour ce livre.");
       }
-    });
+    }
   });
 }
+
 
 
 fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=15");
