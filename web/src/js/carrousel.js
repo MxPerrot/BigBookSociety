@@ -1,5 +1,3 @@
-document.addEventListener("DOMContentLoaded", fetchBooks);
-
 function fetchBooks(url) {
   fetch(url)
     .then(response => response.text())
@@ -23,6 +21,8 @@ function fetchBooks(url) {
         scroller.innerHTML = ""; // On vide l'ancien contenu
 
         if (Array.isArray(books) && books.length > 0) {
+          const fragment = document.createDocumentFragment(); // Création d'un fragment de document
+
           books.forEach(book => {
             const id = book.id_livre || "ID non disponible";
             const titre = book.titre || "Titre non disponible";
@@ -36,24 +36,28 @@ function fetchBooks(url) {
               ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
               : "public/img/couverture.jpg";
 
-            const bookHTML = `
-              <div class="media-element" data-id="${id}">
-                <div>
-                  <div class="isbn">
-                    <img src="${coverUrl}" alt="Couverture du livre ${titre}" />
-                  </div>
-                  <div class="Livres">
-                    <h3>${titre}</h3>
-                    <p>${auteur}</p>
-                    <p>${genre}</p>
-                  </div>
+            const bookElement = document.createElement('div');
+            bookElement.classList.add("media-element");
+            bookElement.setAttribute("data-id", id);
+
+            bookElement.innerHTML = `
+              <div>
+                <div class="isbn">
+                  <img src="${coverUrl}" alt="Couverture du livre ${titre}" />
+                </div>
+                <div class="Livres">
+                  <h3>${titre}</h3>
+                  <p>${auteur}</p>
+                  <p>${genre}</p>
                 </div>
               </div>
             `;
 
-            scroller.innerHTML += bookHTML;
+            fragment.appendChild(bookElement); // Ajouter chaque élément au fragment
           });
 
+          scroller.appendChild(fragment); // Ajouter tout le fragment d'un coup au DOM
+          
           setupInfiniteScroll(scroller);
           addClickEventToBooks(); // Appel de la fonction pour ajouter l'événement click
         } else {
@@ -117,6 +121,6 @@ function addClickEventToBooks() {
   });
 }
 
-
-
-fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=15");
+document.addEventListener("DOMContentLoaded", () => {
+  fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=15");
+});
