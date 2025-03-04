@@ -119,6 +119,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     token = create_access_token(user[0])
+
+    
     return {"access_token": token, "token_type": "bearer"}
 
 

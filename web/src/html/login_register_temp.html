@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/web/src/js/login_register_temp.js" type="text/javascript" defer></script>
     <title>Login</title>
 </head>
 
 <body>
     <h2>Login</h2>
-    <form action="http://127.0.0.1:8000/token" method="POST">
+    <form id="loginForm">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>
 
@@ -20,6 +19,75 @@
         <button type="submit">Login</button>
     </form>
 
+    <h2>Token:</h2>
+    <pre id="tokenOutput">Your token will appear here.</pre>
+
+    <h2>Request:</h2>
+    <button type="submit" id="getData">Login</button>
+    <pre id="dataOutput">Your request will appear here.</pre>
+
+    <script>
+        token = null;
+
+        document.getElementById("loginForm").addEventListener("submit", function (event) {
+            event.preventDefault();  // Prevent form refresh
+
+            // Get the username and password input values
+            const formData = new FormData();
+            formData.append("username", document.getElementById("username").value);
+            formData.append("password", document.getElementById("password").value);
+
+            // Make the POST request to the FastAPI login endpoint
+            fetch('http://127.0.0.1:8000/token', {
+                method: 'POST',
+                body: formData  // Send form data
+            })
+            .then(response => response.json())  // Parse the JSON response
+            .then(data => {
+                if (data.access_token) {
+                    document.getElementById("tokenOutput").textContent = `Token: ${data.access_token}`;
+                    token=data.access_token;
+                } else {
+                    document.getElementById("tokenOutput").textContent = "Login failed. Please check your credentials.";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("tokenOutput").textContent = "An error occurred while fetching the token.";
+            });
+        });
+
+
+
+        document.getElementById("getData").addEventListener("click", function () {
+
+            console.log(token);
+
+            if (!token) {
+                document.getElementById("dataOutput").textContent = "No token found. Please log in.";
+                return;
+            }
+
+            fetch('http://127.0.0.1:8000/users/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Include the token in the request
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("dataOutput").textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("dataOutput").textContent = "Failed to fetch protected data.";
+            });
+        });
+
+
+
+    </script>
     
 </body>
 
