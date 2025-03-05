@@ -60,6 +60,12 @@ async def get_author_data_by_id(id:int):
     return author_json
 
 
+@app.get("/get_user_book/")
+async def get_book_item_based(user:int):
+    books_info = bdd.getLivresUtilisateur(cursor, int(user))
+    return json.loads(books_info.to_json(orient='index'))
+
+
 @app.get("/get_book_item_based/")
 async def get_book_item_based(user:int, nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(user), int(nbrecommendation), bdd.getLivresAEvaluer(cursor, int(limit)))
