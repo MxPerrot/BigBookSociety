@@ -8,39 +8,87 @@
     <script src="/libs/js/jquery-3.7.1.min.js"></script>
     <script src="./src/js/header-accueil.js" type="text/javascript"></script>
     <script src="./src/js/footer.js" type="text/javascript"></script>
-    <title>ACCUEIL BigBook</title>
+    <title>BigBook</title>
 </head>
 <body>
     <div class="slogan-container">
-        <img id="background" src="./public/img/image_home.jpeg" alt="">
+        <img id="background" src="./public/img/newhome.jpg" alt="">
         <h1 class="Slogan"> Vos envies, nos recommandations</h1>
     </div>
     
     <header-accueil></header-accueil>
 
     <main>
-        
-      <div class="media-container">
-          <div class="media-scroller">
-          </div>
-      </div>
-      
-      <svg>
-          <symbol id="next" viewBox="0 0 256 512">
-              <path fill="white"
-                    d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z" />
-          </symbol>
-          <symbol id="previous" viewBox="0 0 256 512">
-              <path fill="white"
-                    d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" />
-          </symbol>
-      </svg>
+        <!-- Section pour item-based -->
+        <section id="item-based-container" class="recommendation-section">
+            <h2>Recommandations basées sur l'item</h2>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel Item-Based-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Section pour item-based tendance -->
+        <section id="item-based-tendance-container" class="recommendation-section">
+            <h2>Recommandations basées sur la tendance</h2>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel Item-Based Tendance-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Section pour user-based -->
+        <section id="user-based-container" class="recommendation-section">
+            <h2>Recommandations basées sur l'utilisateur</h2>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel User-Based-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+      <!-- Les symboles SVG -->
+    <svg style="display: none;">
+      <symbol id="next" viewBox="0 0 256 512">
+          <path fill="white"
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z" />
+      </symbol>
+      <symbol id="previous" viewBox="0 0 256 512">
+          <path fill="white"
+              d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" />
+      </symbol>
+  </svg>
+
     </main>
 
     <p id="result"></p>
 
-    <script src="./src/js/lien_api.js" type="text/javascript"></script>
-
+    <script src="./src/js/carrousel.js" type="text/javascript"></script>
 
     <footer-component></footer-component>
 </body>

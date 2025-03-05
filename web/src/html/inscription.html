@@ -14,7 +14,7 @@
     <main>
         <div class="register-container">
             <h2>Inscription</h2>
-            <form id="registerForm">
+            <form action="/register" method="post">
                 <div class="input-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
@@ -28,16 +28,14 @@
                     <input type="password" id="password" name="password" required>
                 </div>
                 <div class="input-group">
-                    <label for="sexe">Âge</label>
-                    <input type="text" id="sexe" name="sexe" required>
+                    <label for="age">Âge</label>
+                    <input type="number" id="age" name="age" required>
                 </div>
                 <button type="submit" class="register-button">S'inscrire</button>
             </form>
             <p class="register-message">Déja inscrit? <a href="./connexion.html">Connectez-vous ici</a></p>
         </div>
     </main>
-
-    <script src="../js/script_enregistrement.js"></script>
     <footer-component></footer-component>
 </body>
 </html>

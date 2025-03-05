@@ -7,7 +7,8 @@ NOMBRE_LIVRES_TESTES = 1000
 UTILISATEUR_A_RECOMMANDER = 131
 
 # Met en place le curseur de la connexion à la base de données
-cursor = bdd.setUpCursor()
+connexion = bdd.setUpConnection()
+cursor = bdd.setUpCursor(connexion)
 # Entrainement du modèle des genres
 modelGenres = ru.model_genre(cursor)
 

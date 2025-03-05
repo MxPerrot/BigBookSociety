@@ -35,7 +35,6 @@ CREATE TABLE _livre (
     titre VARCHAR NOT NULL,
     nb_notes INTEGER,
     nb_critiques INTEGER,
-    note_moyenne DECIMAL,
     nb_note_1_etoile INTEGER,
     nb_note_2_etoile INTEGER,
     nb_note_3_etoile INTEGER,
@@ -499,6 +498,9 @@ WbImport
 -table=_utilisateur_raison_achat
 -delimiter=','
 -header=true;
+
+ALTER TABLE _livre 
+ADD COLUMN note_moyenne DECIMAL GENERATED ALWAYS AS ((nb_note_1_etoile*1.0+nb_note_2_etoile*2.0+nb_note_3_etoile*3.0+nb_note_4_etoile*4.0+nb_note_5_etoile*5.0)/CAST (NULLIF(nb_notes,0) AS DECIMAL)) STORED;
 
 SELECT setval('_utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) FROM _utilisateur));
 

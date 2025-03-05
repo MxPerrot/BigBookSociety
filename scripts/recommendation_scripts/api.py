@@ -145,6 +145,41 @@ def read_users_me(current_user: dict = Depends(get_current_user)):
 
 
 
+@app.get("/get_book_data_by_id/{id}")
+async def get_book_data_by_id(id:int):
+    book_infos = getLivresInformation(cursor,[id])
+    return book_infos
+
+@app.get("/get_author_data_by_id/{id}")
+async def get_author_data_by_id(id:int):
+    authorInfo = bdd.getAuthorById(cursor, id)
+    author_json = []
+
+    if type(authorInfo) == int:
+        return json.dumps(author_json)
+    
+    noteMoy = authorInfo[3]
+    if noteMoy != None:
+        noteMoy = float(noteMoy)
+
+    author_json.append({
+            "nom": authorInfo[0],
+            "origine": authorInfo[1],
+            "sexe": authorInfo[2],
+            "note_moyenne": noteMoy,
+            "nb_review": authorInfo[4],
+            "nb_critiques": authorInfo[5]
+        })
+
+    return author_json
+
+
+@app.get("/get_books_by_user/")
+async def get_book_item_based(user:int):
+    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(user))
+    books_infos = getLivresInformation(cursor,book_id_list)
+    return books_infos
+
 
 @app.get("/get_book_item_based/")
 async def get_book_item_based(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
@@ -197,19 +232,19 @@ async def get_in_serie(current_user: dict = Depends(get_current_user)):
 @app.get("/get_next_books/{id}")
 async def get_next_books(id:int):
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _episode_serie.id_serie
         FROM _episode_serie
-        WHERE _episode_serie.id_livre = {id};
-    """)
+        WHERE _episode_serie.id_livre = %s;
+    """,(id,))
 
     serieData = cursor.fetchall()
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _episode_serie.id_livre
         FROM _episode_serie
-        WHERE _episode_serie.id_serie = {serieData[0][0]};
-    """)
+        WHERE _episode_serie.id_serie = %s;
+    """,(serieData[0][0],))
 
     bookData = cursor.fetchall()
     books_infos = getLivresInformation(cursor,bookData)
@@ -218,12 +253,12 @@ async def get_next_books(id:int):
 
 @app.get("/get_genres/")
 async def get_genres():
-    genre_list = bdd.getGenres(cursor)
+    genre_list = bdd.getAllGenres(cursor)
     return json.dumps(genre_list)
 
 @app.get("/get_authors/")
 async def get_authors():
-    author_list = bdd.getAuthors(cursor)
+    author_list = bdd.getAllAuthors(cursor)
     return json.dumps(author_list)
 
 @app.get("/search_books/")
@@ -260,9 +295,9 @@ async def search_author(nom:str):
 
 
 def getLivresInformation(cursor,idLivres):
-    idLivres = bdd.turnIterableIntoSqlList(idLivres)
+    #idLivres = bdd.turnIterableIntoSqlList(idLivres)
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT 
             _livre.id_livre, 
             _livre.titre,
@@ -284,57 +319,57 @@ def getLivresInformation(cursor,idLivres):
         
         FROM _livre
         LEFT JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-        WHERE _livre.id_livre IN ({idLivres});
-    """)
+        WHERE _livre.id_livre = ANY(%s);
+    """,(idLivres,))
 
     bookData = cursor.fetchall()
 
     if len(bookData) == 0:
         return json.dumps([])
     
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _genre_livre.id_livre, _genre.libelle_genre, _genre_livre.nb_votes
         FROM _genre_livre
         INNER JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-        WHERE _genre_livre.id_livre IN ({idLivres});
-    """)
+        WHERE _genre_livre.id_livre = ANY(%s);
+    """, (idLivres,))
 
     genreData = cursor.fetchall()
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _auteur_livre.id_livre, _auteur.nom
         FROM _auteur_livre
         INNER JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-        WHERE _auteur_livre.id_livre IN ({idLivres});
-    """)
+        WHERE _auteur_livre.id_livre = ANY(%s);
+    """, (idLivres,))
 
     authorData = cursor.fetchall()
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _episode_serie.id_livre, _serie.nom_serie, _episode_serie.numero_episode
         FROM _episode_serie
         INNER JOIN _serie ON _episode_serie.id_serie = _serie.id_serie
-        WHERE _episode_serie.id_livre IN ({idLivres});
-    """)
+        WHERE _episode_serie.id_livre = ANY(%s);
+    """, (idLivres,))
 
     seriesData = cursor.fetchall()
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _cadre_livre.id_livre, _pays.nom, _cadre.localisation, _cadre.annee
         FROM _cadre_livre
         LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
         LEFT JOIN _pays ON _cadre.id_pays = _pays.id_pays
-        WHERE _cadre_livre.id_livre IN ({idLivres});
-    """)
+        WHERE _cadre_livre.id_livre = ANY(%s);
+    """,(idLivres,))
 
     settingData = cursor.fetchall()
 
-    cursor.execute(f"""
+    cursor.execute("""
         SELECT _prix_livre.id_livre, _prix.nom_prix, _prix.annee_prix
         FROM _prix_livre
         LEFT JOIN _prix ON _prix_livre.id_prix = _prix.id_prix
-        WHERE _prix_livre.id_livre IN ({idLivres});
-    """)
+        WHERE _prix_livre.id_livre = ANY(%s);
+    """,(idLivres,))
 
     priceData = cursor.fetchall()
 
