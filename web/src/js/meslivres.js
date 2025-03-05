@@ -64,7 +64,7 @@ function fetchBooksByUserId() {
 }
 
 function removeBook(bookId) {
-    fetch(`http://127.0.0.1:8000/remove_book/${bookId}`, { 
+    fetch(`http://127.0.0.1:8000/delete_book/${bookId}`, { 
         method: 'DELETE'
     })
     .then(response => {
