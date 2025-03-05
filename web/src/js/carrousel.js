@@ -3,9 +3,19 @@ function fetchBooks(url, containerId) {
   console.log(cachedData);
 
   if (cachedData) {
-    // Si les données sont dans sessionStorage, on les utilise directement
-    console.log("Données récupérées depuis sessionStorage.");
-    carouselGenerateur(cachedData, containerId);
+    try {
+      const parsedData = JSON.parse(cachedData);
+      if (parsedData.detail === "Invalid token") {
+        throw new Error("Token invalide détecté dans le cache.");
+      }
+      // Si les données sont valides, on les utilise
+      console.log("Données récupérées depuis sessionStorage.");
+      carouselGenerateur(cachedData, containerId);
+      return;
+    } catch (error) {
+      console.warn("Cache invalide ou erreur de parsing JSON :", error);
+      sessionStorage.removeItem(url); // On supprime les données invalides du cache
+    }
   } else {
     console.log("Lancement fetch");
 
