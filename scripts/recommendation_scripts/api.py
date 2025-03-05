@@ -293,6 +293,10 @@ async def search_author(nom:str):
     
     return author_json
 
+@app.get("/delete_book/{bookId}")
+async def delete_book(bookId: int):
+    bdd.deleteLivre(cursor, bookId)
+    return {"message": "Livre supprimé"}
 
 def getLivresInformation(cursor,idLivres):
     #idLivres = bdd.turnIterableIntoSqlList(idLivres)

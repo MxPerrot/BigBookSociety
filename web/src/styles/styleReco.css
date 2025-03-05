@@ -145,7 +145,7 @@ h3, p {
   text-align: center;
 }
 
-.bt_connex {
+.bt_connex, .refresh {
   display: inline-block;
   padding: 20px 40px;
   background-color: var(--col4);
