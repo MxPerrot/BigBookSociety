@@ -36,6 +36,29 @@ async def get_book_data_by_id(id:int):
     book_infos = getLivresInformation(cursor,[id])
     return book_infos
 
+@app.get("/get_author_data_by_id/{id}")
+async def get_author_data_by_id(id:int):
+    authorInfo = bdd.getAuthorById(cursor, id)
+    author_json = []
+
+    if type(authorInfo) == int:
+        return json.dumps(author_json)
+    
+    noteMoy = authorInfo[3]
+    if noteMoy != None:
+        noteMoy = float(noteMoy)
+
+    author_json.append({
+            "nom": authorInfo[0],
+            "origine": authorInfo[1],
+            "sexe": authorInfo[2],
+            "note_moyenne": noteMoy,
+            "nb_review": authorInfo[4],
+            "nb_critiques": authorInfo[5]
+        })
+
+    return author_json
+
 
 @app.get("/get_book_item_based/")
 async def get_book_item_based(user:int, nbrecommendation:int=10, limit:int=1000):
@@ -109,12 +132,12 @@ async def get_next_books(id:int):
 
 @app.get("/get_genres/")
 async def get_genres():
-    genre_list = bdd.getGenres(cursor)
+    genre_list = bdd.getAllGenres(cursor)
     return json.dumps(genre_list)
 
 @app.get("/get_authors/")
 async def get_authors():
-    author_list = bdd.getAuthors(cursor)
+    author_list = bdd.getAllAuthors(cursor)
     return json.dumps(author_list)
 
 @app.get("/search_books/")

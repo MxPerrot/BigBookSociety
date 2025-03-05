@@ -431,6 +431,24 @@ def getBookIdInSeries(cursor, user):
 
     return liste_continuer_lecture
 
+def getAuthorById(cursor, id):
+    cursor.execute(f"""
+    SELECT nom, origine, sexe, note_moyenne, nb_reviews, nb_critiques 
+    FROM _auteur
+    WHERE id_auteur = %s;
+    """, (id,))
+
+    authorRaw = cursor.fetchall()
+
+    # Si aucun utilisateur n'a été récupéré renvoie -1, indiquant qu'aucune donnée n'a été récupérée
+    if len(authorRaw) == 0:
+        return -1
+
+    # Reformate les données
+    #TODO author = [list(author) for author in authorRaw]
+
+    return authorRaw[0]
+
 def ajoutClause(recherche,ajoutWhere):
     if ajoutWhere:
         recherche += "WHERE "
@@ -439,7 +457,7 @@ def ajoutClause(recherche,ajoutWhere):
         recherche += "AND "
     return (recherche,ajoutWhere)
 
-def getGenres(cursor):
+def getAllGenres(cursor):
     cursor.execute(f"""
     SELECT id_genre, libelle_genre 
     FROM _genre;
@@ -452,7 +470,7 @@ def getGenres(cursor):
 
     return genres
 
-def getAuthors(cursor):
+def getAllAuthors(cursor):
     cursor.execute(f"""
     SELECT _auteur.id_auteur, _auteur.nom 
     FROM _auteur;
@@ -555,5 +573,5 @@ def rechercheAuteur(cursor, nom):
 
 #cursor = setUpCursor()
 #print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
-#print(getGenres(cursor))
+#print(getAllGenres(cursor))
 #print(rechercheAuteur(cursor,"martin"))
