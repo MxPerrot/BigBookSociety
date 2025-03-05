@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     // const userId = "131"; // ID utilisateur forcé
-    // fetchBooksByUserId(userId);
+    fetchBooksByUserId();
     /* const userId = getUserIdFromSession();
     if (userId) {
         fetchBooksByUserId(userId);
