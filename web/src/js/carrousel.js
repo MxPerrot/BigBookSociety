@@ -150,16 +150,69 @@ function addClickEventToBooks() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // item based :
-  fetchBooks("http://127.0.0.1:8000/get_book_item_based/?nbrecommendation=15", "item-based-container");
+  const token = localStorage.getItem('Token');
 
-  // item based tendance :
-  fetchBooks("http://127.0.0.1:8000/get_book_item_based_tendance/?nbrecommendation=15", "item-based-tendance-container");
+  // Si le token est absent
+  if (!token) {
+    console.warn("Aucun token trouvé dans le localStorage. Seul le fetch des livres populaires sera effectué.");
 
-  // user based :
-  fetchBooks("http://127.0.0.1:8000/get_book_user_based/?nbrecommendation=15", "user-based-container");
+    // Supprimer tout le contenu du <main>
+    const mainElement = document.querySelector("main");
+    if (mainElement) {
+      mainElement.innerHTML = '';  // Vide le contenu de <main>
+    }
 
-  //tendance
-  //fetchBooks("http://127.0.0.1:8000/get_tendance/10", "tendance-container");
+    // Remplir le <main> avec la section pour les livres populaires
+    const popularSectionHTML = `
+      <!-- Section pour populaire -->
+      <section id="populaire-container" class="recommendation-section">
+          <h2>Les plus populaires</h2>
+          <div class="media-container">
+              <button class="previous" aria-label="previous">
+                  <svg><use href="#previous"></use></svg>
+              </button>
+          
+              <div class="media-scroller">
+                  <!-- Carrousel populaire-->
+              </div>
+          
+              <button class="next" aria-label="next">
+                  <svg><use href="#next"></use></svg>
+              </button>
+          </div>
+      </section>
+      <!-- Les symboles SVG -->
+      <svg style="display: none;">
+        <symbol id="next" viewBox="0 0 256 512">
+            <path fill="white"
+                d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z" />
+        </symbol>
+        <symbol id="previous" viewBox="0 0 256 512">
+            <path fill="white"
+                d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" />
+        </symbol>
+      </svg>
 
+      <div class="lien_connexion">
+        <h1>Pour plus de recommandations, veuillez vous connectez ou créez un compte :</h1>
+        <a class="bt_connex" href="./src/html/connexion.html"> Connexion</a>
+      </div>
+
+    `;
+
+    if (mainElement) {
+      mainElement.innerHTML = popularSectionHTML;  // Ajoute la section populaire dans <main>
+    }
+
+    // Exécuter uniquement la requête pour les livres populaires
+    fetchBooks("http://127.0.0.1:8000/get_tendance/20", "populaire-container");
+
+  } else {
+    // Si le token est présent, exécuter tous les fetch
+    fetchBooks("http://127.0.0.1:8000/get_book_item_based/?nbrecommendation=20", "item-based-container");
+    fetchBooks("http://127.0.0.1:8000/get_book_item_based_tendance/?nbrecommendation=20", "item-based-tendance-container");
+    fetchBooks("http://127.0.0.1:8000/get_book_user_based/?nbrecommendation=20", "user-based-container");
+    fetchBooks("http://127.0.0.1:8000/get_tendance/20", "populaire-container");
+  }
 });
+

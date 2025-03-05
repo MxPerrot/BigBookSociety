@@ -138,3 +138,34 @@ h3, p {
 .media-scroller:hover .navigation-indicators {
   opacity: 1;
 }
+
+
+.lien_connexion{
+  color: white;
+  text-align: center;
+}
+
+.bt_connex {
+  display: inline-block;
+  padding: 20px 40px;
+  background-color: var(--col4);
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 50px;
+}
+
+.bt_connex:hover {
+  background-color: #0056b3; /* Bleu plus foncé */
+  transform: scale(1.05);
+}
+
+.bt_connex:active {
+  background-color: #004494;
+  transform: scale(0.98);
+}
