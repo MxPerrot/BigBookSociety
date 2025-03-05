@@ -122,10 +122,12 @@ class Header extends HTMLElement {
       shadowRoot.appendChild(headerTemplate.content);
     }
   }
-  
-  customElements.define('header-component', Header);
 
-  const token = localStorage.getItem('Token');
+customElements.define('header-component', Header);
+
+// Check if user is logged in, if not, replace "my profile" with "log in"
+
+let token = localStorage.getItem('Token');
 
 document.addEventListener("DOMContentLoaded", () => {
     const headerElement = document.querySelector("header-component");

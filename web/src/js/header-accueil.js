@@ -130,7 +130,9 @@ class Header extends HTMLElement {
 
 customElements.define('header-accueil', Header);
 
-const token = localStorage.getItem('Token');
+// Check if user is logged in, if not, replace "my profile" with "log in"
+
+let token = localStorage.getItem('Token');
 
 document.addEventListener("DOMContentLoaded", () => {
     const headerElement = document.querySelector("header-accueil");
