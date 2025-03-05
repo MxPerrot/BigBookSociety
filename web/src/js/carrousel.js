@@ -1,5 +1,11 @@
 function fetchBooks(url, containerId) {
-  fetch(url)
+  fetch(url, {
+         method: 'GET',
+         headers: {
+             'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+             'Content-Type': 'application/json'
+         }
+  })
     .then(response => response.text())
     .then(data => {
 
@@ -9,7 +15,7 @@ function fetchBooks(url, containerId) {
 
       try {
         const books = JSON.parse(data);
-        
+        console.log(localStorage.getItem('Token'));
         const container = document.querySelector(`#${containerId} .media-container`);
         if (!container) {
           console.error("Erreur : Élément contenant le carrousel introuvable !");
@@ -130,13 +136,13 @@ function addClickEventToBooks() {
 
 document.addEventListener("DOMContentLoaded", () => {
   // item based :
-  fetchBooks("http://127.0.0.1:8000/get_book_item_based/?user=131&nbrecommendation=15", "item-based-container");
+  fetchBooks("http://127.0.0.1:8000/get_book_item_based/?nbrecommendation=15", "item-based-container");
 
   // item based tendance :
-  fetchBooks("http://127.0.0.1:8000/get_book_item_based_tendance/?user=131&nbrecommendation=15", "item-based-tendance-container");
+  fetchBooks("http://127.0.0.1:8000/get_book_item_based_tendance/?nbrecommendation=15", "item-based-tendance-container");
 
   // user based :
-  fetchBooks("http://127.0.0.1:8000/get_book_user_based/?user=131&nbrecommendation=15", "user-based-container");
+  fetchBooks("http://127.0.0.1:8000/get_book_user_based/?nbrecommendation=15", "user-based-container");
 
   //tendance
   //fetchBooks("http://127.0.0.1:8000/get_tendance/10");
