@@ -1,79 +1,95 @@
 function fetchBooks(url, containerId) {
-  fetch(url)
-    .then(response => response.text())
-    .then(data => {
+  const cachedData = sessionStorage.getItem(url);
+  console.log(cachedData);
 
-      if (data.startsWith("'") && data.endsWith("'")) {
-        data = data.slice(1, -1);
-      }
+  if (cachedData) {
+    // Si les données sont dans sessionStorage, on les utilise directement
+    console.log("Données récupérées depuis sessionStorage.");
+    carouselGenerateur(cachedData, containerId);
+  } else {
+    console.log("Lancement fetch");
 
-      try {
-        const books = JSON.parse(data);
-        
-        const container = document.querySelector(`#${containerId} .media-container`);
-        if (!container) {
-          console.error("Erreur : Élément contenant le carrousel introuvable !");
-          return;
+    fetch(url)
+      .then(response => response.text())
+      .then(data => {
+        if (data.startsWith("'") && data.endsWith("'")) {
+          data = data.slice(1, -1);
         }
 
-        const scroller = document.createElement('div');
-        scroller.classList.add("media-scroller");
+        sessionStorage.setItem(url, data);  // Stocke la réponse en cache
 
-        container.appendChild(scroller);
+        carouselGenerateur(data, containerId);
+      })
+      .catch(error => {
+        console.error("Erreur lors de la récupération des données : ", error);
+      });
+  }
+}
 
-        scroller.innerHTML = "";
+// Affichage des livres dans le carrousel
+function carouselGenerateur(data, containerId) {
+  try {
+    const books = JSON.parse(data);
+    
+    const container = document.querySelector(`#${containerId} .media-container`);
+    if (!container) {
+      console.error("Erreur : Élément contenant le carrousel introuvable !");
+      return;
+    }
 
-        if (Array.isArray(books) && books.length > 0) {
-          const fragment = document.createDocumentFragment();
+    const scroller = document.createElement('div');
+    scroller.classList.add("media-scroller");
 
-          books.forEach(book => {
-            const id = book.id_livre || "ID non disponible";
-            const titre = book.titre || "Titre non disponible";
-            const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
-            const auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
-            const genre = book.libelle_genre && book.libelle_genre.length > 0 ? 
-              book.libelle_genre[0].includes(',') ? book.libelle_genre[0].split(',')[0] : book.libelle_genre[0] : 
-              "Genre inconnu";
+    container.appendChild(scroller);
 
-            const coverUrl = (isbn !== "Aucun ISBN disponible") 
-              ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
-              : "public/img/couverture.jpg";
+    scroller.innerHTML = "";
 
-            const bookElement = document.createElement('div');
-            bookElement.classList.add("media-element");
-            bookElement.setAttribute("data-id", id);
+    if (Array.isArray(books) && books.length > 0) {
+      const fragment = document.createDocumentFragment();
 
-            bookElement.innerHTML = `
-              <div>
-                <div class="isbn">
-                  <img src="${coverUrl}" alt="Couverture du livre ${titre}" onerror="this.onerror=null;this.src='public/img/couverture.jpg';" />                </div>
-                <div class="Livres">
-                  <h3>${titre}</h3>
-                  <p>${auteur}</p>
-                  <p>${genre}</p>
-                </div>
-              </div>
-            `;
+      books.forEach(book => {
+        const id = book.id_livre || "ID non disponible";
+        const titre = book.titre || "Titre non disponible";
+        const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
+        const auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
+        const genre = book.libelle_genre && book.libelle_genre.length > 0 ? 
+          book.libelle_genre[0].includes(',') ? book.libelle_genre[0].split(',')[0] : book.libelle_genre[0] : 
+          "Genre inconnu";
 
-            fragment.appendChild(bookElement);
-          });
+        const coverUrl = (isbn !== "Aucun ISBN disponible") 
+          ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
+          : "public/img/couverture.jpg";
 
-          scroller.appendChild(fragment);
-          
-          setupInfiniteScroll(scroller);
+        const bookElement = document.createElement('div');
+        bookElement.classList.add("media-element");
+        bookElement.setAttribute("data-id", id);
 
-          // Appeler cette fonction après l'ajout des livres pour les rendre cliquables (lien pour la page de détail du livre)
-          addClickEventToBooks();
-        } else {
-          scroller.innerHTML = "<p>Aucun livre trouvé.</p>";
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'analyse des données : ", error);
-      }
-    })
-    .catch(error => {
-      console.error("Erreur lors de la récupération des données : ", error);
-    });
+        bookElement.innerHTML = `
+          <div>
+            <div class="isbn">
+              <img src="${coverUrl}" alt="Couverture du livre ${titre}" onerror="this.onerror=null;this.src='public/img/couverture.jpg';" />
+            </div>
+            <div class="Livres">
+              <h3>${titre}</h3>
+              <p>${auteur}</p>
+              <p>${genre}</p>
+            </div>
+          </div>
+        `;
+
+        fragment.appendChild(bookElement);
+      });
+
+      scroller.appendChild(fragment);
+      
+      setupInfiniteScroll(scroller);
+      addClickEventToBooks();
+    } else {
+      scroller.innerHTML = "<p>Aucun livre trouvé.</p>";
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'analyse des données : ", error);
+  }
 }
 
 // Permet de se déplacer à l'infini dans le caroussel, peu importe le sens
@@ -86,8 +102,7 @@ function setupInfiniteScroll(scroller) {
     return;
   }
 
-
-  // Attribuer la fonction addClickEventToBooks (lien pour les détails d'un livre) quand on se déplace dans le caroussel
+  // Attribuer la fonction addClickEventToBooks (lien pour les détails d'un livre) quand on se déplace dans le carrousel
   prevButton.addEventListener("click", () => {
     shiftCarousel(scroller, "prev");
     addClickEventToBooks();
