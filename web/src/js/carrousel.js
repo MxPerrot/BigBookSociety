@@ -5,10 +5,20 @@ function fetchBooks(url, containerId) {
   if (cachedData) {
     try {
       const parsedData = JSON.parse(cachedData);
+      
+      // Vérifier si les données sont un tableau vide
+      if (Array.isArray(parsedData) && parsedData.length === 0) {
+        console.warn("Le cache contient un tableau vide, relance la requête...");
+        sessionStorage.removeItem(url); // Supprimer l'entrée du cache avant de relancer la requête
+        fetchBooks(url, containerId); // Relancer la requête si le tableau est vide
+        return;
+      }
+
       if (parsedData.detail === "Invalid token") {
         throw new Error("Token invalide détecté dans le cache.");
       }
-      // Si les données sont valides, on les utilise
+
+      // Si les données sont valides et non vides
       console.log("Données récupérées depuis sessionStorage.");
       carouselGenerateur(cachedData, containerId);
       return;
@@ -25,22 +35,23 @@ function fetchBooks(url, containerId) {
           'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
           'Content-Type': 'application/json'
       }
-  })
-      .then(response => response.text())
-      .then(data => {
-        if (data.startsWith("'") && data.endsWith("'")) {
-          data = data.slice(1, -1);
-        }
+    })
+    .then(response => response.text())
+    .then(data => {
+      if (data.startsWith("'") && data.endsWith("'")) {
+        data = data.slice(1, -1);
+      }
 
-        sessionStorage.setItem(url, data);  // Stocke la réponse en cache
+      sessionStorage.setItem(url, data);  // Stocke la réponse en cache
 
-        carouselGenerateur(data, containerId);
-      })
-      .catch(error => {
-        console.error("Erreur lors de la récupération des données : ", error);
-      });
+      carouselGenerateur(data, containerId);
+    })
+    .catch(error => {
+      console.error("Erreur lors de la récupération des données : ", error);
+    });
   }
 }
+
 
 // Affichage des livres dans le carrousel
 function carouselGenerateur(data, containerId) {
