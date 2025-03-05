@@ -1,6 +1,5 @@
 function fetchBooks(url, containerId) {
   const cachedData = sessionStorage.getItem(url);
-  console.log(cachedData);
 
   if (cachedData) {
     try {
@@ -36,21 +35,35 @@ function fetchBooks(url, containerId) {
           'Content-Type': 'application/json'
       }
     })
-    .then(response => response.text())
+    .then(response => {
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Token expired");
+        }
+      }
+      return response.json();
+    })
     .then(data => {
-      if (data.startsWith("'") && data.endsWith("'")) {
-        data = data.slice(1, -1);
+      if (data.detail === "Token expired") {
+        // Si le token a expiré, on efface sessionStorage et relance la requête
+        console.warn("Token expiré, nettoyage du sessionStorage...");
+        sessionStorage.clear();  // Supprimer tout le sessionStorage
+
+        // Relancer la requête
+        fetchBooks(url, containerId);
+        return;
       }
 
-      sessionStorage.setItem(url, data);  // Stocke la réponse en cache
+      sessionStorage.setItem(url, JSON.stringify(data));  // Stocke la réponse en cache
 
-      carouselGenerateur(data, containerId);
+      carouselGenerateur(JSON.stringify(data), containerId);
     })
     .catch(error => {
       console.error("Erreur lors de la récupération des données : ", error);
     });
   }
 }
+
 
 
 // Affichage des livres dans le carrousel
@@ -237,3 +250,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+
+function refreshCarrousel() {
+  window.location.href = `./index.html`;
+
+  // Efface les données du sessionStorage
+  sessionStorage.clear();
+  
+  // Crée un nouvel élément script pour relancer carrousel.js
+  var script = document.createElement('script');
+  script.src = './src/js/carrousel.js';
+  script.type = 'text/javascript';
+  
+  // Ajoute le script à la page
+  document.head.appendChild(script);
+  window.location.href = `./index.html`;
+  sessionStorage.clear();
+
+}
