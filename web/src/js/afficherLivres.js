@@ -26,7 +26,8 @@ function afficherLivres(livres, conteneur) {
             
             var $img = $('<img>', {
                 src: urlImage,
-                alt: livre.titre
+                alt: livre.titre,
+                onerror: "this.onerror=null;this.src='../../public/img/couverture.jpg';"
             });
             
             // Ajout de l'image à la div du livre
@@ -50,12 +51,12 @@ function addClickEventToBooks() {
 
     books.forEach(book => {
         book.addEventListener("click", (e) => {
-        const id = book.getAttribute('id');
-        if (id) {
-            window.location.href = `./livres.html?id=${id}`;
-        } else {
-            console.error("ID non trouvé pour ce livre.");
-        }
+            const id = book.getAttribute('id');
+            if (id) {
+                window.location.href = `./livres.html?id=${id}`;
+            } else {
+                console.error("ID non trouvé pour ce livre.");
+            }
         });
     });
 }

@@ -6,6 +6,13 @@ let genre_container_id = "genreIdBar"
 let author_input_id = author_container_id + "-input"
 let genre_input_id = genre_container_id + "-input"
 
+function loadSearch() {
+    let data = sessionStorage.getItem("searchData");
+    console.log(JSON.parse(data))
+    if (data) {
+        afficherLivres(JSON.parse(data), result);
+    }
+}
 
 async function search_book(url, title_input, author_input, genre_input, result_container) {
     let first = true
@@ -38,11 +45,12 @@ async function search_book(url, title_input, author_input, genre_input, result_c
             url += "&genres="+genres
         }
     }
-        const rawData = await fetch(url)
-        const data = await rawData.json() // FIXME: sometimes need to be parsed (JSON.parse(...))
+    const rawData = await fetch(url)
+    const data = await rawData.json() // FIXME: sometimes need to be parsed (JSON.parse(...))
 
-        afficherLivres(data, result_container);
-        
+    afficherLivres(data, result_container);
+    stringCache = JSON.stringify(data)
+    sessionStorage.setItem("searchData", stringCache);
 }
 
 button.on("click", function() {
