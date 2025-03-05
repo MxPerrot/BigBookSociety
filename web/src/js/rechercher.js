@@ -7,10 +7,13 @@ let author_input_id = author_container_id + "-input"
 let genre_input_id = genre_container_id + "-input"
 
 function loadSearch() {
-    let data = sessionStorage.getItem("searchData");
-    console.log(JSON.parse(data))
-    if (data) {
-        afficherLivres(JSON.parse(data), result);
+    let dataJsonString = sessionStorage.getItem("searchData");
+    if (dataJsonString) {
+        let [title, author, genre, data] = JSON.parse(dataJsonString);
+        afficherLivres(data, result);
+        searchbar.val(title)
+        $(`#${author_input_id}`).val(author)
+        $(`#${genre_input_id}`).val(genre)
     }
 }
 
@@ -49,7 +52,8 @@ async function search_book(url, title_input, author_input, genre_input, result_c
     const data = await rawData.json() // FIXME: sometimes need to be parsed (JSON.parse(...))
 
     afficherLivres(data, result_container);
-    stringCache = JSON.stringify(data)
+    // FIXME : Avoid having to type $(`#${genre_input_id}`)
+    stringCache = JSON.stringify([searchbar.val(), $(`#${author_input_id}`).val(), $(`#${genre_input_id}`).val(), data])
     sessionStorage.setItem("searchData", stringCache);
 }
 
