@@ -44,3 +44,4 @@ function fetchBookById(id) {
             console.error("Erreur lors de la récupération du livre :", error);
         });
 }
+
