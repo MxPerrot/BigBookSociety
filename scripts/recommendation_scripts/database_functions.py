@@ -561,6 +561,6 @@ def rechercheAuteur(cursor, nom):
 
     return authors
 
-connexion = setUpConnection()
-cursor = setUpCursor(connexion)
-print(getLivresUtilisateur(cursor, 131))
+#connexion = setUpConnection()
+#cursor = setUpCursor(connexion)
+#print(getLivresUtilisateur(cursor, 131))

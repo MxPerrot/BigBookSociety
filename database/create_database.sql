@@ -528,4 +528,13 @@ NATURAL JOIN _raison_achat
 
 WHERE nom_utilisateur = USER;
 
---CREATE ROLE utilisateur;
+SELECT * FROM _info_utilisateur;
+
+--GRANT CONNECT ON DATABASE pg_dgoupil TO USER;
+
+--GRANT SELECT ON _info_utilisateur TO USER;
+
+
+UPDATE _utilisateur
+SET nom_utilisateur = 'Maxou', mot_de_passe_hashed = '$2b$12$RNDlH8mt0ehyiOnWNsAqDOFO098cNrNSfqU1FRF.TrQZG4D.ubQIu'
+WHERE id_utilisateur=131;
