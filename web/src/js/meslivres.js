@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* function getUserIdFromSession() {
- 
     return sessionStorage.getItem('userId');
 } */
 
@@ -20,7 +19,7 @@ function fetchBooksByUserId(userId) {
 
     fetch(url)
         .then(response => response.json())
-        .then( response => console.log(response))
+        .then(response => console.log(response))
         .then(books => {
             console.log(books);
             if (books && books.length > 0) {

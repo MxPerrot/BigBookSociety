@@ -36,15 +36,6 @@
     margin: 5px 0;
 }
 
-.card-description,
-.card-editeur,
-.card-pages,
-.card-datesortie {
-    font-size: 0.9em;
-    color: #666;
-    margin: 5px 0;
-}
-
 .bouton-retirer {
     background-color: #ff4d4d;
     color: #fff;
