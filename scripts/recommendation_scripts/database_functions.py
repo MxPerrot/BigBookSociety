@@ -43,31 +43,12 @@ def turnIterableIntoSqlList(iterable):
             chaineListe += ", "+str(elem)
     return chaineListe
 
-def getLivresUtilisateur(cursor, id_utilisateur):
-    """
-    Renvoie les données des livres lus par l'utilisateur donné en paramètre
-    """
-    # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
-    # Execute la requete SQL
+def getIdLivresUtilisateur(cursor, id_utilisateur):
     cursor.execute("""
-        SELECT DISTINCT _livre.id_livre, _livre.titre, _livre.nb_notes, _livre.nombre_pages, _livre.date_publication, _editeur.id_editeur, _prix_livre.id_prix, _cadre.id_pays, _auteur.id_auteur, _auteur.sexe, _auteur.origine, _genre.id_genre, _genre.libelle_genre
+        SELECT DISTINCT _livre.id_livre
         FROM _utilisateur 
         INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
         INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
-
-        INNER JOIN _editeur ON _editeur.id_editeur = _livre.id_editeur
-
-        LEFT JOIN _prix_livre ON _livre.id_livre = _prix_livre.id_livre
-                
-        LEFT JOIN _cadre_livre ON _livre.id_livre = _cadre_livre.id_livre
-        LEFT JOIN _cadre ON _cadre_livre.id_cadre = _cadre.id_cadre
-
-        LEFT JOIN _auteur_livre ON _livre.id_livre = _auteur_livre.id_livre
-        LEFT JOIN _auteur ON _auteur_livre.id_auteur = _auteur.id_auteur
-
-        LEFT JOIN _genre_livre ON _livre.id_livre = _genre_livre.id_livre
-        LEFT JOIN _genre ON _genre_livre.id_genre = _genre.id_genre
-                
         WHERE _utilisateur.id_utilisateur = %s;
     """,(id_utilisateur,))
 
@@ -77,8 +58,17 @@ def getLivresUtilisateur(cursor, id_utilisateur):
     if len(userData) == 0:
         raise Exception("No books can be found for this user, either the database is operating incorrectly or this user doesn't have any book")
     
-    # Reformate les données
-    userBookList = [list(book) for book in userData]
+    return
+
+def getLivresUtilisateur(cursor, id_utilisateur):
+    """
+    Renvoie les données des livres lus par l'utilisateur donné en paramètre
+    """
+
+    listIdLivres = tuple(getIdLivresUtilisateur(cursor, id_utilisateur))
+
+    # TODO Fix presence of INNER JOIN clause for _editeur and ensuing errors
+    userBookList = getLivresFromIdList(cursor, listIdLivres)
 
     # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(userBookList, columns = ["id_livre", "titre", "nb_notes", "nombre_pages", "date_publication", "id_editeur", "id_prix", "id_pays", "id_auteur", "sexe_auteur", "origine_auteur", "id_genre", "genre"])
@@ -571,7 +561,6 @@ def rechercheAuteur(cursor, nom):
 
     return authors
 
-#cursor = setUpCursor()
-#print(rechercheLivre(cursor,genres=tuple([418,1]),minNote=2,maxNote=3))
-#print(getAllGenres(cursor))
-#print(rechercheAuteur(cursor,"martin"))
+connexion = setUpConnection()
+cursor = setUpCursor(connexion)
+print(getLivresUtilisateur(cursor, 131))

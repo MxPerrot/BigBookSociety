@@ -62,8 +62,9 @@ async def get_author_data_by_id(id:int):
 
 @app.get("/get_books_by_user/")
 async def get_book_item_based(user:int):
-    books_info = bdd.getLivresUtilisateur(cursor, int(user))
-    return json.loads(books_info.to_json(orient='index'))
+    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(user))
+    books_infos = getLivresInformation(cursor,book_id_list)
+    return books_infos
 
 
 @app.get("/get_book_item_based/")
