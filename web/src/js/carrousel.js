@@ -46,8 +46,7 @@ function fetchBooks(url, containerId) {
             bookElement.innerHTML = `
               <div>
                 <div class="isbn">
-                  <img src="${coverUrl}" alt="Couverture du livre ${titre}" />
-                </div>
+                  <img src="${coverUrl}" alt="Couverture du livre ${titre}" onerror="this.onerror=null;this.src='public/img/couverture.jpg';" />                </div>
                 <div class="Livres">
                   <h3>${titre}</h3>
                   <p>${auteur}</p>
