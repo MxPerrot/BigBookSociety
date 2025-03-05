@@ -19,7 +19,6 @@ function fetchBooksByUserId(userId) {
 
     fetch(url)
         .then(response => response.json())
-        .then(response => console.log(response))
         .then(books => {
             console.log(books);
             if (books && books.length > 0) {
