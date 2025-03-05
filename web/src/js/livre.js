@@ -18,12 +18,15 @@ function fetchBookById(id) {
             console.log("Données récupérées :", book[0].titre);
             
             if (book) {
+
                 const bookContainer = document.querySelector(".card");
                 const isbn = book[0].isbn13 || book[0].isbn || "Aucun ISBN disponible";
-                const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` : "placeholder.jpg";
-                
+                const coverUrl = (isbn !== "Aucun ISBN disponible") 
+                ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
+                : "../../public/img/couverture.jpg";      
+
                 bookContainer.innerHTML = `
-                     <img src="${coverUrl}" alt="Couverture du livre "  class="card-img" />
+                    <img src="${coverUrl}" alt="Couverture du livre ${book[0].titre}" onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';" />                </div>
                     <div class="card-content">
                         <h2 class="card-title"> ${book[0].titre || "Titre non disponible" }</h2>
                         <h3 class="card-author"> De ${book[0].nom_auteur || "Auteur inconnu"}</h3>
