@@ -1,17 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const userId = getUserIdFromSession();
+    const userId = "131"; // ID utilisateur forcé
+    fetchBooksByUserId(userId);
+    /* const userId = getUserIdFromSession();
     if (userId) {
         fetchBooksByUserId(userId);
     } else {
         console.error("Aucun ID d'utilisateur trouvé.");
         document.getElementById('books-container').innerHTML = "<p>Aucun utilisateur trouvé.</p>";
-    }
+    } */
 });
 
-function getUserIdFromSession() {
+/* function getUserIdFromSession() {
  
     return sessionStorage.getItem('userId');
-}
+} */
 
 function fetchBooksByUserId(userId) {
     const url = `http://127.0.0.1:8000/get_books_by_user/${userId}`; 
@@ -36,10 +38,6 @@ function fetchBooksByUserId(userId) {
                         <div class="card-content">
                             <h2 class="card-title">${book.titre || "Titre non disponible"}</h2>
                             <h3 class="card-author">De ${book.nom_auteur || "Auteur inconnu"}</h3>
-                            <p class="card-description">Description: ${book.description || "Description non disponible"}</p>
-                            <h4 class="card-editeur">Edition: ${book.editeur || "Éditeur inconnu"}</h4>
-                            <h4 class="card-pages">Pages: ${book.nombre_pages || "Nombre de pages inconnu"}</h4>
-                            <h4 class="card-datesortie">Date de sortie: ${book.date_sortie || "Non disponible"}</h4>
                             <button class="bouton-retirer" onclick="removeBook(${book.id})">Retirer livre</button>
                         </div>
                     `;
