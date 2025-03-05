@@ -3,39 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/styles.css">
-    <link rel="stylesheet" href="../styles/stylerechercher.css">
+    <title>Recherche</title>
+    <script src="/libs/js/jquery-3.7.1.min.js" defer></script>
+    <script src="/libs/js/jquery-ui-1.14.1/jquery-ui.min.js" defer></script>
+    <script src="/web/src/js/datalist.js" type="text/javascript" defer></script>
+    <script src="/web/src/js/afficherLivres.js" type="text/javascript" defer></script>
+    <script src="/web/src/js/rechercher.js" type="text/javascript" defer></script>
     <script src="../js/header.js" type="text/javascript"></script>
-    <script src="../js/rechercher.js" type="text/javascript" defer></script>
     <script src="../js/footer.js" type="text/javascript" defer></script>
-    <title>RECHERCHER</title>
+    <link rel="stylesheet" href="/web/src/styles/styles.css">
+    <link rel="stylesheet" href="/web/src/styles/styleListeLivres.css">
+    <link rel="stylesheet" href="/web/src/styles/style_rechercher.css">
 </head>
-<body>
+
+<body onload="loadSearch()">
     <header-component></header-component>
     <main>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Rechercher des livres..." oninput="filterBooks()">
-            <select id="genre-select" onchange="filterBooks()">
-                <option value="">Tous les genres</option>
-                <option value="fiction">Fiction</option>
-                <option value="non-fiction">Non-Fiction</option>
-                <option value="fantasy">Fantasy</option>
-                <option value="science-fiction">Science Fiction</option>
-                <option value="mystery">Mystery</option>
-                <option value="biography">Biography</option>
-                <!-- Add more genres as needed -->
-            </select>
-            <!-- NOTE : Utiliser https://jqueryui.com/slider/#range pour un double slider -->
-            <div class="slider-container">
-                <label id="rating-range">Intervalle des notes:</label>
-                <div class="range-slider">
-                    <input type="range" id="min-rating" min="0" max="5" step="0.1" value="0" oninput="updateRatingRange()">
-                    <input type="range" id="max-rating" min="0" max="5" step="0.1" value="5" oninput="updateRatingRange()">
+        <div id="rechercheLivres" class="search-book">
+            <div class="search-book-form">
+                <div class="search-book-form-input">
+                    <input type="text" id="searchbar" class="datalist-input" placeholder="Titre">
                 </div>
-                <span id="rating-range">0 - 5</span>
+                <div id="datalist-1" class="search-book-form-input"></div>
+                <div id="datalist-2" class="search-book-form-input"></div>
+                <button id="sendsearch" class="confirm-button"><img src="/web/public/icons/search.svg" alt="Rechercher"/></button>
             </div>
-        </div>
-        <div class="results-container" id="results-container">
+            <div id="slider-range"></div>
+            <div id="result" class="book-list"></div>
         </div>
     </main>
     <footer-component></footer-component>

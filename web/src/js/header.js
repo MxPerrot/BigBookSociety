@@ -117,10 +117,30 @@ class Header extends HTMLElement {
     }
   
     connectedCallback() {
-      const shadowRoot = this.attachShadow({ mode: 'closed' });
+      const shadowRoot = this.attachShadow({ mode: 'open' });
   
       shadowRoot.appendChild(headerTemplate.content);
     }
   }
-  
-  customElements.define('header-component', Header);
+
+customElements.define('header-component', Header);
+
+// Check if user is logged in, if not, replace "my profile" with "log in"
+
+let token = localStorage.getItem('Token');
+
+document.addEventListener("DOMContentLoaded", () => {
+    const headerElement = document.querySelector("header-component");
+
+    if (headerElement && headerElement.shadowRoot) {
+        const navLinks = headerElement.shadowRoot.querySelectorAll("nav ul li");
+
+        navLinks.forEach(li => {
+            const link = li.querySelector("a");
+
+            if (link && link.getAttribute("href") === "../html/profil.html" && !token) {
+                li.innerHTML = `<a href="../html/connexion.html">CONNEXION</a>`;
+            }
+        });
+    }
+});

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const userId = "131"; // ID utilisateur forcé
-    fetchBooksByUserId(userId);
+    // const userId = "131"; // ID utilisateur forcé
+    fetchBooksByUserId();
     /* const userId = getUserIdFromSession();
     if (userId) {
         fetchBooksByUserId(userId);
@@ -14,10 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
     return sessionStorage.getItem('userId');
 } */
 
-function fetchBooksByUserId(userId) {
-    const url = `http://127.0.0.1:8000/get_books_by_user/?user=${userId}`; 
+function fetchBooksByUserId() {
+    const url = `http://127.0.0.1:8000/get_books_by_user/`; 
 
-    fetch(url)
+    fetch(url, {
+                 method: 'GET',
+                 headers: {
+                     'Authorization': `Bearer ${localStorage.getItem("Token")}`,  // Include the token in the request
+                     'Content-Type': 'application/json'
+                 }
+             })
         .then(response => response.json())
         .then(books => {
             console.log(books);
@@ -77,7 +83,7 @@ function addClickEventToBooks() {
     
     books.forEach(book => {
       book.addEventListener("click", (e) => {
-        window.location.href = `src/html/livres.html?id=${book.dataset.id}`;
+        window.location.href = `src/html/livres.html?id=${book.id}`;
       });
     });
 }

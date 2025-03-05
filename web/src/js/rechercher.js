@@ -1,54 +1,82 @@
-const books = [
-    { title: 'Book One', author: 'Author One', genre: 'fiction', rating: 4.5, cover: '../../public/img/goat.jpg' },
-    { title: 'Book Two', author: 'Author Two', genre: 'non-fiction', rating: 3.8, cover: '../../public/img/cover.jpg' },
-    { title: 'Book Three', author: 'Author Three', genre: 'fantasy', rating: 4.2, cover: '../../public/img/cover.jpg' },
-    // Add more books as needed
-];
+let searchbar = $("#searchbar")
+let button = $("#sendsearch")
+var result = $("#result")
+let author_container_id = "authorIdBar"
+let genre_container_id = "genreIdBar"
+let author_input_id = author_container_id + "-input"
+let genre_input_id = genre_container_id + "-input"
 
-function filterBooks() {
-    const searchInput = document.getElementById('search-input').value.toLowerCase();
-    const genreSelect = document.getElementById('genre-select').value;
-    const minRating = parseFloat(document.getElementById('min-rating').value);
-    const maxRating = parseFloat(document.getElementById('max-rating').value);
-    const resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
+function loadSearch() {
+    let data = sessionStorage.getItem("searchData");
+    console.log(JSON.parse(data))
+    if (data) {
+        afficherLivres(JSON.parse(data), result);
+    }
+}
 
-    const filteredBooks = books.filter(book => 
-        (book.title.toLowerCase().includes(searchInput) || 
-        book.author.toLowerCase().includes(searchInput)) &&
-        (genreSelect === '' || book.genre === genreSelect) &&
-        book.rating >= minRating && book.rating <= maxRating
+async function search_book(url, title_input, author_input, genre_input, result_container) {
+    let first = true
+
+    // Titre
+    let title = title_input.val()
+    if (title) {
+        url += "?title="+title
+        first = false
+    }
+
+    // Auteur
+    let author = getSelectedID(author_input);
+    if (author) {
+        if (first) {
+            url += "?authors="+author
+            first = false
+        } else {
+            url += "&authors="+author
+        }
+    }
+
+    // Genres
+    let genres = getSelectedID(genre_input);
+    if (genres) {
+        if (first) {
+            url += "?genres="+genres
+            first = false
+        } else {
+            url += "&genres="+genres
+        }
+    }
+    const rawData = await fetch(url)
+    const data = await rawData.json() // FIXME: sometimes need to be parsed (JSON.parse(...))
+
+    afficherLivres(data, result_container);
+    stringCache = JSON.stringify(data)
+    sessionStorage.setItem("searchData", stringCache);
+}
+
+button.on("click", function() {
+    search_book(
+        "http://127.0.0.1:8000/search_books/",
+        searchbar,
+        $(`#${author_input_id}`),
+        $(`#${genre_input_id}`),
+        result
     );
+});
 
-    filteredBooks.forEach(book => {
-        const bookCard = document.createElement('div');
-        bookCard.className = 'book-card';
+createDatalist("datalist-1",author_container_id,"Auteur","http://127.0.0.1:8000/get_authors/")
+createDatalist("datalist-2",genre_container_id,"Genres","http://127.0.0.1:8000/get_genres/")
 
-        const bookCover = document.createElement('img');
-        bookCover.src = book.cover;
-        bookCover.alt = book.title;
-
-        const bookInfo = document.createElement('div');
-        const bookTitle = document.createElement('h3');
-        bookTitle.textContent = book.title;
-        const bookAuthor = document.createElement('p');
-        bookAuthor.textContent = `by ${book.author}`;
-        const bookRating = document.createElement('p');
-        bookRating.textContent = `Rating: ${book.rating}`;
-
-        bookInfo.appendChild(bookTitle);
-        bookInfo.appendChild(bookAuthor);
-        bookInfo.appendChild(bookRating);
-        bookCard.appendChild(bookCover);
-        bookCard.appendChild(bookInfo);
-
-        resultsContainer.appendChild(bookCard);
+// Slider double node
+$( function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 0,
+      max: 500,
+      values: [ 75, 300 ],
+      slide: function( event, ui ) {
+        $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+      }
     });
-}
-
-function updateRatingRange() {
-    const minRating = document.getElementById('min-rating').value;
-    const maxRating = document.getElementById('max-rating').value;
-    document.getElementById('rating-range').textContent = `${minRating} - ${maxRating}`;
-    filterBooks();
-}
+    $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+      " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+  } );
