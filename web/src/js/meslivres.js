@@ -44,6 +44,9 @@ function fetchBooksByUserId(userId) {
 
                     booksContainer.appendChild(bookCard);
                 });
+
+                // Add click event listeners to each book card
+                addClickEventToBooks();
             } else {
                 document.getElementById('books-container').innerHTML = "<p>Aucun livre trouvé.</p>";
             }
@@ -70,11 +73,11 @@ function removeBook(bookId) {
 
 // Lien entre meslivres et la page de détail du livre
 function addClickEventToBooks() {
-    const books = document.querySelectorAll(".books-container");
+    const books = document.querySelectorAll(".card");
     
     books.forEach(book => {
       book.addEventListener("click", (e) => {
-        window.location.href = `src/html/livres.html?id=${book.id}`
+        window.location.href = `src/html/livres.html?id=${book.dataset.id}`;
       });
     });
-  }
+}
