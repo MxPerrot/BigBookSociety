@@ -130,3 +130,20 @@ class Header extends HTMLElement {
 
 customElements.define('header-accueil', Header);
 
+const token = localStorage.getItem('Token');
+
+document.addEventListener("DOMContentLoaded", () => {
+    const headerElement = document.querySelector("header-accueil");
+
+    if (headerElement && headerElement.shadowRoot) {
+        const navLinks = headerElement.shadowRoot.querySelectorAll("nav ul li");
+
+        navLinks.forEach(li => {
+            const link = li.querySelector("a");
+
+            if (link && link.getAttribute("href") === "./src/html/profil.html" && !token) {
+                li.innerHTML = `<a href="./src/html/connexion.html">CONNEXION</a>`;
+            }
+        });
+    }
+});
