@@ -175,8 +175,8 @@ async def get_author_data_by_id(id:int):
 
 
 @app.get("/get_books_by_user/")
-async def get_book_item_based(user:int):
-    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(user))
+async def get_books_by_user(current_user: dict = Depends(get_current_user)):
+    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(current_user[0]))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
