@@ -19,7 +19,7 @@ document.getElementById("loginForm").addEventListener("submit", function (event)
             token=data.access_token;
             localStorage.setItem('Token', token);
             console.log(token);
-            window.location.replace("http://127.0.0.1:5500/BigBookSociety/web/index.html");
+            window.location.replace("http://127.0.0.1:5500/web/index.html");
         } else {
             console.log("Login failed. Please check your credentials.");
         }
