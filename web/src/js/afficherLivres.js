@@ -15,7 +15,7 @@ function afficherLivres(livres, conteneur) {
         $.each(livres, function(index, livre) {
             // Création d'une div pour chaque livre avec un id unique et une classe
             var $livreItem = $('<div>', {
-                id: 'book' + (index + 1),
+                id: livre.id_livre,
                 class: 'book-list-item'
             });
 
@@ -40,8 +40,22 @@ function afficherLivres(livres, conteneur) {
     } else {
 
         conteneur.append("Pas de livres.")
-
     }
 
+    addClickEventToBooks()
+}
 
+function addClickEventToBooks() {
+    const books = document.querySelectorAll(".book-list-item");
+
+    books.forEach(book => {
+        book.addEventListener("click", (e) => {
+        const id = book.getAttribute('id');
+        if (id) {
+            window.location.href = `./livres.html?id=${id}`;
+        } else {
+            console.error("ID non trouvé pour ce livre.");
+        }
+        });
+    });
 }
