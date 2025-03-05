@@ -160,6 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchBooks("http://127.0.0.1:8000/get_book_user_based/?nbrecommendation=15", "user-based-container");
 
   //tendance
-  //fetchBooks("http://127.0.0.1:8000/get_tendance/10");
+  //fetchBooks("http://127.0.0.1:8000/get_tendance/10", "tendance-container");
 
 });
