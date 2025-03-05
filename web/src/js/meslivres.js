@@ -16,10 +16,11 @@ document.addEventListener("DOMContentLoaded", function () {
 } */
 
 function fetchBooksByUserId(userId) {
-    const url = `http://127.0.0.1:8000/get_books_by_user/${userId}`; 
+    const url = `http://127.0.0.1:8000/get_books_by_user/?user=${userId}`; 
 
     fetch(url)
         .then(response => response.json())
+        .then( response => console.log(response))
         .then(books => {
             console.log(books);
             if (books && books.length > 0) {
