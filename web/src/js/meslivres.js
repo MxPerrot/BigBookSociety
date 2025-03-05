@@ -21,6 +21,7 @@ function fetchBooksByUserId(userId) {
     fetch(url)
         .then(response => response.json())
         .then(books => {
+            console.log(books);
             if (books && books.length > 0) {
                 const booksContainer = document.getElementById('books-container');
                 booksContainer.innerHTML = ''; 
