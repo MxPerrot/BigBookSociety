@@ -67,3 +67,14 @@ function removeBook(bookId) {
     })
     .catch(error => console.error('Erreur lors de la suppression du livre:', error));
 }
+
+// Lien entre meslivres et la page de détail du livre
+function addClickEventToBooks() {
+    const books = document.querySelectorAll(".books-container");
+    
+    books.forEach(book => {
+      book.addEventListener("click", (e) => {
+        window.location.href = `src/html/livres.html?id=${book.id}`
+      });
+    });
+  }

@@ -37,7 +37,7 @@
 }
 
 .bouton-retirer {
-    background-color: #ff4d4d;
+    background-color: var(--col3);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -47,5 +47,5 @@
 }
 
 .bouton-retirer:hover {
-    background-color: #ff1a1a;
+    background-color: var(--col4);
 }
