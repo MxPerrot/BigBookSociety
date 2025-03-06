@@ -20,6 +20,8 @@ function clearMainContent() {
 // Fonction pour afficher la section des livres populaires
 function displayPopularBooksSection() {
   const popularSectionHTML = `
+    <a class="refresh" href="javascript:void(0);" onclick="refreshCarrousel()">Rafraîchir</a>
+
     <section id="populaire-container" class="recommendation-section">
       <h2>Les plus populaires</h2>
       <div class="media-container">
