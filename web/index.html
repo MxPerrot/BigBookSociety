@@ -8,6 +8,8 @@
     <script src="/libs/js/jquery-3.7.1.min.js"></script>
     <script src="./src/js/header-accueil.js" type="text/javascript"></script>
     <script src="./src/js/footer.js" type="text/javascript"></script>
+    <script src="./src/js/zoom.js" type="text/javascript"></script>
+    
     <title>BigBook</title>
 </head>
 <body>
@@ -19,6 +21,12 @@
     <header-accueil></header-accueil>
 
     <main>
+        <div id="zoom-modal" class="zoom-modal">
+            <span class="close">&times;</span>
+            <img id="zoomed-img" class="zoomed-img">
+        </div>
+        <a class="refresh" href="javascript:void(0);" onclick="refreshCarrousel()">Rafraîchir</a>
+
         <!-- Section pour item-based -->
         <section id="item-based-container" class="recommendation-section">
             <h2>Par rapport aux livres que vous avez lus</h2>
@@ -108,6 +116,21 @@
     <p id="result"></p>
 
     <script src="./src/js/carrousel.js" type="text/javascript"></script>
+    <script>
+        function refreshCarrousel() {
+            // Efface les données du sessionStorage
+            sessionStorage.clear();
+            
+            // Crée un nouvel élément script pour relancer carrousel.js
+            var script = document.createElement('script');
+            script.src = './src/js/carrousel.js';
+            script.type = 'text/javascript';
+            
+            // Ajoute le script à la page
+            document.head.appendChild(script);
+        }
+
+    </script>
 
     <footer-component></footer-component>
 </body>

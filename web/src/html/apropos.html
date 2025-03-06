@@ -1,68 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="../styles/styleapropos.css">
-    <script src="../js/header.js" type="text/javascript"></script>
-    <script src="../js/footer.js" type="text/javascript" defer></script>
-    <title>A PROPOS</title>
+    <script src="../js/header.js" defer></script>
+    <script src="../js/footer.js" defer></script>
+    <title>À Propos</title>
 </head>
 <body>
     <header-component></header-component>
+
     <main>
         <div class="apropos-container">
-            <h1>A PROPOS</h1>
-            <p>Teams WIZARDS ici pour les choquer !!</p>
+            <h1>À Propos</h1>
+            <p class="intro">Bienvenue chez <strong>Teams WIZARDS</strong>, ici pour les choquer !!</p>
+
             <div class="team-section">
-                <h2>Les membres</h2>
-                <div class="team-member">
-                    <img src="../../public/img/goat.jpg" alt="Photo de Florian Normand" class="team-img">
-                    <h3>Florian Normand</h3>
-                    <p>Developer Fullstack</p>
-                    <p>John is responsible for overseeing the project and ensuring everything runs smoothly.</p>
+                <h2>Notre Équipe</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <img src="../../public/img/goat.jpg" alt="Photo de Florian Normand" class="team-img">
+                        <div class="member-info">
+                            <h3>Florian Normand</h3>
+                            <p class="role">Développeur Fullstack</p>
+                            <p>Passionné par le développement web et la création de solutions innovantes.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <img src="../../public/img/goat.jpg" alt="Photo de Damien Goupil" class="team-img">
+                        <div class="member-info">
+                            <h3>Damien Goupil</h3>
+                            <p class="role">Développeur Fullstack</p>
+                            <p>Expert en technologies backend, il aime relever des défis techniques.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <img src="../../public/img/goat.jpg" alt="Photo de Nathan Bracquart" class="team-img">
+                        <div class="member-info">
+                            <h3>Nathan Bracquart</h3>
+                            <p class="role">Développeur Fullstack</p>
+                            <p>Créatif et rigoureux, il aime transformer des idées en projets concrets.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <img src="../../public/img/Ewan Lansonneur.png" alt="Photo d'Ewan Lansonneur" class="team-img">
+                        <div class="member-info">
+                            <h3>Ewan Lansonneur</h3>
+                            <p class="role">Spécialiste en IA</p>
+                            <p>Etudiant en BUT Informatique Parcours C. Fan de SAEs. Amateur de musique de tout genre (sauf le rap). Rôliste invétéré</p>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <img src="../../public/img/goat.jpg" alt="Photo de Maxime Perrot" class="team-img">
+                        <div class="member-info">
+                            <h3>Maxime Perrot</h3>
+                            <p class="role">Développeur Fullstack</p>
+                            <p>Déterminé à repousser les limites du code avec des projets ambitieux.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <img src="../../public/img/goat.jpg" alt="Photo d'Asaiah Cosson" class="team-img">
+                        <div class="member-info">
+                            <h3>Asaiah Cosson</h3>
+                            <p class="role">Gestion des données</p>
+                            <p>Expert en bases de données et structuration de l'information.</p>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <img src="../../public/img/goat.jpg" alt="Photo de Miliaw Chesne" class="team-img">
+                        <div class="member-info">
+                            <h3>Miliaw Chesne</h3>
+                            <p class="role">Gestion des données</p>
+                            <p>Passionné de data science et de structuration des informations.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="team-member">
-                    <img src="../../public/img/goat.jpg" alt="Photo de Damien Goupil" class="team-img">
-                    <h3>Damien Goupil</h3>
-                    <p>Developer Fullstack</p>
-                    <p>Jane leads the development team and is responsible for the technical direction of the project.</p>
-                </div>
-                <div class="team-member">
-                    <img src="../../public/img/goat.jpg" alt="Photo de Nathan Bracquart" class="team-img">
-                    <h3>Nathan Bracquart</h3>
-                    <p>Developer Fullstack</p>
-                    <p>John is responsible for overseeing the project and ensuring everything runs smoothly.</p>
-                </div>
-                <div class="team-member">
-                    <img src="../../public/img/Ewan Lansonneur.png" alt="Photo d'Ewan Lansonneur" class="team-img">
-                    <h3>Ewan Lansonneur</h3>
-                    <p>Spécialiste en IA</p>
-                    <p>Etudiant en BUT Informatique Parcours C. Fan de SAEs. Amateur de musique de tout genre (sauf le rap). Rôliste invétéré.</p>
-                </div>
-                <div class="team-member">
-                    <img src="../../public/img/goat.jpg" alt="Photo de Maxime Perrot" class="team-img">
-                    <h3>Maxime Perrot</h3>
-                    <p>Developer Fullstack</p>
-                    <p>John is responsible for overseeing the project and ensuring everything runs smoothly.</p>
-                </div>
-                <div class="team-member">
-                    <img src="../../public/img/goat.jpg" alt="Photo d'Asaiah Cosson" class="team-img">
-                    <h3>Asaiah Cosson</h3>
-                    <p>Gestion des données</p>
-                    <p>John is responsible for overseeing the project and ensuring everything runs smoothly.</p>
-                </div>
-                <div class="team-member">
-                    <img src="../../public/img/goat.jpg" alt="Photo de Miliaw Chesne" class="team-img">
-                    <h3>Miliaw Chesne</h3>
-                    <p>Gestion des données</p>
-                    <p>John is responsible for overseeing the project and ensuring everything runs smoothly.</p>
-                </div>
-                <!-- Add more team members as needed -->
             </div>
         </div>
     </main>
+
     <footer-component></footer-component>
 </body>
 </html>
