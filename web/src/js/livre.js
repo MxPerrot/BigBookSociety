@@ -1,22 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
-<<<<<<< HEAD
 
     console.log("Book ID récupéré :", bookId); // DEBUG
 
-=======
-   
-    console.log("Book ID récupéré :", bookId); // DEBUG
-   
->>>>>>> a350c61dd90f4706eb331aaabca5cf5c8fba6962
     if (bookId) {
     fetchBookById(bookId);
     } else {
     console.error("Aucun ID de livre trouvé dans l'URL.");
     document.querySelector(".card").innerHTML = "<p>Aucun livre trouvé.</p>";
     }
-<<<<<<< HEAD
 });
 
 function fetchBookById(id) {
@@ -58,9 +51,7 @@ function fetchBookById(id) {
         .catch(error => {
             console.error("Erreur lors de la récupération du livre :", error);
         });
-}
-=======
-   });
+   };
    
    function fetchBookById(id) {
     const url = `http://127.0.0.1:8000/get_book_data_by_id/${id}`;
@@ -102,5 +93,3 @@ function fetchBookById(id) {
     console.error("Erreur lors de la récupération du livre :", error);
     });
    }
-
->>>>>>> a350c61dd90f4706eb331aaabca5cf5c8fba6962
