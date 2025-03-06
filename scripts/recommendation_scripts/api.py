@@ -229,6 +229,36 @@ async def get_in_serie(current_user: dict = Depends(get_current_user)):
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
+
+
+
+
+
+@app.get("/like/")
+async def like(current_user: dict = Depends(get_current_user), bookID:int=None):
+    try:
+        cursor.execute("INSERT INTO _livre_utilisateur(id_utilisateur,id_livre) VALUES (%s, %s)", (current_user[0], bookID))
+        connection.commit()
+        return {"message": "Link created successfully"}
+    except psycopg2.IntegrityError:
+        raise HTTPException(status_code=400, detail="User already likes the book")
+
+
+@app.get("/unlike/")
+async def unlike(current_user: dict = Depends(get_current_user), bookID:int=None):
+    try:
+        cursor.execute("DELETE FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0], bookID))
+        connection.commit()
+        return {"message": "Link delete successfully"}
+    except psycopg2.IntegrityError:
+        raise HTTPException(status_code=400, detail="User already not like the book")
+
+
+
+
+
+
+
 @app.get("/get_next_books/{id}")
 async def get_next_books(id:int):
 
@@ -442,3 +472,5 @@ def getLivresInformation(cursor,idLivres):
     return 0
 
 #print(getLivresInformation(cursor, [1,350]))
+
+
