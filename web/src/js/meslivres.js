@@ -14,25 +14,21 @@ function fetchBooksByUserId() {
     })
     .then(response => response.json())
     .then(books => {
-        console.log('Réponse de l\'API :', books); // Affiche la réponse complète pour vérifier la structure
+        console.log('Réponse de l\'API :', books);
+
+        const booksContainer = document.getElementById('books-container');
+        booksContainer.innerHTML = '';
 
         if (books && books.length > 0) {
-            const booksContainer = document.getElementById('books-container');
-            booksContainer.innerHTML = '';
-
             books.forEach(book => {
-                // Afficher la structure de chaque livre pour vérifier la présence de l'ID
-                console.log("Structure du livre:", book);
-                
-                // Vérifier si l'ID est présent dans le livre
                 if (!book.id_livre) {
                     console.error("Erreur : L'ID du livre est indéfini ou null.");
-                    return; // Arrêter si l'ID est invalide
+                    return;
                 }
 
                 const bookCard = document.createElement('div');
                 bookCard.className = 'card';
-                bookCard.dataset.id = book.id_livre; // Utilisez id_livre ici au lieu de id
+                bookCard.dataset.id = book.id_livre;
 
                 const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
                 const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg` : "placeholder.jpg";
@@ -42,17 +38,18 @@ function fetchBooksByUserId() {
                     <div class="card-content">
                         <h2 class="card-title">${book.titre || "Titre non disponible"}</h2>
                         <h3 class="card-author">De ${book.nom_auteur || "Auteur inconnu"}</h3>
-                        <button class="bouton-retirer" onclick="removeBook(${book.id_livre})">Retirer livre</button>
+                        <button class="bouton-retirer" data-id="${book.id_livre}">Retirer le livre</button>
                     </div>
                 `;
 
                 booksContainer.appendChild(bookCard);
             });
 
-            // Add click event listeners to each book card
+            // Ajouter les événements aux boutons "Retirer"
+            addRemoveEventListeners();
             addClickEventToBooks();
         } else {
-            document.getElementById('books-container').innerHTML = "<p>Aucun livre trouvé.</p>";
+            booksContainer.innerHTML = "<p>Aucun livre trouvé.</p>";
         }
     })
     .catch(error => {
@@ -61,8 +58,18 @@ function fetchBooksByUserId() {
     });
 }
 
+function addRemoveEventListeners() {
+    document.querySelectorAll(".bouton-retirer").forEach(button => {
+        button.addEventListener("click", function (e) {
+            e.stopPropagation(); // Empêche le clic de déclencher la redirection
+            const bookId = this.dataset.id;
+            removeBook(bookId);
+        });
+    });
+}
+
 function removeBook(bookId) {
-    fetch(`http://127.0.0.1:8000/remove_book/${bookId}`, { 
+    fetch(`http://127.0.0.1:8000/delete_book/${bookId}`, { 
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem("Token")}`,
@@ -70,37 +77,32 @@ function removeBook(bookId) {
         }
     })
     .then(response => {
-    if (response.ok) {
-    document.querySelector(`.card[data-id="${bookId}"]`).remove();
-    } else {
-    console.error('Erreur lors de la suppression du livre:', response.statusText);
-    }
+        if (response.ok) {
+            console.log(`Livre ${bookId} supprimé avec succès.`);
+            document.querySelector(`.card[data-id="${bookId}"]`).remove();
+        } else {
+            console.error('Erreur lors de la suppression du livre:', response.statusText);
+        }
     })
     .catch(error => console.error('Erreur lors de la suppression du livre:', error));
-   }
-   
-   // Lien entre meslivres et la page de détail du livre
-   function addClickEventToBooks() {
-    const books = document.querySelectorAll(".card");
+}
 
-    books.forEach(book => {
-        book.addEventListener("click", (e) => {
-            const bookId = book.dataset.id; 
 
+function addClickEventToBooks() {
+    document.querySelectorAll(".card").forEach(book => {
+        book.addEventListener("click", function (e) {
+            // Vérifier si l'élément cliqué est le bouton "Retirer"
+            if (e.target.classList.contains("bouton-retirer")) return;
+
+            const bookId = this.dataset.id;
             if (!bookId) { 
                 console.error("Erreur : L'ID du livre est indéfini ou null.");
                 alert("Impossible de trouver l'ID du livre. Veuillez réessayer.");
-                return; 
+                return;
             }
 
             console.log(`Redirection vers le livre avec l'ID : ${bookId}`);
-            
-            // Assurez-vous que l'ID est valide avant de rediriger
-            if (bookId !== null) {
-                window.location.href = `/web/src/html/livres.html?id=${bookId}`;
-            } else {
-                console.error("Erreur : L'ID du livre est null.");
-            }
+            window.location.href = `/web/src/html/livres.html?id=${bookId}`;
         });
     });
 }

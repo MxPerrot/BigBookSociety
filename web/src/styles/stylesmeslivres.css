@@ -8,42 +8,59 @@
 
 .card {
     background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid var(--col1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    width: 200px;
+    width: 220px; /* Augmenté pour plus de clarté */
+    display: flex;
+    flex-direction: column; /* S'assure que tous les éléments sont bien empilés */
+    align-items: center; /* Centre le contenu */
     text-align: center;
 }
 
 .card-img {
     width: 100%;
-    height: auto;
+    height: 250px; /* Hauteur fixe pour uniformiser */
+    object-fit: cover; /* Ajuste l'image pour remplir l'espace sans la déformer */
 }
 
 .card-content {
+    flex-grow: 1; /* Permet au contenu de s'étirer uniformément */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Espace égal entre les éléments */
     padding: 10px;
+    width: 100%;
 }
 
 .card-title {
     font-size: 1.2em;
     margin: 10px 0;
+    min-height: 40px; /* Garde une hauteur fixe pour l'alignement */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .card-author {
     font-size: 1em;
     color: #666;
     margin: 5px 0;
+    min-height: 30px; /* Hauteur minimale pour uniformiser */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .bouton-retirer {
     background-color: var(--col3);
     color: #fff;
     border: none;
-    border-radius: 4px;
     padding: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: auto; /* Place le bouton en bas */
+    width: 100%; /* Pour une largeur uniforme */
 }
 
 .bouton-retirer:hover {
