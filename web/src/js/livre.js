@@ -45,3 +45,18 @@ function fetchBookById(id) {
         });
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const likeButton = document.getElementById('likeButton');
+
+    likeButton.addEventListener('click', function () {
+      // Toggle the 'liked' class for button styling
+      likeButton.classList.toggle('liked');
+
+      // Change button text based on state
+      if (likeButton.classList.contains('liked')) {
+        likeButton.textContent = 'Liked';
+      } else {
+        likeButton.textContent = 'Like';
+      }
+    });
+  });
