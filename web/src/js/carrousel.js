@@ -262,8 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function refreshCarrousel() {
-  window.location.href = `./index.html`;
-
   // Efface données sessionStorage (le cache)
   sessionStorage.clear();
   
@@ -273,5 +271,4 @@ function refreshCarrousel() {
   
   document.head.appendChild(script);
   window.location.href = `./index.html`;
-  sessionStorage.clear();
 }
