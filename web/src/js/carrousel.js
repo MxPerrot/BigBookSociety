@@ -11,7 +11,7 @@ function TokenError() {
 
 // Fonction pour effacer le contenu de <main>
 function clearMainContent() {
-  const mainElement = document.querySelector("main");
+  let mainElement = document.querySelector("main");
   if (mainElement) {
     mainElement.innerHTML = '';  // Vide le contenu de <main>
   }
@@ -19,7 +19,7 @@ function clearMainContent() {
 
 // Fonction pour afficher la section des livres populaires
 function displayPopularBooksSection() {
-  const popularSectionHTML = `
+  let popularSectionHTML = `
     <a class="refresh" href="javascript:void(0);" onclick="refreshCarrousel()">Rafraîchir</a>
 
     <section id="populaire-container" class="recommendation-section">
@@ -48,20 +48,20 @@ function displayPopularBooksSection() {
     </div>
   `;
   
-  const mainElement = document.querySelector("main");
+  let mainElement = document.querySelector("main");
   if (mainElement) {
     mainElement.innerHTML = popularSectionHTML;
   }
 }
 
 function fetchBooks(url, containerId) {
-  const cachedData = sessionStorage.getItem(url);
+  let cachedData = sessionStorage.getItem(url);
 
   let token = localStorage.getItem('Token');
 
   if (cachedData) {
     try {
-      const parsedData = JSON.parse(cachedData);
+      let parsedData = JSON.parse(cachedData);
 
       // Vérification supplémentaire de l'intégrité des données
       if (parsedData?.detail === "Invalid token" || parsedData?.detail === "Token expired") {
@@ -81,7 +81,7 @@ function fetchBooks(url, containerId) {
   } else {
     console.log("Lancement fetch");
 
-    const headers = {
+    let headers = {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     };
@@ -96,7 +96,7 @@ function fetchBooks(url, containerId) {
         }
 
         // Vérifie si le type de contenu de la réponse est du JSON
-        const contentType = response.headers.get("Content-Type");
+        let contentType = response.headers.get("Content-Type");
         if (contentType && contentType.includes("application/json")) {
           return response.json(); // Renvoie la réponse au format JSON
         } else {
@@ -131,15 +131,15 @@ function fetchBooks(url, containerId) {
 // Affichage des livres dans le carrousel
 function carouselGenerateur(data, containerId) {
   try {
-    const books = data;
+    let books = data;
     
-    const container = document.querySelector(`#${containerId} .media-container`);
+    let container = document.querySelector(`#${containerId} .media-container`);
     if (!container) {
       console.error("Erreur : Élément contenant le carrousel introuvable !");
       return;
     }
 
-    const scroller = document.createElement('div');
+    let scroller = document.createElement('div');
     scroller.classList.add("media-scroller");
 
     container.appendChild(scroller);
@@ -147,22 +147,22 @@ function carouselGenerateur(data, containerId) {
     scroller.innerHTML = "";
 
     if (Array.isArray(books) && books.length > 0) {
-      const fragment = document.createDocumentFragment();
+      let fragment = document.createDocumentFragment();
 
       books.forEach(book => {
-        const id = book.id_livre || "ID non disponible";
-        const titre = book.titre || "Titre non disponible";
-        const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
-        const auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
-        const genre = book.libelle_genre && book.libelle_genre.length > 0 ? 
+        let id = book.id_livre || "ID non disponible";
+        let titre = book.titre || "Titre non disponible";
+        let isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
+        let auteur = book.nom_auteur && book.nom_auteur.length > 0 ? book.nom_auteur.join(", ") : "Auteur inconnu";
+        let genre = book.libelle_genre && book.libelle_genre.length > 0 ? 
           book.libelle_genre[0].includes(',') ? book.libelle_genre[0].split(',')[0] : book.libelle_genre[0] : 
           "Genre inconnu";
 
-        const coverUrl = (isbn !== "Aucun ISBN disponible") 
+          let coverUrl = (isbn !== "Aucun ISBN disponible") 
           ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
           : "public/img/couverture.jpg";
 
-        const bookElement = document.createElement('div');
+          let bookElement = document.createElement('div');
         bookElement.classList.add("media-element");
         bookElement.setAttribute("data-id", id);
 
@@ -196,8 +196,8 @@ function carouselGenerateur(data, containerId) {
 
 // Permet de se déplacer à l'infini dans le caroussel, peu importe le sens
 function setupInfiniteScroll(scroller) {
-  const prevButton = scroller.closest('.recommendation-section').querySelector(".previous");
-  const nextButton = scroller.closest('.recommendation-section').querySelector(".next");
+  let prevButton = scroller.closest('.recommendation-section').querySelector(".previous");
+  let nextButton = scroller.closest('.recommendation-section').querySelector(".next");
 
   if (!prevButton || !nextButton) {
     console.error("Boutons next/previous introuvables !");
@@ -217,8 +217,8 @@ function setupInfiniteScroll(scroller) {
 }
 
 function shiftCarousel(scroller, direction) {
-  const firstElement = scroller.firstElementChild;
-  const lastElement = scroller.lastElementChild;
+  let firstElement = scroller.firstElementChild;
+  let lastElement = scroller.lastElementChild;
 
   if (direction === "next") {
     scroller.appendChild(firstElement.cloneNode(true));
@@ -231,11 +231,11 @@ function shiftCarousel(scroller, direction) {
 
 // Lien entre les livres du carrousel et la page de détail du livre
 function addClickEventToBooks() {
-  const books = document.querySelectorAll(".media-element");
+  let books = document.querySelectorAll(".media-element");
   
   books.forEach(book => {
     book.addEventListener("click", (e) => {
-      const id = book.getAttribute('data-id');
+      let id = book.getAttribute('data-id');
       if (id) {
         window.location.href = `src/html/livres.html?id=${id}`;
       } else {
