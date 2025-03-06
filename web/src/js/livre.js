@@ -1,3 +1,5 @@
+var bookID = null;
+
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
@@ -15,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
    
 function fetchBookById(id) {
     const url = `http://127.0.0.1:8000/get_book_data_by_id/${id}`;
+    bookID = id
     
     fetch(url)
     .then(response => response.json())
@@ -64,8 +67,22 @@ document.addEventListener('DOMContentLoaded', function () {
       // Change button text based on state
       if (likeButton.classList.contains('liked')) {
         likeButton.textContent = 'Liked';
+        fetch(`http://127.0.0.1:8000/like/?bookID=${bookID}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                'Content-Type': 'application/json'
+            }
+        });
       } else {
         likeButton.textContent = 'Like';
+        fetch(`http://127.0.0.1:8000/unlike/?bookID=${bookID}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                'Content-Type': 'application/json'
+            }
+        });
       }
     });
   });
