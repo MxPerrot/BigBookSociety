@@ -1,29 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="../styles/styleprofil.css">
     <script src="../js/header.js" type="text/javascript"></script>
-    <script src="../js/profil.js" type="text/javascript"></script>
-    <script src="../js/footer.js" type="text/javascript" defer></script>
-    <title>PROFIL</title>
+    <script src="../js/profil.js" type="text/javascript" defer></script>
+    <script src="../js/footer.js" type="text/javascript"></script>
+    <title>Profil</title>
 </head>
 <body>
     <header-component></header-component>
     <main>
         <div class="profile-container">
             <div class="profile-header">
-                <img src="../../public/img/goat.jpg" alt="Profile Picture" class="profile-img" id="profile-img">
+                <img src="" alt="Profile Picture" class="profile-img" id="profile-img">
                 <input type="file" id="profile-img-input" style="display: none;" accept="image/*" onchange="changeProfileImage(event)">
-                <button class="edit-button" onclick="document.getElementById('profile-img-input').click()">modifier la photo</button>
-                <h1 class="profile-name">John Doe</h1>
-                <button class="edit-button" onclick="editProfileName()">modifier</button>
-                <p class="profile-dob">Date de naissance: 01/01/1990</p>
-                <button class="edit-button" onclick="editProfileDob()">modifier</button>
-                <p class="profile-languages">Langues: Français, Anglais</p>
-                <button class="edit-button" onclick="editProfileLanguages()">modifier</button>
+                <button class="edit-button" onclick="document.getElementById('profile-img-input').click()">Modifier la photo</button>
+                
+                <h1 class="profile-name"></h1>
+                <button class="edit-button" onclick="editProfileName()">Modifier</button>
+                
+                <p class="profile-dob"></p>
+                <button class="edit-button" onclick="editProfileDob()">Modifier</button>
+                
+                <p class="profile-languages"></p>
+                <button class="edit-button" onclick="editProfileLanguages()">Modifier</button>
             </div>
         </div> 
     </main>
