@@ -38,6 +38,7 @@ function fetchBookById(id) {
                 : "../../public/img/couverture.jpg";      
 
             bookContainer.innerHTML = `
+                <button onclick="history.back()">Go Back</button>
                 <img class="card-img" src="${coverUrl}" alt="Couverture du livre ${bookData.titre}" onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';" />
                 <div class="card-content">
                     <h2 class="card-title">${bookData.titre || "Titre non disponible"}</h2>
