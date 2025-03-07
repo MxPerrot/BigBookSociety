@@ -237,7 +237,7 @@ def getUtilisateurById(cursor, id_utilisateur):
 
     # Si aucun utilisateur n'est recupéré envoie un message d'erreur
     if len(utilisateur) == 0:
-        raise Exception('User not found, either there is no user with that ID or the Database is not operating correctly.\nUser ID : '+id_utilisateur)
+        raise Exception('User not found, either there is no user with that ID or the Database is not operating correctly.\nUser ID : '+ str(id_utilisateur))
 
     # Renvoie un Dataframe contenant les données récupérées
     return pd.DataFrame(utilisateur, columns = ["id_utilisateur", "sexe", "age", "profession", "situation_familiale", "frequence_lecture", "vitesse_lecture", "nb_livres_lus", "langue", "motivation", "raison_achat", "procuration", "format"])

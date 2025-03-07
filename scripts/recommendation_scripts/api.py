@@ -230,28 +230,36 @@ async def get_in_serie(current_user: dict = Depends(get_current_user)):
     return books_infos
 
 
+@app.get("/is_liked/")
+async def is_liked(current_user: dict = Depends(get_current_user), bookID:int=None):
+        cursor.execute("SELECT id_utilisateur,id_livre FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0], bookID))
+        record = cursor.fetchall()
+        if len(record)==0:
+            return False
+        else:
+            return True
 
 
 
 
-@app.get("/like/")
+@app.post("/like/")
 async def like(current_user: dict = Depends(get_current_user), bookID:int=None):
-    try:
+    # try:
         cursor.execute("INSERT INTO _livre_utilisateur(id_utilisateur,id_livre) VALUES (%s, %s)", (current_user[0], bookID))
         connection.commit()
         return {"message": "Link created successfully"}
-    except psycopg2.IntegrityError:
-        raise HTTPException(status_code=400, detail="User already likes the book")
+    # except psycopg2.IntegrityError:
+    #     raise HTTPException(status_code=400, detail="User already likes the book")
 
 
-@app.get("/unlike/")
+@app.delete("/unlike/")
 async def unlike(current_user: dict = Depends(get_current_user), bookID:int=None):
-    try:
+    #  try:
         cursor.execute("DELETE FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0], bookID))
         connection.commit()
         return {"message": "Link delete successfully"}
-    except psycopg2.IntegrityError:
-        raise HTTPException(status_code=400, detail="User already not like the book")
+    #  except psycopg2.IntegrityError:
+    #      raise HTTPException(status_code=400, detail="User already not like the book")
 
 
 

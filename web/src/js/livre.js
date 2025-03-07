@@ -1,5 +1,3 @@
-var bookID = null;
-
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
@@ -53,9 +51,37 @@ function fetchBookById(id) {
             `;
 
             const likeButton = document.getElementById("likeButton");
+
+            
+
             likeButton.addEventListener("click", function () {
                 likeButton.classList.toggle("liked");
                 likeButton.textContent = likeButton.classList.contains("liked") ? "Liked" : "Like";
+              
+
+                if (likeButton.textContent.trim() == 'Liked') {
+                  fetch(`http://127.0.0.1:8000/like/?bookID=${id}`, {
+                      method: 'POST',
+                      headers: {
+                          'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                          'Content-Type': 'application/json'
+                      }                  
+                    })
+                  .then(response => response.json())  // Parse response as JSON
+                  .then(data => console.log('Response:', data))  // Log the response
+                  .catch(error => console.error('Error:', error));
+                } else {
+                  fetch(`http://127.0.0.1:8000/unlike/`, {
+                      method: 'DELETE',
+                      headers: {
+                          'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                          'Content-Type': 'application/json'
+                      }
+                  })
+                  .then(response => response.json())  // Parse response as JSON
+                  .then(data => console.log('Response:', data))  // Log the response
+                  .catch(error => console.error('Error:', error));
+                }
             });
         })
         .catch(error => {
