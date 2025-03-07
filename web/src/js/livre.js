@@ -32,7 +32,7 @@ function fetchBookById(id) {
             const bookContainer = document.querySelector(".card");
             const isbn = bookData.isbn13 || bookData.isbn || "Aucun ISBN disponible";
             const coverUrl = (isbn !== "Aucun ISBN disponible") 
-                ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` 
+                ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false` 
                 : "../../public/img/couverture.jpg";      
 
             bookContainer.innerHTML = `

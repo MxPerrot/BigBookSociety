@@ -117,7 +117,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = cursor.fetchone()
     # cursor.close()
     # conn.close()
-    print(user)
     if not user or not verify_password(form_data.password, user[1]):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
