@@ -269,13 +269,25 @@ NATURAL JOIN _raison_achat
 WHERE nom_utilisateur = USER;
 
 
-CREATE OR REPLACE TRIGGER _utilisateur_access
-BEFORE INSERT OR UPDATE ON _utilisateur
-FOR EACH ROW
-BEGIN
- GRANT CONNECT ON DATABASE pg_dgoupil TO NEW.nom_utilisateur;
- GRANT SELECT ON _info_utilisateur TO NEW.nom_utilisateur;
-END;
+--CREATE OR REPLACE FUNCTION grant_rights()
+--RETURNS TRIGGER AS $$
+--DECLARE
+  --utilisateur VARCHAR;
+--BEGIN
+  -- utilisateur := NEW.mail_utilisateur;
+   --GRANT CONNECT ON DATABASE pg_dgoupil TO utilisateur;
+   --GRANT SELECT ON _info_utilisateur TO utilisateur;
+  -- CREATE ROLE utilisateur;
+  -- EXECUTE format('GRANT SELECT, INSERT ON _info_utilisateur TO %I', utilisateur);
+  -- RETURN NEW;
+--END;
+--$$ LANGUAGE plpgsql;
+
+
+--CREATE OR REPLACE TRIGGER triggerUserRight
+--BEFORE INSERT OR UPDATE
+--ON _utilisateur FOR EACH ROW
+--EXECUTE PROCEDURE grant_rights();
 
 -- PEUPLEMENT
 

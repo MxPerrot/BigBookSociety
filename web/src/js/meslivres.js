@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function fetchBooksByUserId() {
     const url = `http://127.0.0.1:8000/get_books_by_user/`;
-
+    document.getElementById("loading-spinner").style.display = "block";
     fetch(url, {
         method: 'GET',
         headers: {
@@ -48,7 +48,9 @@ function fetchBooksByUserId() {
             // Ajouter les événements aux boutons "Retirer"
             addRemoveEventListeners();
             addClickEventToBooks();
+            document.getElementById("loading-spinner").style.display = "none";  
         } else {
+            document.getElementById("loading-spinner").style.display = "none";  
             booksContainer.innerHTML = "<p>Aucun livre trouvé.</p>";
         }
     })
