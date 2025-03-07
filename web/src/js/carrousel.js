@@ -73,6 +73,7 @@ function fetchBooks(url, containerId) {
 
       console.log("Données récupérées depuis sessionStorage.");
       carouselGenerateur(parsedData, containerId);
+      document.getElementById("loading-spinner-"+containerId).style.display = "none";
     } catch (error) {
       console.warn("Erreur lors du parsing des données depuis sessionStorage", error);
       console.warn("Token invalide ou expiré. Seul le fetch des livres populaires sera effectué.");
