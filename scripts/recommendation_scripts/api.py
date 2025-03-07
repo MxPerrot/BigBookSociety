@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, Query, HTTPException, Depends
+from pydantic import BaseModel
 from item_based_recommendation import recommendationItemBased
 from user_based_recommendation import recommendationUserBased
 import database_functions as bdd
@@ -14,6 +15,9 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import re
 
+class SimpleDict(BaseModel):
+    key: str
+    value: str
 
 app = FastAPI()
 
@@ -44,7 +48,6 @@ def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt).decode()
 
-# print(hash_password("boulangerie"))
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
@@ -143,6 +146,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 def read_users_me(current_user: dict = Depends(get_current_user)):
     return {"id": current_user[0], "username": current_user[1], "email": current_user[2]}
 
+@app.put("/users/update")
+def update_user_data(dataToChange:SimpleDict, current_user: dict = Depends(get_current_user)):
+    result = bdd.changeUserData(current_user[0],dataToChange.key,dataToChange.value)
+    return result
 
 
 @app.get("/get_book_data_by_id/{id}")

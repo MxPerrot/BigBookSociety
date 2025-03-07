@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         profileName.textContent = user.username || "Nom inconnu";
         profileDob.textContent = `Date de naissance: ${user.dob || "Non renseigné"}`;
         profileLanguages.textContent = `Langues: ${user.languages || "Non renseigné"}`;
-        profileImage.src = user.profile_image || "../../public/img/default-avatar.png";
+        profileImage.src = user.profile_image || "../../public/img/DefaultMan.webp";
     })
     .catch(error => console.error("Erreur lors de la récupération du profil:", error));
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ [field]: value })
+            body: JSON.stringify({'key':field,'value':value})
         })
         .then(response => response.json())
         .then(updatedUser => {

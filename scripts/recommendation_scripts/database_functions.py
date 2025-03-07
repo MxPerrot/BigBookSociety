@@ -439,6 +439,9 @@ def getAuthorById(cursor, id):
 
     return authorRaw[0]
 
+def changeUserData(idUtil,key,value):
+    return -1
+
 def ajoutClause(recherche,ajoutWhere):
     if ajoutWhere:
         recherche += "WHERE "
