@@ -92,7 +92,9 @@ function fetchBooks(url, containerId) {
       .then(response => {
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error("Token expired");
+            localStorage.removeItem("Token");
+            location.reload();
+            throw new Error("Token expired"); 
           }
           throw new Error("Erreur réseau");
         }
