@@ -141,6 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (link && link.getAttribute("href") === "../html/profil.html" && !token) {
                 li.innerHTML = `<a href="../html/connexion.html">CONNEXION</a>`;
             }
+            if (link && link.getAttribute("href") === "../html/meslivres.html" && !token) {
+                li.innerHTML = `<li><a href="../html/connexion.html">MES LIVRES</a></li>`;
+            }
         });
     }
 });
