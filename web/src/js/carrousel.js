@@ -55,6 +55,7 @@ function displayPopularBooksSection() {
 }
 
 function fetchBooks(url, containerId) {
+  document.getElementById("loading-spinner-"+containerId).style.display = "block";
   let cachedData = sessionStorage.getItem(url);
 
   let token = localStorage.getItem('Token');
@@ -120,6 +121,7 @@ function fetchBooks(url, containerId) {
         console.log("Données récupérées depuis l'API.");
         sessionStorage.setItem(url, JSON.stringify(data));
         carouselGenerateur(data, containerId);
+        document.getElementById("loading-spinner-"+containerId).style.display = "none";
       })
       .catch(error => {
         console.error("Erreur lors de la récupération des données : ", error);
