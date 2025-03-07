@@ -59,13 +59,6 @@ footerTemplate.innerHTML = `
       </style>
 
     <footer>
-        <nav>
-            <ul>
-                <li><a href="#">Mention légales</a></li>
-                <li><a href="#">Conditions générales d'utilisation</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
         <p>© 2025  BigBook - Tous droits réservés</p>
     </footer>
 `;

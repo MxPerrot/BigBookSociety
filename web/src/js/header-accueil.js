@@ -146,6 +146,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (link && link.getAttribute("href") === "./src/html/profil.html" && !token) {
                 li.innerHTML = `<a href="./src/html/connexion.html">CONNEXION</a>`;
             }
+            if (link && link.getAttribute("href") === "./src/html/meslivres.html" && !token) {
+                li.innerHTML = `<li><a href="./src/html/connexion.html">MES LIVRES</a></li>`;
+            }
         });
     }
 });
