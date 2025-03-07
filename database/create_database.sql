@@ -244,6 +244,38 @@ SELECT
     NULL::VARCHAR[] AS methodes_procuration -- Tableau des méthodes de procuration
 ;
 
+CREATE VIEW _info_utilisateur AS SELECT * FROM _utilisateur 
+NATURAL JOIN _format_utilisateur
+NATURAL JOIN _format
+
+NATURAL JOIN _utilisateur_auteur
+NATURAL JOIN _auteur
+
+NATURAL JOIN _utilisateur_genre
+NATURAL JOIN _genre
+
+NATURAL JOIN _utilisateur_langue
+NATURAL JOIN _langue
+
+NATURAL JOIN _utilisateur_motivation
+NATURAL JOIN _motivation
+
+NATURAL JOIN _utilisateur_procuration
+NATURAL JOIN _procuration
+
+NATURAL JOIN _utilisateur_raison_achat
+NATURAL JOIN _raison_achat
+
+WHERE nom_utilisateur = USER;
+
+
+CREATE OR REPLACE TRIGGER _utilisateur_access
+BEFORE INSERT OR UPDATE ON _utilisateur
+FOR EACH ROW
+BEGIN
+ GRANT CONNECT ON DATABASE pg_dgoupil TO NEW.nom_utilisateur;
+ GRANT SELECT ON _info_utilisateur TO NEW.nom_utilisateur;
+END;
 
 -- PEUPLEMENT
 
@@ -504,34 +536,10 @@ ADD COLUMN note_moyenne DECIMAL GENERATED ALWAYS AS ((nb_note_1_etoile*1.0+nb_no
 
 SELECT setval('_utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) FROM _utilisateur));
 
-CREATE VIEW _info_utilisateur AS SELECT * FROM _utilisateur 
-NATURAL JOIN _format_utilisateur
-NATURAL JOIN _format
-
-NATURAL JOIN _utilisateur_auteur
-NATURAL JOIN _auteur
-
-NATURAL JOIN _utilisateur_genre
-NATURAL JOIN _genre
-
-NATURAL JOIN _utilisateur_langue
-NATURAL JOIN _langue
-
-NATURAL JOIN _utilisateur_motivation
-NATURAL JOIN _motivation
-
-NATURAL JOIN _utilisateur_procuration
-NATURAL JOIN _procuration
-
-NATURAL JOIN _utilisateur_raison_achat
-NATURAL JOIN _raison_achat
-
-WHERE nom_utilisateur = USER;
-
 SELECT * FROM _info_utilisateur;
 
---GRANT CONNECT ON DATABASE pg_dgoupil TO USER;
 
+--GRANT CONNECT ON DATABASE pg_dgoupil TO USER;
 --GRANT SELECT ON _info_utilisateur TO USER;
 
 
