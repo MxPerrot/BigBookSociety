@@ -235,9 +235,9 @@ async def is_liked(current_user: dict = Depends(get_current_user), bookID:int=No
         cursor.execute("SELECT id_utilisateur,id_livre FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0], bookID))
         record = cursor.fetchall()
         if len(record)==0:
-            return False
+            return "False"
         else:
-            return True
+            return "True"
 
 
 

@@ -53,7 +53,19 @@ function fetchBookById(id) {
 
             const likeButton = document.getElementById("likeButton");
 
-            
+            fetch(`http://127.0.0.1:8000/is_liked/?bookID=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                    'Content-Type': 'application/json'
+                }                  
+            }).then(response => response.json())
+            .then(answer => {
+                if (answer=="True"){
+                    likeButton.classList.toggle("liked");
+                    likeButton.textContent = likeButton.classList.contains("liked") ? "Liked" : "Like";
+                }
+            });
 
             likeButton.addEventListener("click", function () {
                 likeButton.classList.toggle("liked");
@@ -72,7 +84,7 @@ function fetchBookById(id) {
                   .then(data => console.log('Response:', data))  // Log the response
                   .catch(error => console.error('Error:', error));
                 } else {
-                  fetch(`http://127.0.0.1:8000/unlike/`, {
+                  fetch(`http://127.0.0.1:8000/unlike/?bookID=${id}`, {
                       method: 'DELETE',
                       headers: {
                           'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
