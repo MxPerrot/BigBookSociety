@@ -1,3 +1,5 @@
+import { API_PATH } from "./config.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     fetchBooksByUserId();
 });
@@ -38,7 +40,6 @@ function fetchBooksByUserId() {
                     <div class="card-content">
                         <h2 class="card-title">${book.titre || "Titre non disponible"}</h2>
                         <h3 class="card-author">De ${book.nom_auteur || "Auteur inconnu"}</h3>
-                        <button class="bouton-retirer" data-id="${book.id_livre}">Retirer le livre</button>
                     </div>
                 `;
 
@@ -104,7 +105,7 @@ function addClickEventToBooks() {
             }
 
             console.log(`Redirection vers le livre avec l'ID : ${bookId}`);
-            window.location.href = `/web/src/html/livres.html?id=${bookId}`;
+            window.location.href = `../html/livres.html?id=${bookId}`;
         });
     });
 }
