@@ -61,7 +61,7 @@ def genre_expand(genre):
     return res
 
 def model_genre(cursor):
-    cursor.execute("select id_livre,libelle_genre from sae._livre NATURAL JOIN sae._genre_livre NATURAL JOIN sae._genre;")
+    cursor.execute("select id_livre,libelle_genre from BigBookSociety._livre NATURAL JOIN BigBookSociety._genre_livre NATURAL JOIN BigBookSociety._genre;")
 
     record = cursor.fetchall()
 

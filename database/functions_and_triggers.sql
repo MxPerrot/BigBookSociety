@@ -1,4 +1,5 @@
-SET SCHEMA 'sae';
+SET SCHEMA 'BigBookSociety';
+SET search_path TO BigBookSociety;
 
 CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
   DECLARE

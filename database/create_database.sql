@@ -1,6 +1,7 @@
-DROP SCHEMA IF EXISTS sae CASCADE;
-create schema sae;
-set schema 'sae';
+DROP SCHEMA IF EXISTS BigBookSociety CASCADE;
+create schema BigBookSociety;
+set schema 'BigBookSociety';
+SET search_path TO BigBookSociety;
 
 CREATE TABLE _serie (
     id_serie SERIAL PRIMARY KEY,

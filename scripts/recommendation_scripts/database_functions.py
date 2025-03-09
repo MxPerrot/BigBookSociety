@@ -26,9 +26,9 @@ def setUpCursor(connection):
     """
     Returns the cursor
     """
-
     cursor = connection.cursor()
-    cursor.execute("SET SCHEMA 'sae';")
+    cursor.execute("SET SCHEMA 'BigBookSociety';")
+    cursor.execute("SET search_path TO BigBookSociety;")
 
     return cursor
 
@@ -139,8 +139,8 @@ def getIdLivresTendance(cursor, nbLivreEva):
     """
     cursor.execute("""
         SELECT b.id_livre
-        FROM sae._livre b
-        INNER JOIN sae._episode_serie s ON b.id_livre = s.id_livre
+        FROM BigBookSociety._livre b
+        INNER JOIN BigBookSociety._episode_serie s ON b.id_livre = s.id_livre
         WHERE numero_episode = '1'
         AND b.note_moyenne IS NOT NULL
         AND b.nb_notes IS NOT NULL
@@ -173,7 +173,7 @@ def getLivresAEvaluerDecouverte(cursor, nbLivreEva):
     Renvoie les données d'un nombre de livres pris parmi ceux moyennement populaires mais bien notés
     """
     cursor.execute("""
-        SELECT _livre.id_livre FROM sae._livre 
+        SELECT _livre.id_livre FROM BigBookSociety._livre 
         WHERE note_moyenne is not null 
         and nb_notes>1000 
         and nb_notes<50000 
@@ -356,9 +356,9 @@ def getBookIdSameAuthor(cursor, user_id, limit):
     """
 
     cursor.execute("""
-    SELECT id_auteur,id_livre FROM sae._utilisateur 
-    NATURAL JOIN sae._livre_utilisateur 
-    NATURAL JOIN sae._auteur_livre
+    SELECT id_auteur,id_livre FROM BigBookSociety._utilisateur 
+    NATURAL JOIN BigBookSociety._livre_utilisateur 
+    NATURAL JOIN BigBookSociety._auteur_livre
     WHERE id_utilisateur = %s;
     """, (user_id,))
 
@@ -373,8 +373,8 @@ def getBookIdSameAuthor(cursor, user_id, limit):
 
     for i in record:
         cursor.execute("""
-        SELECT id_livre FROM sae._auteur_livre
-        NATURAL JOIN sae._livre
+        SELECT id_livre FROM BigBookSociety._auteur_livre
+        NATURAL JOIN BigBookSociety._livre
         WHERE id_auteur = %s;
         """, (i[0],))
         livres = cursor.fetchall()
@@ -396,7 +396,7 @@ def getBookIdInSeries(cursor, user):
     Renvoie
     """
     cursor.execute("""
-    SELECT id_livre FROM sae._utilisateur NATURAL JOIN sae._livre_utilisateur NATURAL JOIN sae._episode_serie WHERE id_utilisateur = %s;
+    SELECT id_livre FROM BigBookSociety._utilisateur NATURAL JOIN BigBookSociety._livre_utilisateur NATURAL JOIN BigBookSociety._episode_serie WHERE id_utilisateur = %s;
     """, (user,))
 
     record = cursor.fetchall()
@@ -405,7 +405,7 @@ def getBookIdInSeries(cursor, user):
     
     for y in record:
         cursor.execute("""
-        SELECT id_serie,numero_episode FROM sae._episode_serie WHERE id_livre = %s;
+        SELECT id_serie,numero_episode FROM BigBookSociety._episode_serie WHERE id_livre = %s;
         """, (y[0],))
         serie = cursor.fetchall()
 
@@ -414,7 +414,7 @@ def getBookIdInSeries(cursor, user):
             episode = int(serie[0][1])+1
 
             cursor.execute("""
-            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '%s' AND id_serie='%s';
+            SELECT id_livre FROM BigBookSociety._episode_serie WHERE numero_episode = '%s' AND id_serie='%s';
             """, (episode,serie[0][0]))
             livre = cursor.fetchall()
             liste_continuer_lecture.append(livre[0][0])
