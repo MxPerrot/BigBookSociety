@@ -1,3 +1,5 @@
+import { API_PATH } from "./config.js";
+
 function TokenError() {
   console.log("lancement TokenError");
   // Vider sessionStorage et localStorage
@@ -5,7 +7,7 @@ function TokenError() {
   clearMainContent();
   displayPopularBooksSection();
 
-  fetchBooks("http://127.0.0.1:8000/get_tendance/20", "populaire-container");
+  fetchBooks(`${API_PATH}/get_tendance/20`, "populaire-container");
 }
 
 
@@ -260,10 +262,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   } else {
     // Si le token est présent, exécuter tous les fetch
-    fetchBooks("http://127.0.0.1:8000/get_book_item_based/?nbrecommendation=20", "item-based-container");
-    fetchBooks("http://127.0.0.1:8000/get_book_item_based_tendance/?nbrecommendation=20", "item-based-tendance-container");
-    fetchBooks("http://127.0.0.1:8000/get_book_user_based/?nbrecommendation=20", "user-based-container");
-    fetchBooks("http://127.0.0.1:8000/get_tendance/20", "populaire-container");
+    fetchBooks(`${API_PATH}/get_book_item_based/?nbrecommendation=20`, "item-based-container");
+    fetchBooks(`${API_PATH}/get_book_item_based_tendance/?nbrecommendation=20`, "item-based-tendance-container");
+    fetchBooks(`${API_PATH}/get_book_user_based/?nbrecommendation=20`, "user-based-container");
+    fetchBooks(`${API_PATH}/get_tendance/20`, "populaire-container");
   }
 });
 

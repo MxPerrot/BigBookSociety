@@ -1,9 +1,11 @@
+import { API_PATH } from "./config.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     const token = localStorage.getItem("Token");
 
     if (!token) {
         alert("Vous devez être connecté pour accéder à votre profil.");
-        window.location.href = "http://127.0.0.1:5500/web/connexion.html"; // Redirige vers la page de connexion
+        window.location.href = "../html/connexion.html"; // Redirige vers la page de connexion
         return;
     }
 
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const profileImage = document.getElementById("profile-img");
 
     // Récupération des données de l'utilisateur
-    fetch("http://127.0.0.1:8000/users/me", {
+    fetch(`${API_PATH}/users/me`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -32,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fonction pour modifier et enregistrer les informations du profil
     function updateUserData(field, value) {
-        fetch("http://127.0.0.1:8000/users/update", {
+        fetch(`${API_PATH}/users/update`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const formData = new FormData();
                 formData.append("profile_image", file);
 
-                fetch("http://127.0.0.1:8000/users/update-image", {
+                fetch(`${API_PATH}/users/update-image`, {
                     method: "PUT",
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData

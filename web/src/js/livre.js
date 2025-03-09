@@ -1,3 +1,6 @@
+import { API_PATH } from "./config.js";
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
@@ -14,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
    
 function fetchBookById(id) {
-    const url = `http://127.0.0.1:8000/get_book_data_by_id/${id}`;
+    const url = `${API_PATH}/get_book_data_by_id/${id}`;
     
     fetch(url)
         .then(response => response.json())
@@ -53,7 +56,7 @@ function fetchBookById(id) {
 
             const likeButton = document.getElementById("likeButton");
 
-            fetch(`http://127.0.0.1:8000/is_liked/?bookID=${id}`, {
+            fetch(`${API_PATH}/is_liked/?bookID=${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
@@ -73,7 +76,7 @@ function fetchBookById(id) {
               
 
                 if (likeButton.textContent.trim() == 'Liked') {
-                  fetch(`http://127.0.0.1:8000/like/?bookID=${id}`, {
+                  fetch(`${API_PATH}/like/?bookID=${id}`, {
                       method: 'POST',
                       headers: {
                           'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
@@ -84,7 +87,7 @@ function fetchBookById(id) {
                   .then(data => console.log('Response:', data))  // Log the response
                   .catch(error => console.error('Error:', error));
                 } else {
-                  fetch(`http://127.0.0.1:8000/unlike/?bookID=${id}`, {
+                  fetch(`${API_PATH}/unlike/?bookID=${id}`, {
                       method: 'DELETE',
                       headers: {
                           'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request

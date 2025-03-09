@@ -1,3 +1,5 @@
+import { API_PATH } from "./config.js";
+
 let searchbar = $("#searchbar")
 let button = $("#sendsearch")
 var result = $("#result")
@@ -56,7 +58,7 @@ async function search_book(url, title_input, author_input, genre_input, result_c
 button.on("click", function() {
     document.getElementById("loading-spinner").style.display = "block";
     search_book(
-        "http://127.0.0.1:8000/search_books/",
+        `${API_PATH}/search_books/`,
         searchbar,
         $(`#${author_input_id}`),
         $(`#${genre_input_id}`),
@@ -65,8 +67,8 @@ button.on("click", function() {
     document.getElementById("loading-spinner").style.display = "none";  
 });
 
-createDatalist("datalist-1",author_container_id,"Auteur","http://127.0.0.1:8000/get_authors/")
-createDatalist("datalist-2",genre_container_id,"Genres","http://127.0.0.1:8000/get_genres/")
+createDatalist("datalist-1",author_container_id,"Auteur",`${API_PATH}/get_authors/`)
+createDatalist("datalist-2",genre_container_id,"Genres",`${API_PATH}/get_genres/`)
 
 // Slider double node
 $( function() {

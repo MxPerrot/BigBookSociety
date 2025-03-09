@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function fetchBooksByUserId() {
-    const url = `http://127.0.0.1:8000/get_books_by_user/`;
+    const url = `${API_PATH}/get_books_by_user/`;
     document.getElementById("loading-spinner").style.display = "block";
     fetch(url, {
         method: 'GET',
@@ -71,7 +71,7 @@ function addRemoveEventListeners() {
 }
 
 function removeBook(bookId) {
-    fetch(`http://127.0.0.1:8000/delete_book/${bookId}`, { 
+    fetch(`${API_PATH}/delete_book/${bookId}`, { 
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem("Token")}`,
