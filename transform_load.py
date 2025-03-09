@@ -37,8 +37,8 @@ import scripts.etl_scripts.generate_table_genre as generate_table_genre
 #              CONSTANTS              #
 #######################################
 
-CHEMIN_FICHIER_LIVRES = "data/books.csv"
-CHEMIN_FICHIER_AUTEURS = "data/authors.csv"
+CHEMIN_FICHIER_LIVRES = "data/bigboss_book.csv" # previously was books.csv, adapted to the default name bigboss_book.csv
+CHEMIN_FICHIER_AUTEURS = "data/Big_boss_authors.csv" # previously was authors.csv, adapted to the default name Big_boss_authors.csv
 
 CHEMIN_FICHIER_CLEAN_LIVRES = "data/Cleaned_books.csv"
 CHEMIN_FICHIER_CLEAN_AUTEURS = "data/Cleaned_authors.csv"
