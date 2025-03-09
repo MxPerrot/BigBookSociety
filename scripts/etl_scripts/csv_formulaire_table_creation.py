@@ -364,7 +364,6 @@ def main(results):
         return res
 
     # _format_utilisateur : id_format, id_utilisateur
-    print("/// format_utilisateur ///")
     list_format_utilisateur = table_relation(mails,formats_preferes, format_df)
 
     id_utilisateurs = []
@@ -381,7 +380,6 @@ def main(results):
     format_utilisateur.to_csv(os.path.join(PATH_POPULATE,"format_utilisateur.csv"), index=False)
 
     # _utilisateur_motivation : id_utilisateur, id_motivation
-    print("/// utilisateur_motivation ///")
     list_utilisateur_motivation = table_relation(mails, motivation, motivation_df)
 
     id_utilisateurs = []
@@ -398,7 +396,6 @@ def main(results):
     utilisateur_motivation.to_csv(os.path.join(PATH_POPULATE,"utilisateur_motivation.csv"), index=False)
 
     # _utilisateur_procuration : id_utilisateur, id_procuration
-    print("/// utilisateur_procuration ///")
     list_utilisateur_procuration = table_relation(mails, methode_procuration, procuration_df)
 
     id_utilisateurs = []
@@ -415,7 +412,6 @@ def main(results):
     utilisateur_procuration.to_csv(os.path.join(PATH_POPULATE,"utilisateur_procuration.csv"), index=False)
 
     # _utilisateur_langue : id_utilisateur, id_langue
-    print("/// utilisateur_langue ///")
     list_utilisateur_langue = table_relation(mails, langues, langue_df)
 
     id_utilisateurs = []
@@ -432,7 +428,6 @@ def main(results):
     utilisateur_langue.to_csv(os.path.join(PATH_POPULATE,"utilisateur_langue.csv"), index=False)
 
     # _utilisateur_raison_achat : id_utilisateur, id_raison_achat
-    print("/// utilisateur_raison_achat ///")
     list_utilisateur_raison_achat = table_relation(mails, raison_achat, raison_achat_df)
 
     id_utilisateurs = []
@@ -449,7 +444,6 @@ def main(results):
     utilisateur_raison_achat.to_csv(os.path.join(PATH_POPULATE,"utilisateur_raison_achat.csv"), index=False)
     
     # _utilisateur_genre : id_utilisateur, id_genre
-    print("/// utilisateur_genre ///")
     list_utilisateur_genre = table_relation(mails, genres_preferes, genre_df)
 
     id_utilisateurs = []
@@ -466,7 +460,6 @@ def main(results):
     utilisateur_genre.to_csv(os.path.join(PATH_POPULATE,"utilisateur_genre.csv"), index=False)
 
     # _utilisateur_auteur : id_utilisateur, id_auteur
-    print("/// utilisateur_auteur ///")
     
     list_utilisateur_auteur = table_relation_auteur(mails, auteurs_preferes, auteur_df)
 
@@ -484,7 +477,6 @@ def main(results):
     utilisateur_auteur.to_csv(os.path.join(PATH_POPULATE,"utilisateur_auteur.csv"), index=False)
 
     # _livre_utilisateur : id_utilisateur, id_livre
-    print("/// livre_utilisateur ///")
     
     list_livre_utilisateur = table_relation_livre(mails, livres_preferes, livre_df)
 
