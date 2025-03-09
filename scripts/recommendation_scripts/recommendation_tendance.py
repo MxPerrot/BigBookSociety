@@ -11,8 +11,8 @@ def tendance(limit):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -52,8 +52,8 @@ def same_author(user, limit):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -107,8 +107,8 @@ def in_series(user):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -148,8 +148,8 @@ def decouverte(limit):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )

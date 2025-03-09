@@ -33,8 +33,8 @@ def genre(user=False):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
