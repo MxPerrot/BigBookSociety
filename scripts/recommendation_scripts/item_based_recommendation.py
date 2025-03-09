@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from numpy.linalg import norm
-import recommendation_utilities as ru
-import database_functions as bdd
+from . import recommendation_utilities as ru
+from . import database_functions as bdd
 
 # Nombres de données prises en compte dans la création des vecteurs de livres
 NB_DIMENTION_VECTEUR = 3

@@ -1,10 +1,10 @@
 
 from fastapi import FastAPI, Query, HTTPException, Depends, Form
 from pydantic import BaseModel
-from item_based_recommendation import recommendationItemBased
-from user_based_recommendation import recommendationUserBased
-import database_functions as bdd
-import recommendation_utilities as ru
+from .item_based_recommendation import recommendationItemBased
+from .user_based_recommendation import recommendationUserBased
+from . import database_functions as bdd
+from . import recommendation_utilities as ru
 from typing import Annotated
 import json 
 from fastapi.middleware.cors import CORSMiddleware

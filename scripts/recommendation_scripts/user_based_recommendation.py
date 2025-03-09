@@ -3,8 +3,8 @@ import numpy as np
 import random as rd
 from numpy.linalg import norm
 from operator import itemgetter
-import recommendation_utilities as ru
-import database_functions as bdd
+from . import recommendation_utilities as ru
+from . import database_functions as bdd
 
 # Nombres de données prises en compte dans la création des vecteurs de livres
 NB_DIMENTION_VECTEUR = 4
