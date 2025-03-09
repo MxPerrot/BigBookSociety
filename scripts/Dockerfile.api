@@ -1,0 +1,16 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install API dependencies
+COPY requirements_api.txt .
+RUN pip install --no-cache-dir -r requirements_api.txt
+
+# Copy the API code and other needed scripts (adjust as necessary)
+COPY . .
+
+# Ensure /app is in the PYTHONPATH so Python finds "reccomandation_scripts"
+ENV PYTHONPATH=/app
+
+# Expose port 8000 and run the API via uvicorn.
+CMD ["uvicorn", "recommendation_scripts.api:app", "--host", "0.0.0.0", "--port", "8000"]

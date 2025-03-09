@@ -1,0 +1,14 @@
+# Use a slim Python image for ETL
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install ETL dependencies
+COPY requirements_etl.txt .
+RUN pip install --no-cache-dir -r requirements_etl.txt
+
+# Copy the entire repository (or at least what is needed)
+COPY . .
+
+# Run the transform_load.py script
+CMD ["python", "transform_load.py"]
