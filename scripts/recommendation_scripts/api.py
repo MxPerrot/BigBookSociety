@@ -36,14 +36,6 @@ modelGenres = ru.model_genre(cursor)
 
 #https://fastapi.tiangolo.com/tutorial/first-steps/
     
-
-
-
-
-
-
-
-
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode(), salt).decode()
@@ -97,7 +89,6 @@ def create_access_token(username: str):
     to_encode = {"sub": username, "exp": expire}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-
 def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -106,7 +97,6 @@ def verify_token(token: str):
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @app.post("/token")
@@ -124,7 +114,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     
     return {"access_token": token, "token_type": "bearer"}
-
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     username = verify_token(token)
@@ -149,7 +138,6 @@ def read_users_me(current_user: dict = Depends(get_current_user)):
 def update_user_data(dataToChange:SimpleDict, current_user: dict = Depends(get_current_user)):
     result = bdd.changeUserData(current_user[0],dataToChange.key,dataToChange.value)
     return result
-
 
 @app.get("/get_book_data_by_id/{id}")
 async def get_book_data_by_id(id:int):
@@ -179,13 +167,11 @@ async def get_author_data_by_id(id:int):
 
     return author_json
 
-
 @app.get("/get_books_by_user/")
 async def get_books_by_user(current_user: dict = Depends(get_current_user)):
     book_id_list = bdd.getIdLivresUtilisateur(cursor, int(current_user[0]))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-
 
 @app.get("/get_book_item_based/")
 async def get_book_item_based(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
@@ -193,13 +179,11 @@ async def get_book_item_based(current_user: dict = Depends(get_current_user), nb
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-
 @app.get("/get_book_item_based_tendance/")
 async def get_book_item_based_tendance(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
     book_id_list = recommendationItemBased(cursor, modelGenres, int(current_user[0]), int(nbrecommendation), bdd.getLivresAEvaluerTendance(cursor, int(limit)))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-
 
 @app.get("/get_book_item_based_decouverte/")
 async def get_book_item_based_decouverte(current_user: dict = Depends(get_current_user), nbrecommendation:int=10, limit:int=1000):
@@ -207,13 +191,11 @@ async def get_book_item_based_decouverte(current_user: dict = Depends(get_curren
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-
 @app.get("/get_book_user_based/")
 async def get_book_user_based(current_user: dict = Depends(get_current_user), nbrecommendation:int=10):
     book_id_list = recommendationUserBased(cursor, int(current_user[0]), int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-
 
 @app.get("/get_tendance/{limit}")
 async def get_tendance(limit:int):
@@ -221,20 +203,17 @@ async def get_tendance(limit:int):
     books_infos = getLivresInformation(cursor,list(book_id_list))
     return books_infos
 
-
 @app.get("/get_meme_auteur/")
 async def get_meme_auteur(current_user: dict = Depends(get_current_user), nbrecommendation:int=10):
     book_id_list = bdd.getBookIdSameAuthor(cursor, int(current_user[0]),int(nbrecommendation))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
-
 @app.get("/get_in_serie/")
 async def get_in_serie(current_user: dict = Depends(get_current_user)):
     book_id_list = bdd.getBookIdInSeries(cursor, int(current_user[0]))
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
-
 
 @app.get("/is_liked/")
 async def is_liked(current_user: dict = Depends(get_current_user), bookID:int=None):
@@ -245,9 +224,6 @@ async def is_liked(current_user: dict = Depends(get_current_user), bookID:int=No
         else:
             return "True"
 
-
-
-
 @app.post("/like/")
 async def like(current_user: dict = Depends(get_current_user), bookID:int=None):
     # try:
@@ -257,7 +233,6 @@ async def like(current_user: dict = Depends(get_current_user), bookID:int=None):
     # except psycopg2.IntegrityError:
     #     raise HTTPException(status_code=400, detail="User already likes the book")
 
-
 @app.delete("/unlike/")
 async def unlike(current_user: dict = Depends(get_current_user), bookID:int=None):
     #  try:
@@ -266,12 +241,6 @@ async def unlike(current_user: dict = Depends(get_current_user), bookID:int=None
         return {"message": "Link delete successfully"}
     #  except psycopg2.IntegrityError:
     #      raise HTTPException(status_code=400, detail="User already not like the book")
-
-
-
-
-
-
 
 @app.get("/get_next_books/{id}")
 async def get_next_books(id:int):
