@@ -1,10 +1,12 @@
 # RED
 [x] Replace hardcoded links (with port 5500 or localhost for example)
+[x] Dockerize the app
 
 # GREEN
 [ ] Potentiel bug : auteur inconnu à tort dans "mes livres"
 [x] Ajouter Photos membre
 [ ] Enrichir afficherLivres comme sur carrousel (Ewan a fait une partie, finir css)
+[x] Automatically delete temporary CSV files
 
 # BLACK
 [ ] Style barre de recherche
