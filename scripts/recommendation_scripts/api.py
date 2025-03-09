@@ -68,7 +68,7 @@ def register_user(username: str, email: str, password: str, sexe: str):
     verif_sex=["Femme","Homme","Je ne souhaite pas le préciser"]
 
     try:
-        if not sexe not in verif_sex:
+        if sexe not in verif_sex:
             raise Exception("Sexe invalide")
     except :
         raise HTTPException(status_code=400, detail="Sexe invalide") 
