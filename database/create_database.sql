@@ -292,264 +292,264 @@ WHERE nom_utilisateur = USER;
 
 -- PEUPLEMENT
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/genre.csv'
--table=_genre
--delimiter=','
--header=true;
+COPY _genre (libelle_genre, id_genre)
+FROM '/docker-entrypoint-initdb.d/populate/genre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);;
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/genre_2.csv'
--table=_genre
--delimiter=','
--header=true;
+COPY _genre (id_genre, libelle_genre)
+FROM '/docker-entrypoint-initdb.d/populate/genre_2.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/auteur.csv'
--table=_auteur
--delimiter=','
--header=true;
-
-
-WbImport
--usePgCopy
--type=text
--file='../data/populate/auteur_genre.csv'
--table=_auteur_genre
--delimiter=','
--header=true;
+COPY _auteur (id_auteur,nom,note_moyenne,sexe,nb_critiques,nb_reviews,origine)
+FROM '/docker-entrypoint-initdb.d/populate/auteur.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/editeur.csv'
--table=_editeur
--delimiter=','
--header=true;
-
-WbImport
--usePgCopy
--type=text
--file='../data/populate/livre.csv'
--table=_livre
--delimiter=','
--header=true;
-
-WbImport
--usePgCopy
--type=text
--file='../data/populate/livre_genre.csv'
--table=_genre_livre
--delimiter=','
--header=true;
+COPY _auteur_genre (id_auteur,id_genre)
+FROM '/docker-entrypoint-initdb.d/populate/auteur_genre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/prix.csv'
--table=_prix
--delimiter=','
--header=true;
+COPY _editeur (id_editeur,nom_editeur)
+FROM '/docker-entrypoint-initdb.d/populate/editeur.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
+
+COPY _livre (id_livre,titre,nb_notes,nb_critiques,nb_note_5_etoile,nb_note_4_etoile,nb_note_3_etoile,nb_note_2_etoile,nb_note_1_etoile,nombre_pages,date_publication,titre_original,isbn,isbn13,description,id_editeur)
+FROM '/docker-entrypoint-initdb.d/populate/livre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
+
+COPY _genre_livre (id_livre,nb_votes,id_genre)
+FROM '/docker-entrypoint-initdb.d/populate/livre_genre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/prix_livre.csv'
--table=_prix_livre
--delimiter=','
--header=true;
+COPY _prix (id_prix,nom_prix,annee_prix)
+FROM '/docker-entrypoint-initdb.d/populate/prix.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/pays.csv'
--table=_pays
--delimiter=','
--header=true;
+COPY _prix_livre (id_prix,id_livre)
+FROM '/docker-entrypoint-initdb.d/populate/prix_livre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/cadre.csv'
--table=_cadre
--delimiter=','
--header=true;
+COPY _pays (id_pays,nom)
+FROM '/docker-entrypoint-initdb.d/populate/pays.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/cadre_livre.csv'
--table=_cadre_livre
--delimiter=','
--header=true;
+COPY _cadre (id_cadre,annee,localisation,id_pays)
+FROM '/docker-entrypoint-initdb.d/populate/cadre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/series.csv'
--table=_serie
--delimiter=','
--header=true;
+COPY _cadre_livre (id_cadre,id_livre)
+FROM '/docker-entrypoint-initdb.d/populate/cadre_livre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/episode_serie.csv'
--table=_episode_serie
--delimiter=','
--header=true;
+COPY _serie (id_serie,nom_serie)
+FROM '/docker-entrypoint-initdb.d/populate/series.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/link.csv'
--table=_auteur_livre
--delimiter=','
--header=true;
+COPY _episode_serie (id_serie,id_livre,numero_episode)
+FROM '/docker-entrypoint-initdb.d/populate/episode_serie.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
+
+
+COPY _auteur_livre (id_livre,id_auteur)
+FROM '/docker-entrypoint-initdb.d/populate/link.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 -- Asaiah
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/code_postal.csv'
--table=_code_postal
--delimiter=','
--header=true;
+COPY _code_postal (id_code_postal,code_postal)
+FROM '/docker-entrypoint-initdb.d/populate/code_postal.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/format.csv'
--table=_format
--delimiter=','
--header=true;
+COPY _format (id_format,format)
+FROM '/docker-entrypoint-initdb.d/populate/format.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur.csv'
--table=_utilisateur
--delimiter=','
--header=true;
+COPY _utilisateur (id_utilisateur,mail_utilisateur,sexe,age,profession,situation_familiale,frequence_lecture,vitesse_lecture,nb_livres_lus)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/raison_achat.csv'
--table=_raison_achat
--delimiter=','
--header=true;
+COPY _raison_achat (id_raison_achat,raison_achat)
+FROM '/docker-entrypoint-initdb.d/populate/raison_achat.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/langue.csv'
--table=_langue
--delimiter=','
--header=true;
+COPY _langue (id_langue,langue)
+FROM '/docker-entrypoint-initdb.d/populate/langue.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/procuration.csv'
--table=_procuration
--delimiter=','
--header=true;
+COPY _procuration (id_procuration,methode_procuration)
+FROM '/docker-entrypoint-initdb.d/populate/procuration.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/motivation.csv'
--table=_motivation
--delimiter=','
--header=true;
+COPY _motivation (id_motivation,motivation)
+FROM '/docker-entrypoint-initdb.d/populate/motivation.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/format_utilisateur.csv'
--table=_format_utilisateur
--delimiter=','
--header=true;
+COPY _format_utilisateur (id_utilisateur,id_format)
+FROM '/docker-entrypoint-initdb.d/populate/format_utilisateur.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur_genre.csv'
--table=_utilisateur_genre
--delimiter=','
--header=true;
+COPY _utilisateur_genre (id_utilisateur,id_genre)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur_genre.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur_auteur.csv'
--table=_utilisateur_auteur
--delimiter=','
--header=true;
+COPY _utilisateur_auteur (id_utilisateur,id_auteur)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur_auteur.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/livre_utilisateur.csv'
--table=_livre_utilisateur
--delimiter=','
--header=true;
+COPY _livre_utilisateur (id_utilisateur,id_livre)
+FROM '/docker-entrypoint-initdb.d/populate/livre_utilisateur.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur_motivation.csv'
--table=_utilisateur_motivation
--delimiter=','
--header=true;
+COPY _utilisateur_motivation (id_utilisateur,id_motivation)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur_motivation.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur_procuration.csv'
--table=_utilisateur_procuration
--delimiter=','
--header=true;
+COPY _utilisateur_procuration (id_utilisateur,id_procuration)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur_procuration.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur_langue.csv'
--table=_utilisateur_langue
--delimiter=','
--header=true;
+COPY _utilisateur_langue (id_utilisateur,id_langue)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur_langue.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
-WbImport
--usePgCopy
--type=text
--file='../data/populate/utilisateur_raison_achat.csv'
--table=_utilisateur_raison_achat
--delimiter=','
--header=true;
+COPY _utilisateur_raison_achat (id_utilisateur,id_raison_achat)
+FROM '/docker-entrypoint-initdb.d/populate/utilisateur_raison_achat.csv'
+WITH (
+  FORMAT csv,
+  HEADER true,
+  DELIMITER ','
+);
 
 ALTER TABLE _livre 
 ADD COLUMN note_moyenne DECIMAL GENERATED ALWAYS AS ((nb_note_1_etoile*1.0+nb_note_2_etoile*2.0+nb_note_3_etoile*3.0+nb_note_4_etoile*4.0+nb_note_5_etoile*5.0)/CAST (NULLIF(nb_notes,0) AS DECIMAL)) STORED;
 
-SELECT setval('_utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) FROM _utilisateur));
+-- SELECT setval('_utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) () FROM _utilisateur));
 
-SELECT * FROM _info_utilisateur;
+-- SELECT * () FROM _info_utilisateur;
 
 
 --GRANT CONNECT ON DATABASE pg_dgoupil TO USER;
@@ -557,5 +557,5 @@ SELECT * FROM _info_utilisateur;
 
 
 UPDATE _utilisateur
-SET nom_utilisateur = 'Maxou', mot_de_passe_hashed = '$2b$12$RNDlH8mt0ehyiOnWNsAqDOFO098cNrNSfqU1FRF.TrQZG4D.ubQIu'
+SET nom_utilisateur = 'max', mot_de_passe_hashed = '$2b$12$RNDlH8mt0ehyiOnWNsAqDOFO098cNrNSfqU1FRF.TrQZG4D.ubQIu'
 WHERE id_utilisateur=131;
