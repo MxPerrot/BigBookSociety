@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Query, HTTPException, Depends
+from fastapi import FastAPI, Query, HTTPException, Depends, Form
 from pydantic import BaseModel
 from item_based_recommendation import recommendationItemBased
 from user_based_recommendation import recommendationUserBased
@@ -46,7 +46,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 @app.post("/register")
-def register_user(username: str, email: str, password: str, sexe: str):
+def register_user(username: str = Form(...), email: str = Form(...), password: str = Form(...), sexe: str = Form(...)):
     hashed_pw = hash_password(password)
 
     EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")

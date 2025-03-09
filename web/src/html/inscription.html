@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="../styles/styleconnexion.css">
-    <script src="../js/header.js" type="text/javascript"></script>
+    <script src="../../../libs/js/jquery-3.7.1.min.js" defer></script>
+    <script src="../js/header.js" type="text/javascript" defer></script>
     <script src="../js/footer.js" type="text/javascript" defer></script>
     <title>Inscription</title>
 </head>
@@ -14,7 +15,7 @@
     <main>
         <div class="register-container">
             <h2>Inscription</h2>
-            <form action="/register" method="post">
+            <form id="registerForm">
                 <div class="input-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
@@ -28,11 +29,16 @@
                     <input type="password" id="password" name="password" required>
                 </div>
                 <div class="input-group">
-                    <label for="age">Âge</label>
-                    <input type="number" id="age" name="age" required>
+                    <label for="sexe">Sexe</label>
+                    <select id="sexe" name="sexe" required>
+                        <option value="Femme">Femme</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Je ne souhaite pas le préciser">Je ne souhaite pas le préciser</option>
+                    </select>
                 </div>
                 <button type="submit" class="register-button">S'inscrire</button>
             </form>
+            <script src="../js/script_enregistrement.js" type="module"></script>
             <p class="register-message">Déja inscrit? <a href="./connexion.html">Connectez-vous ici</a></p>
         </div>
     </main>

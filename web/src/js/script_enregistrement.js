@@ -1,60 +1,29 @@
+import { API_PATH } from "./config.js";
+
 token = null;
 
-document.getElementById("registerForm").addEventListener("submit", function (event) {
-    event.preventDefault();  // Prevent form refresh
+// Assuming API_PATH is defined globally or imported elsewhere
+var token = null;
 
-    // Get the username and password input values
-    const formData = new FormData();
-    formData.append("username", document.getElementById("username").value);
-    formData.append("password", document.getElementById("password").value);
-    formData.append("email", document.getElementById("email").value);
-    formData.append("sexe", document.getElementById("sexe").value);
+$(document).ready(function() {
+    $("#registerForm").on("submit", function(event) {
+        event.preventDefault(); // Prevent form refresh
 
-    // Make the POST request to the FastAPI login endpoint
-    fetch('http://127.0.0.1:8000/register', {
-        method: 'POST',
-        body: formData  // Send form data
-    })
-    .then(response => response.json())  // Parse the JSON response
-    .then(data => {
-        if (data.access_token) {
-            token=data.access_token;
-            localStorage.setItem('Token', token);
-            console.log("Register complete.")
-        } else {
-            console.log("Login failed. Please check your credentials.");
+        // Serialize the form data into a URL-encoded string
+        var data = $(this).serialize();
+
+        $.ajax({
+        url: API_PATH + "/register",
+        type: "POST",
+        data: data, // Data is sent in the request body
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("Error:", textStatus, errorThrown);
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
+        });
     });
 });
-
-
-
-
-// document.getElementById("getData").addEventListener("click", function () {
-
-//     console.log(token);
-
-//     if (!token) {
-//         document.getElementById("dataOutput").textContent = "No token found. Please log in.";
-//         return;
-//     }
-
-//     fetch('http://127.0.0.1:8000/users/me', {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${token}`,  // Include the token in the request
-//             'Content-Type': 'application/json'
-//         }
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         document.getElementById("dataOutput").textContent = JSON.stringify(data, null, 2);
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//         document.getElementById("dataOutput").textContent = "Failed to fetch protected data.";
-//     });
-// });
+  
+  
