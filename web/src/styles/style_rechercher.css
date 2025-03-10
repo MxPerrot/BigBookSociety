@@ -1,0 +1,126 @@
+/* 
+.search-book {
+    border: solid 3px red;
+}
+
+.search-book-form {
+border: solid 3px cyan;
+}
+
+.search-book-form-input {
+border: solid 3px magenta;
+}
+
+.confirm-button {
+    border: solid 3px yellow;
+} */
+
+/* USING FLEXBOXES */
+
+/* Form */
+.search-book-form {
+    padding-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Form elements */
+.search-book-form-input, .confirm-button {
+    height: 2.5rem;
+    border: none;
+    background-color: var(--col2);
+}
+
+/* All form inputs */
+.search-book-form-input .datalist-container, .search-book-form-input input {
+    height: 100%;
+    padding: 0 1rem;
+    border: none;
+}
+
+/* Border radius of form elements */
+.search-book-form > div:first-child input, .search-book-form > div:first-child {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.search-book-form > :last-child  {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+/* Inner border of form inputs */
+.search-book-form > :not(:first-child) input {
+    
+    background-color: var(--col2);
+    border-left: solid 1px lightgray;
+    
+}
+
+
+/* Confirm button */
+.confirm-button {
+    background-color: var(--col3);
+}
+
+.confirm-button:hover {
+    background-color: var(--col4);
+}
+
+/* Remove inputs default focus outline */
+input[type=text] {
+    outline: none;
+}
+
+/* .search-book-input-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.confirm-button {
+    background-color: var(--col3);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+*/
+
+.datalist-container {
+    position: relative;
+    /* width: 250px; */
+}
+
+/* .datalist-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+} */
+
+.datalist-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+}
+
+.datalist-options div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.datalist-options div:hover {
+    background: #f0f0f0;
+} 

@@ -11,8 +11,8 @@ def tendance(limit):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -22,8 +22,8 @@ def tendance(limit):
 
     cursor.execute(f"""
     SELECT b.id_livre
-    FROM sae._livre b
-    INNER JOIN sae._episode_serie s ON b.id_livre = s.id_livre
+    FROM BigBookSociety._livre b
+    INNER JOIN BigBookSociety._episode_serie s ON b.id_livre = s.id_livre
     WHERE numero_episode = '1'
     AND b.note_moyenne IS NOT NULL
     AND b.nb_notes IS NOT NULL
@@ -52,8 +52,8 @@ def same_author(user, limit):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -62,9 +62,9 @@ def same_author(user, limit):
 
 
     cursor.execute(f"""
-    SELECT id_auteur,id_livre FROM sae._utilisateur 
-    NATURAL JOIN sae._livre_utilisateur 
-    NATURAL JOIN sae._auteur_livre
+    SELECT id_auteur,id_livre FROM BigBookSociety._utilisateur 
+    NATURAL JOIN BigBookSociety._livre_utilisateur 
+    NATURAL JOIN BigBookSociety._auteur_livre
     WHERE id_utilisateur = {user};
     """)
 
@@ -79,8 +79,8 @@ def same_author(user, limit):
 
     for i in record:
         cursor.execute(f"""
-        SELECT id_livre FROM sae._auteur_livre
-        NATURAL JOIN sae._livre
+        SELECT id_livre FROM BigBookSociety._auteur_livre
+        NATURAL JOIN BigBookSociety._livre
         WHERE id_auteur = {i[0]};
         """)
         livres = cursor.fetchall()
@@ -107,8 +107,8 @@ def in_series(user):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -117,7 +117,7 @@ def in_series(user):
 
 
     cursor.execute(f"""
-    SELECT id_livre FROM sae._utilisateur NATURAL JOIN sae._livre_utilisateur NATURAL JOIN sae._episode_serie WHERE id_utilisateur = {user};
+    SELECT id_livre FROM BigBookSociety._utilisateur NATURAL JOIN BigBookSociety._livre_utilisateur NATURAL JOIN BigBookSociety._episode_serie WHERE id_utilisateur = {user};
     """)
 
     record = cursor.fetchall()
@@ -126,7 +126,7 @@ def in_series(user):
     
     for y in record:
         cursor.execute(f"""
-        SELECT id_serie,numero_episode FROM sae._episode_serie WHERE id_livre = {y[0]};
+        SELECT id_serie,numero_episode FROM BigBookSociety._episode_serie WHERE id_livre = {y[0]};
         """)
         serie = cursor.fetchall()
 
@@ -135,7 +135,7 @@ def in_series(user):
             episode = int(serie[0][1])+1
 
             cursor.execute(f"""
-            SELECT id_livre FROM sae._episode_serie WHERE numero_episode = '{episode}' AND id_serie='{serie[0][0]}';
+            SELECT id_livre FROM BigBookSociety._episode_serie WHERE numero_episode = '{episode}' AND id_serie='{serie[0][0]}';
             """)
             livre = cursor.fetchall()
             liste_continuer_lecture.append(livre[0][0])
@@ -148,8 +148,8 @@ def decouverte(limit):
 
     connection = psycopg2.connect(
         database=os.getenv("DATABASE_NAME"), 
-        user=os.getenv("USERNAME"), 
-        password=os.getenv("PASSWORD"), 
+        user=os.getenv("DB_USER"), 
+        password=os.getenv("DB_PASSWORD"), 
         host=os.getenv("HOST"), 
         port=os.getenv("PORT")
     )
@@ -157,7 +157,7 @@ def decouverte(limit):
     cursor = connection.cursor()
 
     cursor.execute(f"""
-    SELECT * FROM sae._livre 
+    SELECT * FROM BigBookSociety._livre 
     WHERE note_moyenne is not null 
     and nb_notes>1000 
     and nb_notes<50000 

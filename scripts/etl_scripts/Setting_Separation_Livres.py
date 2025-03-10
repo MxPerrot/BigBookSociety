@@ -55,7 +55,7 @@ dataset.to_csv("./SQL/editeur.csv", index=False)
 
 #Création d'un dataframe pour la table livres
 publisherLinkData = pd.merge(books, dataset, left_on='publisher', right_on="nom_editeur", how='inner')
-booksData = publisherLinkData[['id','title','rating_count','review_count','average_rating','five_star_ratings','four_star_ratings','three_star_ratings','two_star_ratings','one_star_ratings','number_of_pages','date_published','original_title','isbn','isbn13','description','id_editeur']]
+booksData = publisherLinkData[['id','title','rating_count','review_count','five_star_ratings','four_star_ratings','three_star_ratings','two_star_ratings','one_star_ratings','number_of_pages','date_published','original_title','isbn','isbn13','description','id_editeur']]
 booksData = booksData.drop_duplicates()
 booksData = booksData.drop_duplicates(subset=['id'],keep='first')
 
@@ -63,7 +63,6 @@ booksData = booksData.rename(columns={"id": "id_livre"})
 booksData = booksData.rename(columns={"title": "titre"})
 booksData = booksData.rename(columns={"rating_count": "nb_notes"})
 booksData = booksData.rename(columns={"review_count": "nb_critiques"})
-booksData = booksData.rename(columns={"average_rating": "note_moyenne"})
 booksData = booksData.rename(columns={"one_star_ratings": "nb_notes_1_etoile"})
 booksData = booksData.rename(columns={"two_star_ratings": "nb_notes_2_etoile"})
 booksData = booksData.rename(columns={"three_star_ratings": "nb_notes_3_etoile"})

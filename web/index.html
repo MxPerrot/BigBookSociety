@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./src/styles/styles.css">
+    <link rel="stylesheet" href="./src/styles/styleReco.css">
+    <script src="./src/js/jquery-3.7.1.min.js" defer></script>
+    <script src="./src/js/header-accueil.js" type="text/javascript" defer></script>
+    <script src="./src/js/footer.js" type="text/javascript" defer></script>
+    <script src="./src/js/zoom.js" type="text/javascript" defer></script>
+    
+    <title>BigBook</title>
+</head>
+<body>
+    <div class="slogan-container">
+        <img id="background" src="./public/img/newhome.jpg" alt="">
+        <h1 class="Slogan"> Vos envies, nos recommandations</h1>
+    </div>
+    
+    <header-accueil></header-accueil>
+
+    <main>
+        <div id="zoom-modal" class="zoom-modal">
+            <span class="close">&times;</span>
+            <img id="zoomed-img" class="zoomed-img">
+        </div>
+        <div class="boutons" >
+            <a class="refresh" href="javascript:void(0);" onclick="refreshCarrousel()">Rafraîchir</a>
+        </div>
+
+
+        <!-- Section pour item-based -->
+        <section id="item-based-container" class="recommendation-section">
+            <h2>Par rapport aux livres que vous avez lus</h2>
+            <div id="loading-spinner-item-based-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel Item-Based-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Section pour item-based tendance -->
+        <section id="item-based-tendance-container" class="recommendation-section">
+            <h2>Beaucoup ont aimé</h2>
+            <div id="loading-spinner-item-based-tendance-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel Item-Based Tendance-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Section pour user-based -->
+        <section id="user-based-container" class="recommendation-section">
+            <h2>D'autres comme vous ont aimé</h2>
+            <div id="loading-spinner-user-based-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel User-Based-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+
+
+        <!-- Section pour populaire -->
+        <section id="populaire-container" class="recommendation-section">
+            <h2>Les plus populaires</h2>
+            <div id="loading-spinner-populaire-container" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <div class="media-container">
+                <button class="previous" aria-label="previous">
+                    <svg><use href="#previous"></use></svg>
+                </button>
+            
+                <div class="media-scroller">
+                    <!-- Carrousel populaire-->
+                </div>
+            
+                <button class="next" aria-label="next">
+                    <svg><use href="#next"></use></svg>
+                </button>
+            </div>
+        </section>
+      <!-- Les symboles SVG -->
+    <svg style="display: none;">
+      <symbol id="next" viewBox="0 0 256 512">
+          <path fill="white"
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z" />
+      </symbol>
+      <symbol id="previous" viewBox="0 0 256 512">
+          <path fill="white"
+              d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" />
+      </symbol>
+  </svg>
+
+    </main>
+
+    <p id="result"></p>
+
+    <script src="./src/js/carrousel.js" type="module"></script>
+    <script>
+        function refreshCarrousel() {
+            // Efface les données du sessionStorage
+            sessionStorage.clear();
+            
+            // Crée un nouvel élément script pour relancer carrousel.js
+            var script = document.createElement('script');
+            script.src = './src/js/carrousel.js';
+            script.type = 'module';
+            
+            // Ajoute le script à la page
+            document.head.appendChild(script);
+        }
+
+    </script>
+
+    <footer-component></footer-component>
+</body>
+</html>

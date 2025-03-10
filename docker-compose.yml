@@ -1,0 +1,65 @@
+services:
+  etl:
+    build:
+      context: .
+      dockerfile: Dockerfile.etl
+    volumes:
+      - ./data:/app/data
+    # Run ETL once; do not restart automatically.
+    restart: "no"
+    # Optionally, you might want to run this service manually
+    # (e.g. via `docker-compose run etl`).
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Mount the SQL scripts so that they are executed on first initialization:
+      - ./database:/docker-entrypoint-initdb.d
+      # Mount the populate folder so SQL scripts can reference the CSV files:
+      - ./data/populate:/docker-entrypoint-initdb.d/populate
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile.api
+    depends_on:
+      - db
+    environment:
+      DATABASE_NAME: ${DATABASE_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      PASSWORD: ${PASSWORD}
+      HOST: ${HOST}
+      PORT: "${PORT}"
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      # Use the repository root as context so we can copy both web and libs.
+      context: .
+      dockerfile: web/Dockerfile.web
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+
+  # Optional Cleanup Service:
+  cleanup:
+    image: alpine
+    depends_on:
+      - db
+      - etl
+    volumes:
+      - ./data:/app/data
+    command: sh -c "rm -rf /app/data/*"
+    # Run this service manually with: docker-compose run cleanup
+
+volumes:
+  db_data:

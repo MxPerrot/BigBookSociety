@@ -1,4 +1,5 @@
-SET SCHEMA 'sae';
+SET SCHEMA 'BigBookSociety';
+SET search_path TO BigBookSociety;
 
 CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
   DECLARE
@@ -79,20 +80,9 @@ CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
   END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE OR REPLACE TRIGGER triggerInsertUser
+DROP TRIGGER IF EXISTS triggerInsertUser ON v_formulaire;
+CREATE TRIGGER triggerInsertUser
 INSTEAD OF INSERT
 ON v_formulaire FOR EACH ROW
 EXECUTE PROCEDURE insertUser();
 
-
-
-CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
-  DECLARE
-  BEGIN
-  END;
-$$ LANGUAGE 'plpgsql';
-
-CREATE OR REPLACE TRIGGER triggerInsertUser
-INSTEAD OF INSERT
-ON v_formulaire FOR EACH ROW
-EXECUTE PROCEDURE insertUser();

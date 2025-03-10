@@ -1,0 +1,186 @@
+.media-container {
+  position: relative;
+  color: white;
+}
+
+h2{
+  color: white;
+}
+
+.media-scroller {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 0 3rem;
+  scroll-padding-inline: 3rem;
+  position: relative;
+}
+
+.media-group {
+  display: flex;
+  flex-direction: row;
+}
+
+.media-element {
+  border-radius: 0.25rem;
+  color: var(--col2);
+  margin: 5px;
+  width: fit-content;
+}
+
+.isbn > img {
+  height: 200px;
+  width: 130px;
+}
+
+h3, p {
+  padding: 0;
+  margin: 0;
+  font-size: x-small;
+}
+
+.Livres {
+  display: flex;
+  flex-direction: column;
+}
+
+.media-element > img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* Positionnement des boutons next/previous */
+.previous,
+.next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  padding: 1rem;
+  background: rgba(255, 0, 0, 0.3);
+  transition: opacity 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+}
+
+.previous {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.next {
+  right: 0.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.media-scroller:hover :where(.next, .previous) {
+  opacity: 1;
+}
+
+.previous:hover,
+.next:hover {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.previous svg,
+.next svg {
+  fill: white;
+  transition: transform 75ms linear;
+  transform: scale(1);
+}
+
+.previous:hover svg,
+.next:hover svg {
+  transform: scale(1.2);
+}
+
+/* Retirer les boutons next/previous sur les premiers et derniers éléments du carousel */
+.media-group:first-child .next {
+  display: flex;
+}
+
+.media-group:last-child .previous {
+  display: flex;
+}
+
+.navigation-indicators {
+  opacity: 0;
+  position: absolute;
+  display: flex;
+  gap: 3px;
+  top: -1rem;
+  right: 2rem;
+}
+
+.navigation-indicators > * {
+  width: 1rem;
+  height: 2px;
+  background: white;
+  opacity: 0.5;
+}
+
+.media-scroller:has(.media-group:target) .navigation-indicators > *:nth-child(1) {
+  opacity: 0.5;
+}
+
+.media-group:nth-child(1):target ~ .navigation-indicators > *:nth-child(1),
+.media-group:nth-child(2):target ~ .navigation-indicators > *:nth-child(2),
+.media-group:nth-child(3):target ~ .navigation-indicators > *:nth-child(3),
+.media-group:nth-child(4):target ~ .navigation-indicators > *:nth-child(4) {
+  opacity: 1;
+}
+
+.media-scroller:hover .navigation-indicators {
+  opacity: 1;
+}
+
+
+.lien_connexion{
+  color: white;
+  text-align: center;
+}
+
+.bt_connex, .refresh, .deconnexion {
+  display: inline-block;
+  padding: 20px 40px;
+  background-color: var(--col4);
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 50px;
+}
+
+
+
+
+.boutons{
+  position: absolute;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  margin:10px
+}
+
+.refresh{
+  margin-left: 10px;
+}
+
+.bt_connex:hover {
+  background-color: #0056b3; /* Bleu plus foncé */
+  transform: scale(1.05);
+}
+
+.bt_connex:active {
+  background-color: #004494;
+  transform: scale(0.98);
+}

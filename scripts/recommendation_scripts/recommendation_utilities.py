@@ -4,7 +4,7 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import re
-import gensim
+from gensim.models import Word2Vec
 import itertools
 
 def compareValeur(nomValeur, elemX, elemY):
@@ -61,7 +61,7 @@ def genre_expand(genre):
     return res
 
 def model_genre(cursor):
-    cursor.execute("select id_livre,libelle_genre from sae._livre NATURAL JOIN sae._genre_livre NATURAL JOIN sae._genre;")
+    cursor.execute("select id_livre,libelle_genre from BigBookSociety._livre NATURAL JOIN BigBookSociety._genre_livre NATURAL JOIN BigBookSociety._genre;")
 
     record = cursor.fetchall()
 
@@ -77,7 +77,7 @@ def model_genre(cursor):
 
     livre = livre.groupby('Livre')['Genre'].apply(list).reset_index(name='Genre')
 
-    model1 = gensim.models.Word2Vec(livre['Genre'], min_count=1,vector_size=100, window=5)
+    model1 = Word2Vec(livre['Genre'], min_count=1,vector_size=100, window=5)
 
     return model1
 

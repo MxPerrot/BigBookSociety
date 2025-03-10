@@ -1,0 +1,21 @@
+.book-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: normal;
+    align-items: center;
+    align-content: stretch;
+    margin: 1rem;
+  }
+  
+.book-list-item {
+    display: block;
+    order: 0;
+    width: 10rem;
+    margin: 1rem 2rem;
+}
+
+.book-list-item img, .book-list-item figure  {
+    width: 100%;
+    margin: 0;
+}
