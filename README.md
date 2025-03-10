@@ -41,6 +41,9 @@ The project includes:
    docker-compose up --build etl
    ```
 
+   **NOTE**
+   This might a few minutes, do not worry, if something goes wrong you will get an error message.
+
 3. **Initialize the Database:**  
    The PostgreSQL container will automatically run the SQL scripts located in the `database/` folder on its first initialization.  
    The scripts import data from the CSV files in `data/populate/`.  
@@ -65,8 +68,8 @@ The project includes:
    docker-compose run cleanup
    ```
    
-   > [!WARNING]  
-   > This will erase all files in the data folder, including the three files of step 1
+   **WARNING**
+   This will erase all files in the data folder, including the three files of step 1
 
 ## Environment Variables
 
