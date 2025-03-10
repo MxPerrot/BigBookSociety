@@ -1,80 +1,115 @@
-# SAE 5.C.01
+# BigBookSociety
 
-## Context
+## Overview
 
-IUT de Lannion            
-BUT Informatique 3     
-2024-2025 
+> IUT de Lannion            
+> BUT Informatique 3     
+> 2024-2025 
 
 **SAE 5.C.01 : Datamining**
 
-Propose an optimised solution based on internal and external data
- - Create a business intelligence application
- - Team development of a technical solution
- - Design of a multi-dimensional database
- - Extract and analyse information to make it available to users
+BigBookSociety is a dynamic book recommandation website that uses user data to propose interesting books to an user according to its preferences and information. 
+
+The project includes:
+
+- **ETL Service:** Processes input CSV files and generates transformed CSVs in `data/populate/`.
+- **Database Service:** A PostgreSQL instance that is initialized with SQL scripts and imports data from the ETL output.
+- **API Service:** A FastAPI backend that connects to the PostgreSQL database.
+- **Web Service:** An NGINX-based dynamic web server.
+- **Cleanup Service:** An optional one-off service to remove temporary CSV files after the database has been populated.
+
+## Prerequisites
+
+- [Docker](https://www.docker.com/) 
+
+## Setup Instructions
+
+0. **Clone this repository**
+   ```sh
+   git clone https://github.com/MxPerrot/BigBookSociety.git .
+   mv ./BigBookSociety/
+   ```
+
+1. **Prepare Input Data:**  
+   Place your input CSV files (`Big_Boss_authors.csv`, `bigboss_book.csv`, `formulaire.csv`) into the `data/` directory.
+
+2. **Run the ETL Process:**  
+   The ETL service will process these CSV files and output transformed files to `data/populate/`.  
+   To run the ETL service, execute:
+   
+   ```sh
+   docker-compose up --build etl
+   ```
+
+3. **Initialize the Database:**  
+   The PostgreSQL container will automatically run the SQL scripts located in the `database/` folder on its first initialization.  
+   The scripts import data from the CSV files in `data/populate/`.  
+   **Note:** If you change any credentials, you may need to remove the persistent volume (using `docker-compose down -v`) so the DB reinitializes.
+
+4. **Start API and Web Services:**  
+   To start the remaining services, run:
+   
+   ```sh
+   docker-compose up --build db api web
+   ```
+   
+   - **API Service:**  
+     Accessible at [http://localhost:8000](http://localhost:8000) (try [http://localhost:8000/docs](http://localhost:8000/docs) for the interactive docs).  
+   - **Web Service:**  
+     Accessible at [http://localhost](http://localhost).
+
+5. **Cleanup Temporary CSV Files (Optional):**  
+   Once the database is populated and the system is running, you can clean up the CSV files by running the cleanup service:
+   
+   ```sh
+   docker-compose run cleanup
+   ```
+   
+   > [!WARNING]  
+   > This will erase all files in the data folder, including the three files of step 1
+
+## Environment Variables
+
+The project uses a `.env` file (located in the project root) to manage environment-specific variables. For example, your `.env` file might look like:
+
+```env
+DATABASE_NAME=db_sae
+DB_USER=postgres
+DB_PASSWORD=password
+HOST=db
+PORT=5432
+```
+
+These variables are referenced in your `docker-compose.yml` and used by the API and DB services to ensure consistency.
+
+## Troubleshooting
+
+- **Database Connection Issues:**  
+  Ensure that your API connects using `HOST=db` (as defined in the `.env` file) and that the DB service is fully initialized before the API attempts to connect. Consider using a wait script if needed.
+
+- **ETL Not Producing Expected Output:**  
+  Verify that the ETL process writes output to the `data/populate/` folder and that the file paths in your SQL scripts correctly point to these files (taking into account the volume mounts in Docker Compose).
+
+- **Web Server Not Serving Files:**  
+  Check that your static files are correctly located in the `web/` directory and that the Dockerfile for the web service is properly copying them to NGINX’s default directory.
 
 ## Team
 
 **Wizards of the West Coast**
 
 - Nathan Bracquart
+- Miliaw Chesné
+- Asaïah Cosson
 - Damien Goupil
 - Ewan Lansonneur
 - Florian Normand
 - Maxime Perrot
 
-## How to use
+## Acknowledgements
 
-### 1. Install requirements
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Clean data (not necessary)
-
-```bash
-python3 clean_data.py
-```
-
-## How to run the data analysis
-
-### 3. Run analysis
-
-```bash
-python3 launch_analysis.py
-```
-
-### Run single analysis
-
-You can run a single analysis like so:
-
-```bash
-python3 analysis_scripts/<analysis_name>.py
-```
-
-e.g.
-
-```bash
-python3 analysis_scripts/acm_genre_by_era.py
-```
-
-## How to run database creation and population
-
-1. Place your original data files in `./data/` and name them:
-- `authors.csv` for the authors data
-- `books.csv` for the books data
-
-2. Run this script to generate the tables that will be populated in the Database
-```bash
-python3 transform_load.py
-```
-
-The resulting population csv are in `./data/populate/`
-
-3. Open your DataBase Management System
-
-4. Run `./database/create_database.sql` to create and populate the database using the previously generated csv files
-
-***NOTE**: This script uses **PostgreSQL**. Use a compatible DBMS.*
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Docker](https://www.docker.com/)
+- [NGINX](https://www.nginx.com/)
+- [Jquery](https://jquery.com/)
+- [Openlibrary API](https://openlibrary.org/developers/api)
