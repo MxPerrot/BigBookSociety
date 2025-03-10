@@ -112,6 +112,7 @@ main {
 
 /* Footer */
 footer {
+    padding: 0.5rem 0;
     background-color: var(--col3);
     color: var(--blanc);
     text-align: center;
