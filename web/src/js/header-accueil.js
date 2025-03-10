@@ -86,7 +86,7 @@ headerTemplate.innerHTML = `
               <li><a href="./src/html/meslivres.html">MES LIVRES</a></li>
               <li><a id="BigBook" href="./index.html">BigBook   </a></li>
               <li><a href="./src/html/apropos.html">A PROPOS</a></li>
-              <li><a class="deconnexion" href="javascript:void(0);" onclick="localStorage.clear()">DÉCONNEXION</a></li>
+              <li><a class="deconnexion" href="javascript:void(0);" onclick="localStorage.clear();refreshCarrousel()">DÉCONNEXION</a></li>
           </ul>
         </nav>
     </header>
