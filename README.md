@@ -26,8 +26,8 @@ The project includes:
 
 0. **Clone this repository**
    ```sh
-   git clone https://github.com/MxPerrot/BigBookSociety.git .
-   mv ./BigBookSociety/
+   git clone https://github.com/MxPerrot/BigBookSociety.git 
+   cd ./BigBookSociety/
    ```
 
 1. **Prepare Input Data:**  
