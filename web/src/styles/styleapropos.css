@@ -113,7 +113,7 @@ body {
 #mentions h2, #mentions h3 {
     margin-top: 20px; /* Margin for headings */
     font-size: 1.2em; /* Font size for headings */
-    color: var(col4); /* Heading color */
+    color: var(--col3); /* Heading color */
 }
 
 #mentions p {
@@ -125,7 +125,7 @@ body {
 }
 
 #mentions a {
-    color: var(--col3); /* Link color */
+    color: var(--col4); /* Link color */
     text-decoration: none; /* Remove underline from links */
 }
 
