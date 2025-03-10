@@ -9,10 +9,11 @@
 [x] Automatically delete temporary CSV files
 
 # BLACK
-[ ] Style barre de recherche
+[x] Style barre de recherche
 [ ] Bouton like doit être dans mesLivres ET livres, pas juste livres (et retirer )
 [ ] Go back button in book selection is ugly (livres.html)
 [ ] Déplacer appel carrousel.js dans index.html au début plutôt qu'a la fin (tester)
 [x] Changer M par L pour les liens des covers
+[x] Crédits openlibrary, jquery
 
 

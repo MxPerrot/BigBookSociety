@@ -19,6 +19,7 @@ border: solid 3px magenta;
 
 /* Form */
 .search-book-form {
+    padding-top: 2rem;
     display: flex;
     justify-content: center;
 }
