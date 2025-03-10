@@ -39,7 +39,7 @@ function fetchBooksByUserId() {
                     <img src="${coverUrl}" alt="Couverture du livre ${book.titre}" class="card-img" />
                     <div class="card-content">
                         <h2 class="card-title">${book.titre || "Titre non disponible"}</h2>
-                        <h3 class="card-author">De ${book.nom_auteur || "Auteur inconnu"}</h3>
+                        <h3 class="card-author">${book.nom_auteur || "Auteur inconnu"}</h3>
                     </div>
                 `;
 
