@@ -145,7 +145,7 @@ h3, p {
   text-align: center;
 }
 
-.bt_connex, .refresh {
+.bt_connex, .refresh, .deconnexion {
   display: inline-block;
   padding: 20px 40px;
   background-color: var(--col4);
@@ -160,10 +160,19 @@ h3, p {
   margin-bottom: 50px;
 }
 
-.refresh{
+
+
+
+.boutons{
   position: absolute;
   right: 0;
+  display: flex;
+  flex-direction: row;
   margin:10px
+}
+
+.refresh{
+  margin-left: 10px;
 }
 
 .bt_connex:hover {

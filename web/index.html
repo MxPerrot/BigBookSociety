@@ -25,7 +25,11 @@
             <span class="close">&times;</span>
             <img id="zoomed-img" class="zoomed-img">
         </div>
-        <a class="refresh" href="javascript:void(0);" onclick="refreshCarrousel()">Rafraîchir</a>
+        <div class="boutons" >
+            <a class="deconnexion" href="javascript:void(0);" onclick="localStorage.clear()">Déconnexion</a>        
+            <a class="refresh" href="javascript:void(0);" onclick="refreshCarrousel()">Rafraîchir</a>
+        </div>
+
 
         <!-- Section pour item-based -->
         <section id="item-based-container" class="recommendation-section">
