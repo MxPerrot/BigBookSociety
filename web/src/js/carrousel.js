@@ -57,7 +57,12 @@ function displayPopularBooksSection() {
 }
 
 function fetchBooks(url, containerId) {
-  document.getElementById("loading-spinner-"+containerId).style.display = "block";
+  try{
+    document.getElementById("loading-spinner-"+containerId).style.display = "block";
+  } catch (error) {
+    console.error("Impossible d'afficher le spinner de chargement");
+  }
+
   let cachedData = sessionStorage.getItem(url);
 
   let token = localStorage.getItem('Token');
