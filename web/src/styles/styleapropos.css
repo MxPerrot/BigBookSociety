@@ -99,6 +99,40 @@ body {
     color: #666;
 }
 
+#mentions {
+    background-color: #f9f9f9; /* Light background color for contrast */
+    border: 1px solid #ddd; /* Light border for separation */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding for spacing */
+    margin: 20px 0; /* Margin for spacing */
+    font-size: 1em; /* Base font size */
+    line-height: 1.6; /* Line height for readability */
+    color: #333; /* Text color */
+}
+
+#mentions h2, #mentions h3 {
+    margin-top: 20px; /* Margin for headings */
+    font-size: 1.2em; /* Font size for headings */
+    color: var(col4); /* Heading color */
+}
+
+#mentions p {
+    margin: 10px 0; /* Margin for paragraphs */
+}
+
+#mentions strong {
+    font-weight: bold; /* Bold text for emphasis */
+}
+
+#mentions a {
+    color: var(--col3); /* Link color */
+    text-decoration: none; /* Remove underline from links */
+}
+
+#mentions a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .team-grid {
