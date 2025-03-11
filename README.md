@@ -22,6 +22,21 @@ The project includes:
 
 - [Docker](https://www.docker.com/) 
 
+## Environment Variables
+
+The project uses a `.env` file (located in the project root) to manage environment-specific variables. For example, your `.env` file might look like:
+
+```env
+DATABASE_NAME=db_sae
+DB_USERNAME=postgres
+PASSWORD=password 
+HOST=db
+PORT=5432
+```
+
+These variables are referenced in your `docker-compose.yml` and used by the API and DB services to ensure consistency.
+Make sure to not share this file with anyone as it contains your db password
+
 ## Setup Instructions
 
 0. **Clone this repository**
@@ -32,6 +47,7 @@ The project includes:
 
 1. **Prepare Input Data:**  
    Place your input CSV files (`Big_Boss_authors.csv`, `bigboss_book.csv`, `formulaire.csv`) into the `data/` directory.
+   You might need to create this directory.
 
 2. **Run the ETL Process:**  
    The ETL service will process these CSV files and output transformed files to `data/populate/`.  
@@ -44,12 +60,16 @@ The project includes:
    **NOTE**
    This might a few minutes, do not worry, if something goes wrong you will get an error message.
 
-3. **Initialize the Database:**  
+3. **Set up Environment**
+    Create the `.env` file in your project root (BigBookSociety/)
+
+4. **Initialize the Database:**  
    The PostgreSQL container will automatically run the SQL scripts located in the `database/` folder on its first initialization.  
    The scripts import data from the CSV files in `data/populate/`.  
    **Note:** If you change any credentials, you may need to remove the persistent volume (using `docker-compose down -v`) so the DB reinitializes.
 
-4. **Start API and Web Services:**  
+5. **Start API and Web Services:**  
+
    To start the remaining services, run:
    
    ```sh
@@ -61,7 +81,7 @@ The project includes:
    - **Web Service:**  
      Accessible at [http://localhost](http://localhost).
 
-5. **Cleanup Temporary CSV Files (Optional):**  
+6. **Cleanup Temporary CSV Files (Optional):**  
    Once the database is populated and the system is running, you can clean up the CSV files by running the cleanup service:
    
    ```sh
@@ -70,20 +90,6 @@ The project includes:
    
    **WARNING**
    This will erase all files in the data folder, including the three files of step 1
-
-## Environment Variables
-
-The project uses a `.env` file (located in the project root) to manage environment-specific variables. For example, your `.env` file might look like:
-
-```env
-DATABASE_NAME=db_sae
-DB_USER=postgres
-DB_PASSWORD=password
-HOST=db
-PORT=5432
-```
-
-These variables are referenced in your `docker-compose.yml` and used by the API and DB services to ensure consistency.
 
 ## Troubleshooting
 
