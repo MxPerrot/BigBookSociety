@@ -9,6 +9,14 @@ RUN pip install --no-cache-dir -r requirements_api.txt
 # Copy the API code and other needed scripts (adjust as necessary)
 COPY . .
 
+# TEST POUR L IUT, TELECHARGER AU PREALALBLE LES DEPENDENCES VIA pip download -r scripts/requirements_api.txt ET LES DEPLACER DANS <projet>/local_dependencies/API
+# # Copy the entire Repository
+# COPY . .
+
+# # Install ETL dependencies
+# RUN pip install --no-cache-dir --no-index --find-links /app/local_dependencies/api -r requirements_api.txt
+
+
 # Ensure /app is in the PYTHONPATH so Python finds "reccomandation_scripts"
 ENV PYTHONPATH=/app
 

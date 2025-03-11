@@ -5,3 +5,4 @@ graphs
 *IGNOREME*
 *.csv
 .env
+local_dependencies/

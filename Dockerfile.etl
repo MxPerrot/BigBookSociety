@@ -10,5 +10,12 @@ RUN pip install --no-cache-dir -r requirements_etl.txt
 # Copy the entire repository (or at least what is needed)
 COPY . .
 
+# TEST POUR L IUT, TELECHARGER AU PREALALBLE LES DEPENDENCES VIA pip download -r requirements_etl.txt ET LES DEPLACER DANS <projet>/local_dependencies/etl
+# # Copy the entire repository 
+# COPY . .
+
+# # Install ETL dependencies
+# RUN pip install --no-cache-dir --find-links=file:///app/local_dependencies/etl -r requirements_etl.txt
+
 # Run the transform_load.py script
 CMD ["python", "transform_load.py"]
