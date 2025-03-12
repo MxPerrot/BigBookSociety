@@ -11,9 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Sélection des éléments du DOM
     const profileName = document.querySelector(".profile-name");
-    const profileDob = document.querySelector(".profile-dob");
+    const profileDob = document.querySelector(".profile-email");
     const profileLanguages = document.querySelector(".profile-languages");
-    const profileImage = document.getElementById("profile-img");
 
     // Récupération des données de l'utilisateur
     fetch(`${API_PATH}/users/me`, {
@@ -26,9 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(response => response.json())
     .then(user => {
         profileName.textContent = user.username || "Nom inconnu";
-        profileDob.textContent = `Date de naissance: ${user.dob || "Non renseigné"}`;
+        profileDob.textContent = `Email: ${user.email || "Non renseigné"}`;
         profileLanguages.textContent = `Langues: ${user.languages || "Non renseigné"}`;
-        profileImage.src = user.profile_image || "../../public/img/DefaultMan.webp";
     })
     .catch(error => console.error("Erreur lors de la récupération du profil:", error));
 
@@ -59,11 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // Modifier la date de naissance
-    window.editProfileDob = function () {
-        const newDob = prompt("Entrez votre nouvelle date de naissance:", profileDob.textContent.replace("Date de naissance: ", ""));
-        if (newDob) {
-            profileDob.textContent = "Date de naissance: " + newDob;
-            updateUserData("dob", newDob);
+    window.editProfileEmail = function () {
+        const newEmail = prompt("Entrez votre nouvel email:", profileDob.textContent.replace("Email: ", ""));
+        if (newEmail) {
+            profileDob.textContent = "Email: " + newEmail;
+            updateUserData("email", newEmail);
         }
     };
 
