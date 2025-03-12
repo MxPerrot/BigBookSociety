@@ -32,18 +32,15 @@ function afficherLivres(livres, conteneur) {
             
             // Ajout de l'image à la div du livre
             $livreItem.append($img);
-            /*
+            
             var $info = $('<div>', {
-                class:"card-content"
             });
             $info.html(`
-                <div >
-                    <h2 class="card-title">${livre.titre || "Titre non disponible"}</h2>
-                    <h3 class="card-author">De ${livre.nom_auteur || "Auteur inconnu"}</h3>
-                </div>
-            `)
+                <h3 class="card-title">${livre.titre || "Titre non disponible"}</h3>
+                <p class="card-author">De ${livre.nom_auteur || "Auteur inconnu"}</p>
+            `);
+
             $livreItem.append($info);
-            */
             
             // Ajout de l'élément livre au conteneur
             conteneur.append($livreItem);

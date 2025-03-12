@@ -19,3 +19,13 @@
     width: 100%;
     margin: 0;
 }
+
+.book-list-item > div > h3 {
+    color: white;
+    font-size: x-small;
+}
+
+.book-list-item > div > p {
+    color: var(--col2);
+    font-size: x-small;
+}
