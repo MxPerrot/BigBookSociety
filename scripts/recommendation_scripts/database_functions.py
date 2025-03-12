@@ -453,8 +453,17 @@ def getAuthorById(cursor, id):
 
     return authorRaw[0]
 
-def changeUserData(idUtil,key,value):
-    return -1
+def changeUserData(connection, cursor,idUtil,key,value):
+    if key == 'username':
+        valueModified = 'nom_utilisateur'
+    cursor.execute(f"""
+        UPDATE _utilisateur
+        SET %s = %s
+        WHERE id_utilisateur = %s;
+    """,(valueModified,value,idUtil))
+
+    connection.commit()
+    return 
 
 def ajoutClause(recherche,ajoutWhere):
     if ajoutWhere:
