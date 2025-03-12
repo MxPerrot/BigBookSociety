@@ -576,7 +576,7 @@ def rechercheAuteur(cursor, nom):
         FROM _auteur
         LEFT JOIN _auteur_genre ON _auteur_genre.id_auteur = _auteur.id_auteur
         LEFT JOIN _genre ON _genre.id_genre = _auteur_genre.id_genre
-        WHERE nom LIKE '%%%s%%';
+        WHERE nom LIKE CONCAT('%%',%s,'%%');
     """,(nom,))
     # This chain is because we need to wrap the %s to insert the string with the joker %, we need to double it to make it work
     
