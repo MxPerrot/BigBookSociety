@@ -33,10 +33,13 @@ function fetchBooksByUserId() {
                 bookCard.dataset.id = book.id_livre;
 
                 const isbn = book.isbn13 || book.isbn || "Aucun ISBN disponible";
-                const coverUrl = isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg` : "placeholder.jpg";
+                const coverUrl = (isbn !== "Aucun ISBN disponible") 
+                ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false` 
+                : "../../public/img/couverture.jpg";      
 
                 bookCard.innerHTML = `
-                    <img src="${coverUrl}" alt="Couverture du livre ${book.titre}" class="card-img" />
+                    <img class="card-img" src="${coverUrl}" alt="Couverture du livre ${book.titre}" onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';" />
+                
                     <div class="card-content">
                         <h2 class="card-title">${book.titre || "Titre non disponible"}</h2>
                         <h3 class="card-author">${book.nom_auteur || "Auteur inconnu"}</h3>

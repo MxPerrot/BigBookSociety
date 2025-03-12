@@ -17,3 +17,12 @@
 [x] Crédits openlibrary, jquery
 
 
+# Ajouts Asaiah
+[x] index.html : Espace entre les livres fois 1.5
+[x] meslivres.html : implémenter les couvertures par défaut
+[x] css : couleur de la roue chargement à changer
+[ ] acceuil : "déconnexion" dans le header
+[ ] livre.html?id=truc : bouton "go back" manque de css ou à enlever
+[ ] like -> note /5
+[x] header book : plus petit... disons 2 fois moins large (on s'en fout de voir l'image en entier)
+[ ] rechercher.html : rajouter les titres !!!
