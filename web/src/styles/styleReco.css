@@ -161,7 +161,9 @@ h3, p {
 }
 
 
-
+.recommendation-section{
+  min-height: 150px;
+}
 
 .boutons{
   position: absolute;
