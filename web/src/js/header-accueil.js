@@ -143,12 +143,16 @@ document.addEventListener("DOMContentLoaded", () => {
         navLinks.forEach(li => {
             const link = li.querySelector("a");
 
-            if (link && link.getAttribute("href") === "./src/html/profil.html" && !token) {
-                li.innerHTML = `<a href="./src/html/connexion.html">CONNEXION</a>`;
-            }
-            if (link && link.getAttribute("href") === "./src/html/meslivres.html" && !token) {
-                li.innerHTML = `<li><a href="./src/html/connexion.html">MES LIVRES</a></li>`;
+            if (link) {
+                const href = link.getAttribute("href");
+                if ((!token || token === "Invalid token" || token === "Token expired") && href === "./src/html/profil.html") {
+                    li.innerHTML = `<a href="./src/html/connexion.html">CONNEXION</a>`;
+                }
+                if ((!token || token === "Invalid token" || token === "Token expired") && href === "./src/html/meslivres.html") {
+                    li.innerHTML = `<a href="./src/html/connexion.html">MES LIVRES</a>`;
+                }
             }
         });
     }
 });
+
