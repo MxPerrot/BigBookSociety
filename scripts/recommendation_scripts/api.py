@@ -136,7 +136,7 @@ def read_users_me(current_user: dict = Depends(get_current_user)):
 
 @app.put("/users/update")
 def update_user_data(dataToChange:SimpleDict, current_user: dict = Depends(get_current_user)):
-    result = bdd.changeUserData(current_user[0],dataToChange.key,dataToChange.value)
+    result = bdd.changeUserData(connection,cursor,current_user[0],dataToChange.key,dataToChange.value)
     return result
 
 @app.get("/get_book_data_by_id/{id}")

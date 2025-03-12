@@ -453,8 +453,20 @@ def getAuthorById(cursor, id):
 
     return authorRaw[0]
 
-def changeUserData(idUtil,key,value):
-    return -1
+def changeUserData(connection,cursor,idUtil,key,value):
+    # Convertis le nom du champ en le nom de la colonne à modifier
+    if key == 'username':
+        valueModified = 'nom_utilisateur'
+    elif key == 'email':
+        valueModified = 'mail_utilisateur'
+    print(key)
+    cursor.execute(f"""
+        UPDATE _utilisateur
+        SET {valueModified} = %s
+        WHERE id_utilisateur = %s;
+    """,(value,idUtil))
+
+    connection.commit()
 
 def ajoutClause(recherche,ajoutWhere):
     if ajoutWhere:
