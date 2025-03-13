@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/styles.css">
+    <script src="../js/header.js" type="text/javascript"></script>
+    <script src="../js/footer.js" type="module" defer></script>
+
+    <link rel="stylesheet" href="../styles/notes.css">
+    <script src="../js/notes.js" type="text/javascript"></script>
+    
+    <title>Notation par étoiles</title>
+</head>
+
+<body>
+    <header-component></header-component>
+    <main>
+        <!-- Noter (étoiles entières) -->
+        <div id="rating-section">
+            <div id="rating-stars" class="group_stars"></div>
+            <button id="validate-btn" class="button_note">Valider</button>
+        </div>
+
+        <!-- Affichage de ma note (étoiles entières) -->
+        <div id="display-section" style="display: none;">
+            <div id="display-stars" class="group_stars"></div>
+            <button id="modify-btn" class="button_note">Modifier</button>
+        </div>
+
+        <!-- Note moyenne (étoiles partielles) -->
+        <div id="average-section">
+            <p>Note moyenne :</p>
+            <div id="average-stars" class="group_stars"></div>
+        </div>
+    </main>
+    <footer-component></footer-component>
+
+</body>
+</html>
