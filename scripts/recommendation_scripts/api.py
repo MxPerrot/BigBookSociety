@@ -209,6 +209,16 @@ async def get_meme_auteur(current_user: dict = Depends(get_current_user), nbreco
     books_infos = getLivresInformation(cursor,book_id_list)
     return books_infos
 
+@app.post("/update_note/")
+async def update_note(current_user: dict = Depends(get_current_user), note:int=None, livre:int=None):
+    cursor.execute("UPDATE _livre_utilisateur SET note = %s WHERE id_utililisateur = %s AND id=livre = %s", (note, current_user[0],livre))
+    connection.commit()
+
+@app.post("/get_note/")
+async def get_note(current_user: dict = Depends(get_current_user), livre:int=None):
+    cursor.execute("SELECT note FROM _livre_utilisateur WHERE id_utililisateur = %s AND id=livre = %s", (current_user[0],livre))
+    return cursor.fetchall()
+
 @app.get("/get_in_serie/")
 async def get_in_serie(current_user: dict = Depends(get_current_user)):
     book_id_list = bdd.getBookIdInSeries(cursor, int(current_user[0]))
