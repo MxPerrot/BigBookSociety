@@ -1,6 +1,5 @@
 import { API_PATH } from "./config.js";
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".card").innerHTML = "<p>Aucun livre trouvé.</p>";
     }
 });
-
    
 function fetchBookById(id) {
     const url = `${API_PATH}/get_book_data_by_id/${id}`;
@@ -52,9 +50,24 @@ function fetchBookById(id) {
                         Like
                     </button>
                 </div>
+                <div id="rating-section">
+                    <div id="rating-stars" class="group_stars"></div>
+                    <button id="validate-btn" class="button_note">Valider</button>
+                </div>
+                <div id="display-section" style="display: none;">
+                    <div id="display-stars" class="group_stars"></div>
+                    <button id="modify-btn" class="button_note">Modifier</button>
+                </div>
             `;
 
             const likeButton = document.getElementById("likeButton");
+            const ratingStars = document.getElementById("rating-stars");
+            const validateBtn = document.getElementById("validate-btn");
+            const displaySection = document.getElementById("display-section");
+            const displayStars = document.getElementById("display-stars");
+            const modifyBtn = document.getElementById("modify-btn");
+            const ratingSection = document.getElementById("rating-section");
+            let selectedRating = 0;
 
             fetch(`${API_PATH}/is_liked/?bookID=${id}`, {
                 method: 'GET',
@@ -99,6 +112,76 @@ function fetchBookById(id) {
                   .catch(error => console.error('Error:', error));
                 }
             });
+
+            createStars(ratingStars, true);
+
+            /* Créer un bloc d'étoiles */
+            function createStars(container, clickHandler) {
+                container.innerHTML = "";
+                for (let i = 1; i <= 5; i++) {
+                    /* Dessin d'une étoile */
+                    const star = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    star.setAttribute("viewBox", "0 0 24 24");
+                    star.setAttribute("class", "star");
+                    star.innerHTML = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77l-6.18 3.23L7 14.14l-5-4.87 6.91-1.01z"/>';
+                    container.appendChild(star);
+
+                    /* events survol / click des étoiles */
+                    if (clickHandler) {
+                        star.addEventListener("mouseover", () => updateStarColors(i));
+                        star.addEventListener("mouseleave", () => updateStarColors(selectedRating));
+                        star.addEventListener("click", () => {
+                            selectedRating = i;
+                            updateStarColors(selectedRating);
+                        });
+                    }
+                }
+            }
+
+            /* fonction update couleur de l'étoile */
+            function updateStarColors(rating) {
+                const stars = ratingStars.querySelectorAll(".star");
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add("red");
+                        star.classList.remove("beige");
+                    } else {
+                        star.classList.remove("red");
+                        if (index < selectedRating) {
+                            star.classList.add("beige");
+                        } else {
+                            star.classList.remove("beige");
+                        }
+                    }
+                });
+                
+            }
+
+            /* Valider : noter -> afficher ma note */
+            validateBtn.addEventListener("click", () => {
+                if (selectedRating > 0) {
+                    ratingSection.style.display = "none";
+                    displaySection.style.display = "block";
+                    updateDisplayStars(selectedRating);
+                }
+            });
+
+            /* Modifier : afficher ma note -> noter */
+            modifyBtn.addEventListener("click", () => {
+                displaySection.style.display = "none";
+                ratingSection.style.display = "block";
+                updateStarColors(selectedRating);
+            });
+
+            /* Modification du nombre d'étoiles affichées selon la note */
+            function updateDisplayStars(rating) {
+                createStars(displayStars, null);
+                displayStars.querySelectorAll(".star").forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add("red");
+                    }
+                });
+            }
         })
         .catch(error => {
             console.error("Erreur lors de la récupération du livre :", error);

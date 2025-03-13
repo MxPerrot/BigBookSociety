@@ -1,0 +1,62 @@
+/* Variables */
+:root {
+    --star_default: lightgray;
+    --star_validate: red;
+    --star_unvalidate: rgb(223, 178, 82);
+    --size: 30px;
+}
+
+/* Bloc d'étoiles */
+.group_stars {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
+}
+
+/* Boutton */
+.button_note {
+    margin-top: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Etoile normale */
+
+.star {
+    width: var(--size);
+    height: var(--size);
+    fill: var(--star_default);
+    transition: fill 0.2s ease-in-out;
+}
+
+.star.beige { 
+    fill: var(--star_unvalidate) 
+}
+
+.star.red { 
+    fill: var(--star_validate) 
+}
+
+/* Etoile partielle */
+
+.half-star {
+    position: relative;
+    display: inline-block;
+    width: var(--size);
+    height: var(--size);
+}
+
+.half-star svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.half-star .full { 
+    clip-path: inset(0 50% 0 0); 
+    fill: var(--star_validate); 
+}
+
+.half-star .empty { 
+    fill: var(--star_default); 
+}
