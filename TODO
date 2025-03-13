@@ -1,28 +1,32 @@
 # RED
 [x] Replace hardcoded links (with port 5500 or localhost for example)
 [x] Dockerize the app
+[ ] Notation (voir onglet dédié)
 
 # GREEN
 [ ] Potentiel bug : auteur inconnu à tort dans "mes livres"
 [x] Ajouter Photos membre
 [ ] Enrichir afficherLivres comme sur carrousel (Ewan a fait une partie, finir css)
 [x] Automatically delete temporary CSV files
+[x] meslivres.html : implémenter les couvertures par défaut
+[x] css : couleur de la roue chargement à changer
+[x] rechercher.html : rajouter les titres !!!
+[ ] acceuil : "déconnexion" dans le header
 
 # BLACK
 [x] Style barre de recherche
-[ ] Bouton like doit être dans mesLivres ET livres, pas juste livres (et retirer )
-[ ] Go back button in book selection is ugly (livres.html)
+[ ] Bouton like doit être dans mesLivres ET livres, pas juste livres (et retirer)
 [ ] Déplacer appel carrousel.js dans index.html au début plutôt qu'a la fin (tester)
 [x] Changer M par L pour les liens des covers
 [x] Crédits openlibrary, jquery
-
-
-# Ajouts Asaiah
 [x] index.html : Espace entre les livres fois 1.5
-[x] meslivres.html : implémenter les couvertures par défaut
-[x] css : couleur de la roue chargement à changer
-[ ] acceuil : "déconnexion" dans le header
-[ ] livre.html?id=truc : bouton "go back" manque de css ou à enlever
-[ ] like -> note /5
+[x] livre.html?id=truc : bouton "go back" manque de css
 [x] header book : plus petit... disons 2 fois moins large (on s'en fout de voir l'image en entier)
-[x] rechercher.html : rajouter les titres !!!
+
+# Notation
+[x] afficher la note moyenne d'un livre
+[ ] créer un trigger pour la moyenne d'un livre
+[ ] noter un livre
+[ ] mettre à jour la moyenne d'un livre
+[ ] afficher la note que j'ai donné à un livre
+[ ] designer l'affichage des notes et moyennes

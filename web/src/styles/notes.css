@@ -1,8 +1,8 @@
 /* Variables */
 :root {
     --star_default: lightgray;
-    --star_validate: red;
-    --star_unvalidate: rgb(223, 178, 82);
+    --star_validate: #9b070e;
+    --star_unvalidate: #fa6c6c;
     --size: 30px;
 }
 
