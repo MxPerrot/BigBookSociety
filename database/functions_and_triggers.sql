@@ -21,6 +21,7 @@ CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
     motive_id INT;
     procuration_ids INT[];
     procuration_id INT;
+    note INT;
 
   BEGIN
     postal_id := (SELECT id_code_postal FROM _code_postal WHERE code_postal = NEW.code_postal);
@@ -69,7 +70,8 @@ CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
     language_ids := (SELECT id_langue FROM _langue WHERE langue IN (NEW.langues_lecture));
     FOREACH language_id IN ARRAY language_ids
     LOOP
-      INSERT INTO _utilisateur_langue VALUES(user_id, language_id);
+      INSERT INTO _utilisateur     evol_exemple := :new.exemple  - :old.exemple;
+_langue VALUES(user_id, language_id);
     END LOOP;
 
     buy_ids := (SELECT id_raison_achat FROM _raison_achat WHERE raison_achat IN (NEW.raisons_achat));
@@ -86,3 +88,60 @@ INSTEAD OF INSERT
 ON v_formulaire FOR EACH ROW
 EXECUTE PROCEDURE insertUser();
 
+--------------
+
+CREATE OR REPLACE FUNCTION updateNote() RETURNS TRIGGER AS $$
+  DECLARE 
+    note_exist INT;
+    livre_id INT;
+    user_id INT;
+    nom_note TEXT;
+    old_nom_note TEXT;
+
+  BEGIN
+    note_exist := (SELECT note FROM _livre_utilisateur WHERE id_livre = NEW.id_livre AND id_utilisateur = NEW.id_utilisateur);
+
+    /* trouve la caractéristique à augmenter */
+    IF NEW.note = 1 THEN
+        nom_note := 'nb_note_1_etoile';
+    ELSIF NEW.note = 2 THEN
+        nom_note := 'nb_note_2_etoile';
+    ELSIF NEW.note = 3 THEN
+        nom_note := 'nb_note_3_etoile';
+    ELSIF NEW.note = 4 THEN
+        nom_note := 'nb_note_4_etoile';
+    ELSE
+        nom_note := 'nb_note_5_etoile';
+    END IF;
+
+    IF note_exist IS NULL THEN
+      /* nb_notes du livre +1, note correspondante +1 */
+      UPDATE _livre SET nb_notes = nb_notes + 1, (nom_note) = (nom_note) + 1 WHERE id_livre = NEW.id_livre;
+
+    ELSE 
+      IF OLD.note = 1 THEN
+            old_nom_note := 'nb_note_1_etoile';
+        ELSIF OLD.note = 2 THEN
+            old_nom_note := 'nb_note_2_etoile';
+        ELSIF OLD.note = 3 THEN
+            old_nom_note := 'nb_note_3_etoile';
+        ELSIF OLD.note = 4 THEN
+            old_nom_note := 'nb_note_4_etoile';
+        ELSE
+            old_nom_note := 'nb_note_5_etoile';
+        END IF;
+        /* ancienne note du livre -1, nouvelle note du livre +1 */
+        UPDATE _livre SET (old_nom_note) = (old_nom_note) - 1, (nom_note) = (nom_note) + 1 WHERE id_livre = NEW.id_livre;
+      END IF;
+
+      RETURN NEW;
+  END;
+$$ LANGUAGE 'plpgsql';
+
+DROP TRIGGER IF EXISTS triggerUpdateNote ON _livre_utilisateur;
+CREATE TRIGGER triggerUpdateNote
+AFTER UPDATE
+ON _livre_utilisateur FOR EACH ROW
+EXECUTE PROCEDURE updateNote();
+
+  
