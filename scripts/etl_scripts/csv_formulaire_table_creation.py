@@ -488,7 +488,8 @@ def main(results):
 
     utilisateur_livre = pd.DataFrame({
         'id_utilisateur': id_utilisateurs,
-        'id_livre': id_livre
+        'id_livre': id_livre,
+        'lu':0
     })
     utilisateur_livre.index = utilisateur_livre.index+1
     utilisateur_livre.to_csv(os.path.join(PATH_POPULATE,"livre_utilisateur.csv"), index=False)

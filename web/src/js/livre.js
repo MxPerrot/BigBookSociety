@@ -34,10 +34,9 @@ function fetchBookById(id) {
             const isbn = bookData.isbn13 || bookData.isbn || "Aucun ISBN disponible";
             const coverUrl = (isbn !== "Aucun ISBN disponible") 
                 ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false` 
-                : "../../public/img/couverture.jpg";      
+                : "../../public/img/couverture.jpg";  
 
             bookContainer.innerHTML = `
-                <button onclick="history.back()">Go Back</button>
                 <img class="card-img" src="${coverUrl}" alt="Couverture du livre ${bookData.titre}" onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';" />
                 <div class="card-content">
                     <h2 class="card-title">${bookData.titre || "Titre non disponible"}</h2>
@@ -46,20 +45,28 @@ function fetchBookById(id) {
                     <h4 class="card-editeur">Edition: ${bookData.nom_editeur || "Éditeur inconnu"}</h4>
                     <h4 class="card-pages">Pages: ${bookData.nombre_pages || "Nombre de pages inconnu"}</h4>
                     <h4 class="card-datesortie">Date de sortie: ${bookData.date_publication || "Non disponible"}</h4>
-                    <button id="likeButton" class="like-button">
-                        Like
-                    </button>
-                </div>
-                <div id="average-section">
-                    <p>Note moyenne : ${bookData.note_moyenne.toFixed(1)} </p>
-                    <div id="average-stars" class="group_stars"></div>
+                    <div class="card-avis">
+                        <button id="likeButton" class="like-button">
+                            Like
+                        </button>
+                        <div id="average-section">
+                            <p>Note moyenne : ${bookData.note_moyenne.toFixed(1) || ""} </p>
+                            <div id="average-stars" class="group_stars"></div>
+                        </div>
+                        <div id="rating-section" style="display: none;">
+                            <button id="validate-btn" class="note-button">Valider</button>
+                            <div id="rating-stars" class="group_stars"></div>
+                        </div>
+                        <div id="display-section" style="display: none;">
+                            <button id="modify-btn" class="note-button liked">Modifier</button>
+                            <div id="display-stars" class="group_stars"></div>
+                        </div>
+                    </div>
                 </div>
             `;
 
             const likeButton = document.getElementById("likeButton");
-            const averageStars = document.getElementById("average-stars");
-            let selectedRating = 0;
-
+            
             fetch(`${API_PATH}/is_liked/?bookID=${id}`, {
                 method: 'GET',
                 headers: {
@@ -102,6 +109,33 @@ function fetchBookById(id) {
                   .then(data => console.log('Response:', data))  // Log the response
                   .catch(error => console.error('Error:', error));
                 }
+            });
+
+            const averageSection = document.getElementById('average-section');
+            const averageStars = document.getElementById('average-stars');
+            const ratingStars = document.getElementById("rating-stars");
+            const validateBtn = document.getElementById("validate-btn");
+            const displaySection = document.getElementById("display-section");
+            const displayStars = document.getElementById("display-stars");
+            const modifyBtn = document.getElementById("modify-btn");
+            const ratingSection = document.getElementById("rating-section");
+            let selectedRating = 0;
+
+            fetch(`${API_PATH}/get_note/?bookID=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                    'Content-Type': 'application/json'
+                }                  
+            }).then(response => response.json())
+            .then(answer => {
+                answer = answer[0][0];
+                if (answer) {
+                    selectedRating = answer;
+                } else {
+                    selectedRating = 0;
+                }
+                console.log(selectedRating);
             });
 
             /* Modification du nombre d'étoiles affichées dans la moyenne */
@@ -150,7 +184,110 @@ function fetchBookById(id) {
                 return div;
             }
 
-            displayAverageRating(bookData.note_moyenne);
+            /* Créer un bloc d'étoiles */
+            function createStars(section, container, clickHandler) {
+                ratingSection.style.display = "none";
+                displaySection.style.display = "none";
+                section.style.display = "block";
+                container.innerHTML = "";
+                for (let i = 1; i <= 5; i++) {
+                    const star = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    star.setAttribute("viewBox", "0 0 24 24");
+                    star.setAttribute("class", "star");
+                    star.innerHTML = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77l-6.18 3.23L7 14.14l-5-4.87 6.91-1.01z"/>';
+                    container.appendChild(star);
+                    if (i <= selectedRating) {
+                        star.classList.add("red");
+                    }
+
+                    if (clickHandler) {
+                        star.addEventListener("mouseover", () => updateStarColors(i));
+                        star.addEventListener("mouseleave", () => updateStarColors(selectedRating));
+                        star.addEventListener("click", () => {
+                            selectedRating = i;
+                            updateStarColors(selectedRating);
+                        });
+                    }
+                }
+            }
+
+            /* fonction update couleur de l'étoile */
+            function updateStarColors(rating) {
+                createStars(ratingSection, ratingStars, true);
+                const stars = ratingStars.querySelectorAll(".star");
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add("red");
+                        star.classList.remove("beige");
+                    } else {
+                        star.classList.remove("red");
+                        if (index < selectedRating) {
+                            star.classList.add("beige");
+                        } else {
+                            star.classList.remove("beige");
+                        }
+                    }
+                });
+                
+            }
+
+            validateBtn.addEventListener("click", () => {
+                if (selectedRating > 0) {
+                    ratingSection.style.display = "none";
+                    displaySection.style.display = "block";
+                    updateDisplayStars(selectedRating);
+                    fetch(`${API_PATH}/update_note/?bookID=${id}&note=${selectedRating}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ bookID: id, note: selectedRating })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('enregistrement réussi');
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                    });
+                }
+            });
+
+            modifyBtn.addEventListener("click", () => {
+                displaySection.style.display = "none";
+                ratingSection.style.display = "block";
+                updateStarColors(selectedRating);
+            });
+
+            function updateDisplayStars(rating) {
+                createStars(displaySection, displayStars, null);
+                displayStars.querySelectorAll(".star").forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add("red");
+                    }
+                });
+            }
+
+            fetch(`${API_PATH}/get_lu/?bookID=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                    'Content-Type': 'application/json'
+                }                  
+            }).then(response => response.json())
+            .then(answer => {
+                console.log(answer);
+                if(answer) {
+                    createStars(displaySection, displayStars, null);
+                }
+                displayAverageRating(bookData.note_moyenne);
+            });
         })
         .catch(error => {
             console.error("Erreur lors de la récupération du livre :", error);

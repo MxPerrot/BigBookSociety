@@ -210,7 +210,7 @@ async def get_meme_auteur(current_user: dict = Depends(get_current_user), nbreco
     return books_infos
 
 @app.get("/a_livre/")
-async def update_note(current_user: dict = Depends(get_current_user), livre:int=None):
+async def update_note(current_user: dict = Depends(get_current_user), bookID:int=None):
     cursor.execute("SELECT id_utilisateur FROM _livre_utilisateur WHERE id_utililisateur = %s AND id=livre = %s", (current_user[0],livre))
     record = cursor.fetchall()
     if (len(record)>0):
@@ -219,14 +219,26 @@ async def update_note(current_user: dict = Depends(get_current_user), livre:int=
         return False
 
 @app.post("/update_note/")
-async def update_note(current_user: dict = Depends(get_current_user), note:int=None, livre:int=None):
-    cursor.execute("UPDATE _livre_utilisateur SET note = %s WHERE id_utililisateur = %s AND id=livre = %s", (note, current_user[0],livre))
+async def update_note(current_user: dict = Depends(get_current_user), note:int=None, bookID:int=None):
+    cursor.execute("UPDATE _livre_utilisateur SET note = %s WHERE id_utilisateur = %s AND id_livre = %s", (note, current_user[0],bookID))
     connection.commit()
 
 @app.get("/get_note/")
-async def get_note(current_user: dict = Depends(get_current_user), livre:int=None):
-    cursor.execute("SELECT note FROM _livre_utilisateur WHERE id_utililisateur = %s AND id=livre = %s", (current_user[0],livre))
+async def get_note(current_user: dict = Depends(get_current_user), bookID:int=None):
+    cursor.execute("SELECT note FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
     return cursor.fetchall()
+
+@app.post("/update_lu/")
+async def update_note(current_user: dict = Depends(get_current_user), note:int=None, bookID:int=None):
+    cursor.execute("UPDATE _livre_utilisateur SET lu = %s WHERE id_utilisateur = %s AND id_livre = %s", (note, current_user[0],bookID))
+    connection.commit()
+
+@app.get("/get_lu/")
+async def get_lu(current_user: dict = Depends(get_current_user), bookID:int=None):
+    cursor.execute("SELECT lu FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
+    record = cursor.fetchall()
+    record = record[0][0]
+    return record
 
 @app.get("/get_in_serie/")
 async def get_in_serie(current_user: dict = Depends(get_current_user)):

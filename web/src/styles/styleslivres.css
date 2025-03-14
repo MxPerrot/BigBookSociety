@@ -13,8 +13,8 @@
     border-radius: 15px;
     background-color: #f8f8f8;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    align-items: stretch;
     max-width: 85%; 
     width: 100%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -32,9 +32,10 @@
 
 /* Contenu de la carte */
 .card-content {
-    text-align: center;
+    text-align: left;
     padding: 20px;
     width: 100%;
+    position: relative;
 }
 
 .card-title {
@@ -66,24 +67,48 @@
 }
 
 
-.like-button {
-    padding: 15px 25px;
-    font-size: 18px;
+.like-button,
+.note-button {
+    padding: 3px 5px;
     cursor: pointer;
     background-color: var(--col4);
     color: var(--blanc);
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    margin-top: 20px;
+    font-size: 15px;
 }
 
-.like-button:hover {
+.like-button {
+    padding: 15px 25px;
+    border: none;
+    font-size: 18px;
+}
+
+.like-button:hover,
+.note-button:hover {
     background-color: var(--col5);
 }
 
 .liked {
     background-color: var(--col3);
+}
+
+.card-avis {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+}
+
+.card-avis, 
+.card-stars {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    align-items: center;
+    text-align: center;
 }
 
 @media (max-width: 768px) {
