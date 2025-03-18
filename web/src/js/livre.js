@@ -34,7 +34,8 @@ function fetchBookById(id) {
             const isbn = bookData.isbn13 || bookData.isbn || "Aucun ISBN disponible";
             const coverUrl = (isbn !== "Aucun ISBN disponible") 
                 ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false` 
-                : "../../public/img/couverture.jpg";  
+                : "../../public/img/couverture.jpg";
+            bookData.note_moyenne = bookData.note_moyenne ? bookData.note_moyenne.toFixed(1) : "";  
 
             bookContainer.innerHTML = `
                 <img class="card-img" src="${coverUrl}" alt="Couverture du livre ${bookData.titre}" onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';" />
@@ -49,8 +50,11 @@ function fetchBookById(id) {
                         <button id="likeButton" class="like-button">
                             Like
                         </button>
+                        <button id="luButton" class="like-button">
+                            lu?
+                        </button>
                         <div id="average-section">
-                            <p>Note moyenne : ${bookData.note_moyenne.toFixed(1) || ""} </p>
+                            <p>Note moyenne : ${bookData.note_moyenne} </p>
                             <div id="average-stars" class="group_stars"></div>
                         </div>
                         <div id="rating-section" style="display: none;">
@@ -66,6 +70,16 @@ function fetchBookById(id) {
             `;
 
             const likeButton = document.getElementById("likeButton");
+            const luButton = document.getElementById("luButton");
+            const averageSection = document.getElementById('average-section');
+            const averageStars = document.getElementById('average-stars');
+            const ratingStars = document.getElementById("rating-stars");
+            const validateBtn = document.getElementById("validate-btn");
+            const displaySection = document.getElementById("display-section");
+            const displayStars = document.getElementById("display-stars");
+            const modifyBtn = document.getElementById("modify-btn");
+            const ratingSection = document.getElementById("rating-section");
+            let selectedRating = 0;
             
             fetch(`${API_PATH}/is_liked/?bookID=${id}`, {
                 method: 'GET',
@@ -78,48 +92,89 @@ function fetchBookById(id) {
                 if (answer=="True"){
                     likeButton.classList.toggle("liked");
                     likeButton.textContent = likeButton.classList.contains("liked") ? "Liked" : "Like";
+                    luButton.style.display = "block";
+                } else {
+                    luButton.style.display = "non";
                 }
             });
 
             likeButton.addEventListener("click", function () {
                 likeButton.classList.toggle("liked");
                 likeButton.textContent = likeButton.classList.contains("liked") ? "Liked" : "Like";
-              
 
                 if (likeButton.textContent.trim() == 'Liked') {
-                  fetch(`${API_PATH}/like/?bookID=${id}`, {
-                      method: 'POST',
-                      headers: {
-                          'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                          'Content-Type': 'application/json'
-                      }                  
-                    })
-                  .then(response => response.json())  // Parse response as JSON
-                  .then(data => console.log('Response:', data))  // Log the response
-                  .catch(error => console.error('Error:', error));
+                    fetch(`${API_PATH}/like/?bookID=${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                            'Content-Type': 'application/json'
+                        }                  
+                        })
+                    .then(response => response.json())  // Parse response as JSON
+                    .then(data => console.log('Response:', data))  // Log the response
+                    .catch(error => console.error('Error:', error));
+                    luButton.style.display = "block";
                 } else {
-                  fetch(`${API_PATH}/unlike/?bookID=${id}`, {
-                      method: 'DELETE',
-                      headers: {
-                          'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                          'Content-Type': 'application/json'
-                      }
-                  })
-                  .then(response => response.json())  // Parse response as JSON
-                  .then(data => console.log('Response:', data))  // Log the response
-                  .catch(error => console.error('Error:', error));
+                    fetch(`${API_PATH}/unlike/?bookID=${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())  // Parse response as JSON
+                    .then(data => console.log('Response:', data))  // Log the response
+                    .catch(error => console.error('Error:', error));
+                    luButton.style.display = "none";
                 }
             });
 
-            const averageSection = document.getElementById('average-section');
-            const averageStars = document.getElementById('average-stars');
-            const ratingStars = document.getElementById("rating-stars");
-            const validateBtn = document.getElementById("validate-btn");
-            const displaySection = document.getElementById("display-section");
-            const displayStars = document.getElementById("display-stars");
-            const modifyBtn = document.getElementById("modify-btn");
-            const ratingSection = document.getElementById("rating-section");
-            let selectedRating = 0;
+            fetch(`${API_PATH}/get_lu/?bookID=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                    'Content-Type': 'application/json'
+                }                  
+            }).then(response => response.json())
+            .then(answer => {
+                if (answer==true || answer==1){
+                    luButton.classList.toggle("lu!");
+                    likeButton.style.display = "none";
+                    luButton.textContent = luButton.classList.contains("lu!") ? "lu!" : "lu?";
+                }
+            });
+
+            luButton.addEventListener("click", function () {
+                luButton.classList.toggle("lu!");
+                luButton.textContent = luButton.classList.contains("lu!") ? "lu!" : "lu?";
+
+                var estlu = luButton.textContent.trim() == "lu!";
+                if (estlu) {
+                    fetch(`${API_PATH}/yes_lu/?bookID=${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                            'Content-Type': 'application/json'
+                        }                  
+                        })
+                    .then(response => response.json())  // Parse response as JSON
+                    .then(data => console.log('Response:', data))  // Log the response
+                    .catch(error => console.error('Error:', error));
+                    likeButton.style.display = "none";
+                } else {
+                    fetch(`${API_PATH}/no_lu/?bookID=${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                            'Content-Type': 'application/json'
+                        }                  
+                        })
+                    .then(response => response.json())  // Parse response as JSON
+                    .then(data => console.log('Response:', data))  // Log the response
+                    .catch(error => console.error('Error:', error));
+                    likeButton.style.display = "block";
+                }
+            });
 
             fetch(`${API_PATH}/get_note/?bookID=${id}`, {
                 method: 'GET',
@@ -135,7 +190,6 @@ function fetchBookById(id) {
                 } else {
                     selectedRating = 0;
                 }
-                console.log(selectedRating);
             });
 
             /* Modification du nombre d'étoiles affichées dans la moyenne */

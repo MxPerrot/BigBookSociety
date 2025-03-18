@@ -52,7 +52,7 @@ CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
     book_ids := (SELECT id_livre FROM _livre WHERE titre IN (NEW.livres_preferes));
     FOREACH book_id IN ARRAY book_ids
     LOOP
-      INSERT INTO _livre_utilisateur VALUES(user_id, book_id);
+      INSERT INTO _livre_utilisateur VALUES(user_id, book_id, 0);
     END LOOP;
 
     motive_ids := (SELECT id_motivation FROM _motivation WHERE motivation IN (NEW.motivations_lecture));
