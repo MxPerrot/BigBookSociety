@@ -5,6 +5,7 @@
 
 h2{
   color: white;
+  margin-left: 1rem;
 }
 
 .media-scroller {
@@ -37,7 +38,7 @@ h2{
 h3, p {
   padding: 0;
   margin: 0;
-  font-size: x-small;
+  font-size: small;
 }
 
 .Livres {
@@ -70,10 +71,11 @@ h3, p {
 .previous {
   top: 50%;
   transform: translateY(-50%);
+  left: 1rem;
 }
 
 .next {
-  right: 0.1rem;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
 }

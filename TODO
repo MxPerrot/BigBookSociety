@@ -1,8 +1,8 @@
 # RED
 [x] Replace hardcoded links (with port 5500 or localhost for example)
 [x] Dockerize the app
-[ ] Notation (voir onglet dédié)
-[ ] Etats d'un lvire
+[x] Notation (voir onglet dédié)
+[x] Etats d'un livre
 
 # GREEN
 [ ] Potentiel bug : auteur inconnu à tort dans "mes livres"
@@ -26,15 +26,15 @@
 
 # Notation
 [x] afficher la note moyenne d'un livre
-[?] créer un trigger pour la moyenne d'un livre -> fait non testé
+[x] créer un trigger pour la moyenne d'un livre -> fait non testé
 [x] noter un livre
 [?] mettre à jour la moyenne d'un livre
 [x] afficher la note que j'ai donné à un livre
 [x] designer l'affichage des notes et moyennes
 
 # Etats d'un livre
-[ ] Etat 1 : "Like"
-[ ] Etat 2 : "Liked" + "Marquer comme lu"
-[ ] Etat 3 : "Lu"
-[ ] 1 -> 2 et 2 -> 1
-[ ] 2 -> 3 et 3 -> 2
+[x] Etat 1 : "Like"
+[x] Etat 2 : "Liked" + "Marquer comme lu"
+[x] Etat 3 : "Lu"
+[x] 1 -> 2 et 2 -> 1
+[x] 2 -> 3 et 3 -> 2

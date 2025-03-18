@@ -1,11 +1,12 @@
 /* Couleurs */
 :root {
-    --col1: #1E2026;
+    --col1: #090c20;
     --blanc: #FFFFFF;
     --noir: #000000;
     --col2: #F2F2F2;
     --col3: #9b070e;
-    --col4: #cf2121;
+    --col4: #9b070e;
+    /*--col4: #cf2121;*/
     --col5: #fa6c6c;
 }
 
@@ -90,7 +91,6 @@ nav a {
     align-items: center; 
     justify-content: center;
     width: 100%;
-    height: 100%;
 }
 
 /* Effet au survol */
@@ -101,7 +101,7 @@ nav a:hover {
 
 #BigBook{
     font-family: 'AbrilFatface';
-    font-size: 4.5rem;
+    font-size: 4.2rem;
 }
 
 /* Main */
