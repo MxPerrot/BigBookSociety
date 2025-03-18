@@ -10,6 +10,9 @@
 .group_stars {
     display: flex;
     gap: 5px;
+}
+
+#rating-stars {
     cursor: pointer;
 }
 
