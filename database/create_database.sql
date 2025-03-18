@@ -152,6 +152,8 @@ CREATE TABLE _utilisateur_auteur (
 CREATE TABLE _livre_utilisateur (
   id_utilisateur INTEGER REFERENCES _utilisateur(id_utilisateur) ON DELETE CASCADE,
   id_livre INTEGER REFERENCES _livre(id_livre) ON DELETE CASCADE,
+  lu BOOLEAN NOT NULL,
+  note INTEGER,
   PRIMARY KEY(id_utilisateur,id_livre)
 );
 

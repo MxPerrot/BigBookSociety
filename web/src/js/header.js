@@ -1,6 +1,5 @@
 const headerTemplate = document.createElement('template');
 
-
 headerTemplate.innerHTML = `
    <style>
         /* Couleurs */
@@ -70,7 +69,6 @@ headerTemplate.innerHTML = `
 
         nav li {
             flex: 1;
-            display: flex;
         }
 
         /* Liens de navigation */
@@ -90,38 +88,89 @@ headerTemplate.innerHTML = `
             color: var(--noir);
         }
 
+        #sous {
+            list-style-type: none;
+            display: none;
+            background-color: white;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            top: 100px;
+        }
+
+        nav > ul li:hover #sous {
+            display: block;
+        }
+
+        #sous li {
+            float: none;
+            width: 100%;
+            text-align: left;
+            height: 50%;
+        }
+
+        #sous a {
+            color: var(--noir);
+        }
+
+        #deroulant {
+            position: sticky;
+            color: var(--blanc);
+            text-decoration: none;
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
         #BigBook{
             font-family: 'AbrilFatface';
             font-size: 4.5rem;
         }
-
-      </style>
+    </style>
 
     <header>
         <nav>
           <ul>
               <li><a href="../html/rechercher.html">RECHERCHER</a></li>
-              <li><a href="../html/meslivres.html">MES LIVRES</a></li>
+              <li id="deroulant">MES LIVRES ▼
+                <ul id="sous">
+                    <li><a href="../html/meslivres.html">Livres à lire</a></li>
+                    <li><a href="../html/meslivres.html">Livres lus</a></li>
+                </ul>
+              </li>
               <li><a id="BigBook" href="../../index.html">BigBook   </a></li>
               <li><a href="../html/apropos.html">A PROPOS</a></li>
               <li><a class="deconnexion" href="javascript:void(0);" onclick="localStorage.clear();refreshCarrousel()">DÉCONNEXION</a></li>
           </ul>
         </nav>
     </header>
-`;
 
+    <script>
+        const deroulant = document.getElementById('deroulant');
+        const sous = document.getElementById('sous');
+        deroulant.addEventListener('mouseover', function() {
+            sous.style.display = 'block';
+        });
+    </script>
+`;
 
 class Header extends HTMLElement {
     constructor() {
       super();
+      this.attachShadow({ mode: 'open' }).appendChild(headerTemplate.content.cloneNode(true));
     }
   
     connectedCallback() {
-      const shadowRoot = this.attachShadow({ mode: 'open' });
-  
-      shadowRoot.appendChild(headerTemplate.content);
+        if (!this.shadowRoot) {
+            const shadowRoot = this.attachShadow({ mode: 'open' });
+        
+            shadowRoot.appendChild(headerTemplate.content);
+        }
     }
-  }
+}
 
 customElements.define('header-component', Header);
 

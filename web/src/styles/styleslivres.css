@@ -7,13 +7,14 @@
 
 /* Conteneur principal pour la carte */
 .card {
+    position: relative;
     margin: 20px auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 15px;
     background-color: #f8f8f8;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     max-width: 85%; 
     width: 100%;
@@ -65,7 +66,6 @@
     margin: 5px 0;
 }
 
-
 .like-button {
     padding: 15px 25px;
     font-size: 18px;
@@ -84,6 +84,17 @@
 
 .liked {
     background-color: var(--col3);
+}
+
+.go-back {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 30px;
+    width: 30px;
+    border: none;
+    background: url(../../public/img/close.svg) center;
+    background-size: contain;
 }
 
 @media (max-width: 768px) {
