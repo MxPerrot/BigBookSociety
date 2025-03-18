@@ -226,12 +226,20 @@ async def update_note(current_user: dict = Depends(get_current_user), note:int=N
 @app.get("/get_note/")
 async def get_note(current_user: dict = Depends(get_current_user), bookID:int=None):
     cursor.execute("SELECT note FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
+    print(cursor.fetchall())
     return cursor.fetchall()
 
-@app.post("/update_lu/")
-async def update_note(current_user: dict = Depends(get_current_user), note:int=None, bookID:int=None):
-    cursor.execute("UPDATE _livre_utilisateur SET lu = %s WHERE id_utilisateur = %s AND id_livre = %s", (note, current_user[0],bookID))
+@app.post("/no_lu/")
+async def no_lu(current_user: dict = Depends(get_current_user), bookID:int=None):
+    cursor.execute("UPDATE _livre_utilisateur SET lu = false WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
     connection.commit()
+    return {"message": "Link created successfully"}
+
+@app.post("/yes_lu/")
+async def yes_lu(current_user: dict = Depends(get_current_user), bookID:int=None):
+    cursor.execute("UPDATE _livre_utilisateur SET lu = true WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
+    connection.commit()
+    return {"message": "Link created successfully"}
 
 @app.get("/get_lu/")
 async def get_lu(current_user: dict = Depends(get_current_user), bookID:int=None):
@@ -258,7 +266,7 @@ async def is_liked(current_user: dict = Depends(get_current_user), bookID:int=No
 @app.post("/like/")
 async def like(current_user: dict = Depends(get_current_user), bookID:int=None):
     # try:
-        cursor.execute("INSERT INTO _livre_utilisateur(id_utilisateur,id_livre) VALUES (%s, %s)", (current_user[0], bookID))
+        cursor.execute("INSERT INTO _livre_utilisateur(id_utilisateur,id_livre,lu) VALUES (%s, %s, false)", (current_user[0], bookID))
         connection.commit()
         return {"message": "Link created successfully"}
     # except psycopg2.IntegrityError:
