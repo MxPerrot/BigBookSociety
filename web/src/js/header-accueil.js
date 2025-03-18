@@ -74,7 +74,7 @@ headerTemplate.innerHTML = `
 
         #BigBook{
             font-family: 'AbrilFatface';
-            font-size: 4.5rem;
+            font-size: 4rem;
         }
 
       </style>
