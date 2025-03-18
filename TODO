@@ -13,7 +13,7 @@
 [x] css : couleur de la roue chargement à changer
 [x] rechercher.html : rajouter les titres !!!
 [ ] acceuil : "déconnexion" dans le header
-[ ] Refaire l'affichage "mes livres" comme index, pour avoir deux lsites : "whislist" et "livres lus"
+[ ] Refaire "mes livres" pour avoir deux listes : "whislist" et "livres lus"
 
 # BLACK
 [x] Style barre de recherche
@@ -33,8 +33,12 @@
 [x] designer l'affichage des notes et moyennes
 
 # Etats d'un livre
-[x] Etat 1 : "Like"
-[x] Etat 2 : "Liked" + "Marquer comme lu"
-[x] Etat 3 : "Lu"
-[x] 1 -> 2 et 2 -> 1
-[x] 2 -> 3 et 3 -> 2
+[ ] Etat 1 : "(1)Like" + "(2)Marquer comme lu"
+[x] Etat 2 : "(3)Liked" + "(4)Marquer comme lu"
+[ ] Etat 3 : "(5)Déplacer dans ma wishlist" + "(6)Marquer comme non lu"
+[ ] Si bouton1 = "Like" : route like 
+[ ] Si bouton1 = "Liked" : route unlike
+[ ] Si bouton1 = "Déplacer dans ma wishlist" : route no_lu 
+[ ] Si bouton2 = "Marquer comme lu" : route like + route yes_lu
+[ ] Si bouton2 = "Marquer comme lu" : route like + route yes_lu
+[ ] Si bouton2 = "Supprimer de la liste" : route unlike

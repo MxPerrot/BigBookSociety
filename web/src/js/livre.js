@@ -47,12 +47,18 @@ function fetchBookById(id) {
                     <h4 class="card-pages">Pages: ${bookData.nombre_pages || "Nombre de pages inconnu"}</h4>
                     <h4 class="card-datesortie">Date de sortie: ${bookData.date_publication || "Non disponible"}</h4>
                     <div class="card-avis">
-                        <button id="likeButton" class="like-button">
-                            Like
-                        </button>
-                        <button id="luButton" class="like-button">
-                            lu?
-                        </button>
+                        <div id="noneEtat">
+                            <button id="noneLikeButton" class="like-button">Like</button>
+                            <button id="noneLuButton" class="like-button">Marquer comme lu</button>
+                        </div>
+                        <div id="likeEtat">
+                            <button id="likeNoneButton" class="like-button">Liked</button>
+                            <button id="likeLuButton" class="like-button">Marquer comme lu</button>
+                        </div>
+                        <div id="luEtat">
+                            <button id="luLikeButton" class="like-button">Mettre dans la whislist</button>
+                            <button id="luNoneButton" class="like-button">Retirer de la liste</button>
+                        </div>
                         <div id="average-section">
                             <p>Note moyenne : ${bookData.note_moyenne} </p>
                             <div id="average-stars" class="group_stars"></div>
@@ -62,15 +68,26 @@ function fetchBookById(id) {
                             <div id="rating-stars" class="group_stars"></div>
                         </div>
                         <div id="display-section" style="display: none;">
-                            <button id="modify-btn" class="note-button liked">Modifier</button>
+                            <button id="modify-btn" class="note-button">Modifier</button>
                             <div id="display-stars" class="group_stars"></div>
                         </div>
                     </div>
                 </div>
             `;
 
-            const likeButton = document.getElementById("likeButton");
-            const luButton = document.getElementById("luButton");
+            ///// CONSTANTES /////
+
+            const noneEtat = document.getElementById("noneEtat");
+            const likeEtat = document.getElementById("likeEtat");
+            const luEtat = document.getElementById("luEtat");
+
+            const noneLikeButton = document.getElementById("noneLikeButton");
+            const noneLuButton = document.getElementById("noneLuButton");
+            const likeNoneButton = document.getElementById("likeNoneButton");
+            const likeLuButton = document.getElementById("likeLuButton");
+            const luLikeButton = document.getElementById("luLikeButton");
+            const luNoneButton = document.getElementById("luNoneButton");
+
             const averageSection = document.getElementById('average-section');
             const averageStars = document.getElementById('average-stars');
             const ratingStars = document.getElementById("rating-stars");
@@ -80,7 +97,14 @@ function fetchBookById(id) {
             const modifyBtn = document.getElementById("modify-btn");
             const ratingSection = document.getElementById("rating-section");
             let selectedRating = 0;
-            
+
+            ///// FETCH /////
+
+            noneEtat.style.display = "block";
+            likeEtat.style.display = "none";
+            luEtat.style.display = "none";
+            displayAverageRating(bookData.note_moyenne);
+
             fetch(`${API_PATH}/is_liked/?bookID=${id}`, {
                 method: 'GET',
                 headers: {
@@ -90,42 +114,9 @@ function fetchBookById(id) {
             }).then(response => response.json())
             .then(answer => {
                 if (answer=="True"){
-                    likeButton.classList.toggle("liked");
-                    likeButton.textContent = likeButton.classList.contains("liked") ? "Liked" : "Like";
-                    luButton.style.display = "block";
-                } else {
-                    luButton.style.display = "non";
-                }
-            });
-
-            likeButton.addEventListener("click", function () {
-                likeButton.classList.toggle("liked");
-                likeButton.textContent = likeButton.classList.contains("liked") ? "Liked" : "Like";
-
-                if (likeButton.textContent.trim() == 'Liked') {
-                    fetch(`${API_PATH}/like/?bookID=${id}`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                            'Content-Type': 'application/json'
-                        }                  
-                        })
-                    .then(response => response.json())  // Parse response as JSON
-                    .then(data => console.log('Response:', data))  // Log the response
-                    .catch(error => console.error('Error:', error));
-                    luButton.style.display = "block";
-                } else {
-                    fetch(`${API_PATH}/unlike/?bookID=${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())  // Parse response as JSON
-                    .then(data => console.log('Response:', data))  // Log the response
-                    .catch(error => console.error('Error:', error));
-                    luButton.style.display = "none";
+                    noneEtat.style.display = "none";
+                    likeEtat.style.display = "block";
+                    luEtat.style.display = "none";
                 }
             });
 
@@ -138,17 +129,163 @@ function fetchBookById(id) {
             }).then(response => response.json())
             .then(answer => {
                 if (answer==true || answer==1){
-                    luButton.classList.toggle("lu!");
-                    likeButton.style.display = "none";
-                    luButton.textContent = luButton.classList.contains("lu!") ? "lu!" : "lu?";
+                    noneEtat.style.display = "none";
+                    likeEtat.style.display = "none";
+                    luEtat.style.display = "block";
+                    createStars(displaySection, displayStars, null);
                 }
             });
 
-            luButton.addEventListener("click", function () {
-                luButton.classList.toggle("lu!");
-                luButton.textContent = luButton.classList.contains("lu!") ? "lu!" : "lu?";
+            fetch(`${API_PATH}/get_note/?bookID=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                    'Content-Type': 'application/json'
+                }                  
+            }).then(response => response.json())
+            .then(answer => {
+                selectedRating = 0;
+                answer = answer[0][0];
+                if (answer) {
+                    selectedRating = answer;
+                }
+            });
 
-                var estlu = luButton.textContent.trim() == "lu!";
+            
+
+            ///// LISTENERS /////
+
+            noneLikeButton.addEventListener("click", function () {
+                fetch(`${API_PATH}/like/?bookID=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }                  
+                    })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));
+                noneEtat.style.display = "none";
+                likeEtat.style.display = "block";
+                luEtat.style.display = "none";
+                console.log("none to like");
+                displaySection.style.display = "none";
+                ratingSection.style.display = "none";
+            });
+
+            noneLuButton.addEventListener("click", function () {
+                fetch(`${API_PATH}/like/?bookID=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));
+
+                fetch(`${API_PATH}/yes_lu/?bookID=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));
+                noneEtat.style.display = "none";
+                likeEtat.style.display = "none";
+                luEtat.style.display = "block";
+                console.log("none to lu");
+                displaySection.style.display = "block";
+                ratingSection.style.display = "none";
+            });
+
+            likeNoneButton.addEventListener("click", function () {
+                fetch(`${API_PATH}/unlike/?bookID=${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));
+                noneEtat.style.display = "block";
+                likeEtat.style.display = "none";
+                luEtat.style.display = "none";
+                console.log("like to none");
+                displaySection.style.display = "none";
+                ratingSection.style.display = "none";
+            });
+
+            likeLuButton.addEventListener("click", function () {
+                fetch(`${API_PATH}/yes_lu/?bookID=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));
+                noneEtat.style.display = "none";
+                likeEtat.style.display = "none";
+                luEtat.style.display = "block";
+                console.log("like to lu");
+                displaySection.style.display = "block";
+                ratingSection.style.display = "none";
+            });
+
+            luLikeButton.addEventListener("click", function () {
+                fetch(`${API_PATH}/no_lu/?bookID=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));
+                noneEtat.style.display = "none";
+                likeEtat.style.display = "block";
+                luEtat.style.display = "none";
+                console.log("lu to like");
+                displaySection.style.display = "none";
+                ratingSection.style.display = "none";
+            });
+
+            luNoneButton.addEventListener("click", function () {
+                fetch(`${API_PATH}/unlike/?bookID=${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => console.log('Response:', data))  // Log the response
+                .catch(error => console.error('Error:', error));       
+                noneEtat.style.display = "block";
+                likeEtat.style.display = "none";
+                luEtat.style.display = "none"; 
+                console.log("lu to none");
+                displaySection.style.display = "none";
+                ratingSection.style.display = "none";       
+            });
+
+            /*
+            luButton.addEventListener("click", function () {
+                luButton.classList.toggle("lu");
+                luButton.textContent = luButton.classList.contains("lu") ? "Marquer comme non-lu" : "Marquer comme lu";
+
+                var estlu = luButton.textContent.trim() == "Marquer comme non-lu";
                 if (estlu) {
                     fetch(`${API_PATH}/yes_lu/?bookID=${id}`, {
                         method: 'POST',
@@ -161,6 +298,8 @@ function fetchBookById(id) {
                     .then(data => console.log('Response:', data))  // Log the response
                     .catch(error => console.error('Error:', error));
                     likeButton.style.display = "none";
+                    displaySection.style.display = "block";
+                    ratingSection.style.display = "none";
                 } else {
                     fetch(`${API_PATH}/no_lu/?bookID=${id}`, {
                         method: 'POST',
@@ -173,24 +312,15 @@ function fetchBookById(id) {
                     .then(data => console.log('Response:', data))  // Log the response
                     .catch(error => console.error('Error:', error));
                     likeButton.style.display = "block";
+                    displaySection.style.display = "none";
+                    ratingSection.style.display = "none";
                 }
             });
+            */
 
-            fetch(`${API_PATH}/get_note/?bookID=${id}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                    'Content-Type': 'application/json'
-                }                  
-            }).then(response => response.json())
-            .then(answer => {
-                answer = answer[0][0];
-                if (answer) {
-                    selectedRating = answer;
-                } else {
-                    selectedRating = 0;
-                }
-            });
+            ///// NOTATIONS /////
+
+            console.log("s : " + selectedRating);
 
             /* Modification du nombre d'étoiles affichées dans la moyenne */
             function displayAverageRating(average) {
@@ -243,6 +373,7 @@ function fetchBookById(id) {
                 ratingSection.style.display = "none";
                 displaySection.style.display = "none";
                 section.style.display = "block";
+
                 container.innerHTML = "";
                 for (let i = 1; i <= 5; i++) {
                     const star = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -286,7 +417,7 @@ function fetchBookById(id) {
             }
 
             validateBtn.addEventListener("click", () => {
-                if (selectedRating > 0) {
+                if (selectedRating >= 0) {
                     ratingSection.style.display = "none";
                     displaySection.style.display = "block";
                     updateDisplayStars(selectedRating);
@@ -327,21 +458,6 @@ function fetchBookById(id) {
                     }
                 });
             }
-
-            fetch(`${API_PATH}/get_lu/?bookID=${id}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                    'Content-Type': 'application/json'
-                }                  
-            }).then(response => response.json())
-            .then(answer => {
-                console.log(answer);
-                if(answer) {
-                    createStars(displaySection, displayStars, null);
-                }
-                displayAverageRating(bookData.note_moyenne);
-            });
         })
         .catch(error => {
             console.error("Erreur lors de la récupération du livre :", error);
