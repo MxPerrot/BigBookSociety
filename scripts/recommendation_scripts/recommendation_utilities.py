@@ -70,7 +70,6 @@ def model_genre(cursor):
 
     livre = pd.DataFrame(record, columns = ['Livre', 'Genre']) 
 
-
     livre['Genre'] = livre['Genre'].apply(genre_expand)
 
     livre = livre.explode('Genre')

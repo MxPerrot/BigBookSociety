@@ -53,7 +53,7 @@ def main():
 
     # 1. Import the csv files
     df_authors = pd.read_csv(AUTHORS_CSV)
-    df_books = pd.read_csv(BOOKS_CSV)
+    df_books = pd.read_csv(BOOKS_CSV, low_memory=False)
     df_genre_from_authors = pd.read_csv(GENRES_FROM_AUTHORS_CSV) # get the genre table extracted from authors
 
     # 2. Clean the books dataframe:
