@@ -93,6 +93,7 @@ CREATE TABLE _utilisateur (
     
     nom_utilisateur VARCHAR,
     mot_de_passe_hashed VARCHAR,
+    group_role VARCHAR,
     id_code_postal INTEGER REFERENCES _code_postal(id_code_postal)
 );
 
@@ -560,3 +561,7 @@ SELECT * FROM _info_utilisateur;
 UPDATE _utilisateur
 SET nom_utilisateur = 'Maxou', mot_de_passe_hashed = '$2b$12$RNDlH8mt0ehyiOnWNsAqDOFO098cNrNSfqU1FRF.TrQZG4D.ubQIu'
 WHERE id_utilisateur=131;
+
+UPDATE _utilisateur
+SET nom_utilisateur = 'Damimi', mot_de_passe_hashed = '$2b$12$RNDlH8mt0ehyiOnWNsAqDOFO098cNrNSfqU1FRF.TrQZG4D.ubQIu', group_role = 'admin'
+WHERE id_utilisateur=234
