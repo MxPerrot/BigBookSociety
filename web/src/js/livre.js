@@ -240,6 +240,7 @@ function fetchBookById(id) {
                 console.log("like to lu");
                 displaySection.style.display = "block";
                 ratingSection.style.display = "none";
+                updateDisplayStars(selectedRating);
             });
 
             luLikeButton.addEventListener("click", function () {
@@ -370,6 +371,7 @@ function fetchBookById(id) {
 
             /* Créer un bloc d'étoiles */
             function createStars(section, container, clickHandler) {
+                console.log("createStars");
                 ratingSection.style.display = "none";
                 displaySection.style.display = "none";
                 section.style.display = "block";
@@ -398,6 +400,7 @@ function fetchBookById(id) {
 
             /* fonction update couleur de l'étoile */
             function updateStarColors(rating) {
+                console.log("updateStarColors");
                 createStars(ratingSection, ratingStars, true);
                 const stars = ratingStars.querySelectorAll(".star");
                 stars.forEach((star, index) => {
@@ -451,6 +454,7 @@ function fetchBookById(id) {
             });
 
             function updateDisplayStars(rating) {
+                console.log("updateDisplayStars");
                 createStars(displaySection, displayStars, null);
                 displayStars.querySelectorAll(".star").forEach((star, index) => {
                     if (index < rating) {
