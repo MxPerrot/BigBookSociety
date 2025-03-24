@@ -282,44 +282,6 @@ function fetchBookById(id) {
                 ratingSection.style.display = "none";       
             });
 
-            /*
-            luButton.addEventListener("click", function () {
-                luButton.classList.toggle("lu");
-                luButton.textContent = luButton.classList.contains("lu") ? "Marquer comme non-lu" : "Marquer comme lu";
-
-                var estlu = luButton.textContent.trim() == "Marquer comme non-lu";
-                if (estlu) {
-                    fetch(`${API_PATH}/yes_lu/?bookID=${id}`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                            'Content-Type': 'application/json'
-                        }                  
-                        })
-                    .then(response => response.json())  // Parse response as JSON
-                    .then(data => console.log('Response:', data))  // Log the response
-                    .catch(error => console.error('Error:', error));
-                    likeButton.style.display = "none";
-                    displaySection.style.display = "block";
-                    ratingSection.style.display = "none";
-                } else {
-                    fetch(`${API_PATH}/no_lu/?bookID=${id}`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
-                            'Content-Type': 'application/json'
-                        }                  
-                        })
-                    .then(response => response.json())  // Parse response as JSON
-                    .then(data => console.log('Response:', data))  // Log the response
-                    .catch(error => console.error('Error:', error));
-                    likeButton.style.display = "block";
-                    displaySection.style.display = "none";
-                    ratingSection.style.display = "none";
-                }
-            });
-            */
-
             ///// NOTATIONS /////
 
             console.log("s : " + selectedRating);
@@ -372,7 +334,6 @@ function fetchBookById(id) {
 
             /* Créer un bloc d'étoiles */
             function createStars(section, container, clickHandler) {
-                console.log("createStars");
                 ratingSection.style.display = "none";
                 displaySection.style.display = "none";
                 section.style.display = "block";
@@ -401,7 +362,6 @@ function fetchBookById(id) {
 
             /* fonction update couleur de l'étoile */
             function updateStarColors(rating) {
-                console.log("updateStarColors");
                 createStars(ratingSection, ratingStars, true);
                 const stars = ratingStars.querySelectorAll(".star");
                 stars.forEach((star, index) => {
@@ -455,7 +415,6 @@ function fetchBookById(id) {
             });
 
             function updateDisplayStars(rating) {
-                console.log("updateDisplayStars");
                 createStars(displaySection, displayStars, null);
                 displayStars.querySelectorAll(".star").forEach((star, index) => {
                     if (index < rating) {
