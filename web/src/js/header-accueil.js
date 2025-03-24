@@ -188,7 +188,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     li.innerHTML = `<a href="./src/html/connexion.html">CONNEXION</a>`;
                 }
                 if ((!token || token === "Invalid token" || token === "Token expired") && href === "./src/html/meslivres.html") {
-                    li.innerHTML = `<a href="./src/html/connexion.html">MES LIVRES</a>`;
+                    li.innerHTML = `
+                        MES LIVRES ▼
+                        <ul id="sous">
+                            <li><a href="./src/html/connexion.html">Livres à lire</a></li>
+                            <li><a href="./src/html/connexion.html">Livres lus</a></li>
+                        </ul>
+                    `;
+                }
+                if ((!token || token === "Invalid token" || token === "Token expired") && href === "./src/html/livreslus.html") {
+                    li.innerHTML = `
+                        MES LIVRES ▼
+                        <ul id="sous">
+                            <li><a href="./src/html/connexion.html">Livres à lire</a></li>
+                            <li><a href="./src/html/connexion.html">Livres lus</a></li>
+                        </ul>
+                    `;
                 }
             }
         });
