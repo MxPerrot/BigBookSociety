@@ -1,6 +1,7 @@
-DROP SCHEMA IF EXISTS bigbooksociety CASCADE;
-create schema bigbooksociety;
-set schema 'bigbooksociety';
+DROP SCHEMA IF EXISTS BigBookSociety CASCADE;
+create schema BigBookSociety;
+set schema 'BigBookSociety';
+set search_path to BigBookSociety;
 
 CREATE TABLE _serie (
     id_serie SERIAL PRIMARY KEY,
@@ -298,7 +299,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/genre.csv'
--table=_genre
+-table=BigBookSociety._genre
 -delimiter=','
 -header=true;
 
@@ -306,7 +307,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/genre_2.csv'
--table=_genre
+-table=BigBookSociety._genre
 -delimiter=','
 -header=true;
 
@@ -314,7 +315,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/auteur.csv'
--table=_auteur
+-table=BigBookSociety._auteur
 -delimiter=','
 -header=true;
 
@@ -323,7 +324,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/auteur_genre.csv'
--table=_auteur_genre
+-table=BigBookSociety._auteur_genre
 -delimiter=','
 -header=true;
 
@@ -332,7 +333,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/editeur.csv'
--table=_editeur
+-table=BigBookSociety._editeur
 -delimiter=','
 -header=true;
 
@@ -340,7 +341,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/livre.csv'
--table=_livre
+-table=BigBookSociety._livre
 -delimiter=','
 -header=true;
 
@@ -348,7 +349,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/livre_genre.csv'
--table=_genre_livre
+-table=BigBookSociety._genre_livre
 -delimiter=','
 -header=true;
 
@@ -357,7 +358,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/prix.csv'
--table=_prix
+-table=BigBookSociety._prix
 -delimiter=','
 -header=true;
 
@@ -366,7 +367,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/prix_livre.csv'
--table=_prix_livre
+-table=BigBookSociety._prix_livre
 -delimiter=','
 -header=true;
 
@@ -375,7 +376,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/pays.csv'
--table=_pays
+-table=BigBookSociety._pays
 -delimiter=','
 -header=true;
 
@@ -384,7 +385,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/cadre.csv'
--table=_cadre
+-table=BigBookSociety._cadre
 -delimiter=','
 -header=true;
 
@@ -393,7 +394,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/cadre_livre.csv'
--table=_cadre_livre
+-table=BigBookSociety._cadre_livre
 -delimiter=','
 -header=true;
 
@@ -402,7 +403,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/series.csv'
--table=_serie
+-table=BigBookSociety._serie
 -delimiter=','
 -header=true;
 
@@ -411,7 +412,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/episode_serie.csv'
--table=_episode_serie
+-table=BigBookSociety._episode_serie
 -delimiter=','
 -header=true;
 
@@ -420,7 +421,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/link.csv'
--table=_auteur_livre
+-table=BigBookSociety._auteur_livre
 -delimiter=','
 -header=true;
 
@@ -430,7 +431,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/code_postal.csv'
--table=_code_postal
+-table=BigBookSociety._code_postal
 -delimiter=','
 -header=true;
 
@@ -438,7 +439,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/format.csv'
--table=_format
+-table=BigBookSociety._format
 -delimiter=','
 -header=true;
 
@@ -446,7 +447,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur.csv'
--table=_utilisateur
+-table=BigBookSociety._utilisateur
 -delimiter=','
 -header=true;
 
@@ -454,7 +455,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/raison_achat.csv'
--table=_raison_achat
+-table=BigBookSociety._raison_achat
 -delimiter=','
 -header=true;
 
@@ -462,7 +463,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/langue.csv'
--table=_langue
+-table=BigBookSociety._langue
 -delimiter=','
 -header=true;
 
@@ -470,7 +471,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/procuration.csv'
--table=_procuration
+-table=BigBookSociety._procuration
 -delimiter=','
 -header=true;
 
@@ -478,7 +479,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/motivation.csv'
--table=_motivation
+-table=BigBookSociety._motivation
 -delimiter=','
 -header=true;
 
@@ -486,7 +487,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/format_utilisateur.csv'
--table=_format_utilisateur
+-table=BigBookSociety._format_utilisateur
 -delimiter=','
 -header=true;
 
@@ -494,7 +495,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur_genre.csv'
--table=_utilisateur_genre
+-table=BigBookSociety._utilisateur_genre
 -delimiter=','
 -header=true;
 
@@ -502,7 +503,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur_auteur.csv'
--table=_utilisateur_auteur
+-table=BigBookSociety._utilisateur_auteur
 -delimiter=','
 -header=true;
 
@@ -510,7 +511,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/livre_utilisateur.csv'
--table=_livre_utilisateur
+-table=BigBookSociety._livre_utilisateur
 -delimiter=','
 -header=true;
 
@@ -518,7 +519,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur_motivation.csv'
--table=_utilisateur_motivation
+-table=BigBookSociety._utilisateur_motivation
 -delimiter=','
 -header=true;
 
@@ -526,7 +527,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur_procuration.csv'
--table=_utilisateur_procuration
+-table=BigBookSociety._utilisateur_procuration
 -delimiter=','
 -header=true;
 
@@ -534,7 +535,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur_langue.csv'
--table=_utilisateur_langue
+-table=BigBookSociety._utilisateur_langue
 -delimiter=','
 -header=true;
 
@@ -542,7 +543,7 @@ WbImport
 -usePgCopy
 -type=text
 -file='../data/populate/utilisateur_raison_achat.csv'
--table=_utilisateur_raison_achat
+-table=BigBookSociety._utilisateur_raison_achat
 -delimiter=','
 -header=true;
 

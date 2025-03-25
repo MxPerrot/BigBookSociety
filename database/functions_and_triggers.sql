@@ -70,8 +70,7 @@ CREATE OR REPLACE FUNCTION insertUser() RETURNS TRIGGER AS $$
     language_ids := (SELECT id_langue FROM _langue WHERE langue IN (NEW.langues_lecture));
     FOREACH language_id IN ARRAY language_ids
     LOOP
-      INSERT INTO _utilisateur     evol_exemple := :new.exemple  - :old.exemple;
-_langue VALUES(user_id, language_id);
+      INSERT INTO _utilisateur_langue VALUES(user_id, language_id);
     END LOOP;
 
     buy_ids := (SELECT id_raison_achat FROM _raison_achat WHERE raison_achat IN (NEW.raisons_achat));
