@@ -564,4 +564,6 @@ WHERE id_utilisateur=131;
 
 UPDATE _utilisateur
 SET nom_utilisateur = 'Damimi', mot_de_passe_hashed = '$2b$12$RNDlH8mt0ehyiOnWNsAqDOFO098cNrNSfqU1FRF.TrQZG4D.ubQIu', group_role = 'admin'
-WHERE id_utilisateur=234
+WHERE id_utilisateur=234;
+
+SELECT * FROM _utilisateur

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="../styles/admin.css">
     <script src="../js/header.js" defer></script>
     <script src="../js/footer.js" defer></script>
     <title>Admin</title>
@@ -12,6 +13,48 @@
     <header-component></header-component>
 
     <main>
+        <!--
+        Possibilité ajout livre en base
+        Liste prédictive des top ventes obtenue grâce à la combinaison des listes de souhaits et des recommandations
+            Ordre des ventes achats
+            idéalement filtrage
+        -->
+
+        <div class="stats">
+            <h2>Les livres les plus populaires</h2>
+            <ul>
+                <li>truc</li>
+                <li>machin</li>
+                <li>chouette</li>
+                <li>bidule</li>
+                <li>chose</li>
+            </ul>
+        </div>
+        <div class="stats">
+            <h2>Les livres les plus souhaités</h2>
+            <ul>
+                <li>truc mais le deuxième</li>
+                <li>machin mais le deuxième</li>
+                <li>chouette mais le deuxième</li>
+                <li>bidule mais le deuxième</li>
+                <li>chose mais le deuxième</li>
+            </ul>
+        </div>
+        <div class="ajout_livre">
+            <form action="post">
+                <h2>Ajouter un livre</h2>
+                <div class="horizontal">
+                    <h3>Titre : </h3>
+                    <input type="text" class="input"/>
+                </div>
+                <h3>Auteur : </h3>
+                <h3>Edition : </h3>
+                <h3>Nombre de pages : </h3>
+                <h3>Date de sortie : </h3>
+                <h3>Description : </h3>
+                <h3>Couverture : </h3>
+            </form>
+        </div>
     </main>
 
     <footer-component></footer-component>
