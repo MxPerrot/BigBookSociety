@@ -22,40 +22,53 @@
 
         <div class="stats">
             <h2>Les livres les plus populaires</h2>
-            <ul>
-                <li>truc</li>
-                <li>machin</li>
-                <li>chouette</li>
-                <li>bidule</li>
-                <li>chose</li>
-            </ul>
+            <div id="list_populaires">
+            </div>
         </div>
         <div class="stats">
             <h2>Les livres les plus souhaités</h2>
-            <ul>
-                <li>truc mais le deuxième</li>
-                <li>machin mais le deuxième</li>
-                <li>chouette mais le deuxième</li>
-                <li>bidule mais le deuxième</li>
-                <li>chose mais le deuxième</li>
-            </ul>
+            <div id="list_whish">
+            </div>
         </div>
         <div class="ajout_livre">
-            <form action="post">
+            <form action="./truc.html" method="post">
                 <h2>Ajouter un livre</h2>
                 <div class="horizontal">
                     <h3>Titre : </h3>
-                    <input type="text" class="input"/>
+                    <input type="text" class="input" name="titre"/>
                 </div>
-                <h3>Auteur : </h3>
-                <h3>Edition : </h3>
-                <h3>Nombre de pages : </h3>
-                <h3>Date de sortie : </h3>
-                <h3>Description : </h3>
-                <h3>Couverture : </h3>
+                <div class="horizontal">
+                    <h3>Auteur : </h3>
+                    <input type="text" class="input" name="auteur"/>
+                </div>
+                <div class="horizontal">
+                    <h3>Edition : </h3>
+                    <input type="text" class="input" name="edition"/>
+                </div>
+                <div class="horizontal">
+                    <h3>Nombre de pages : </h3>
+                    <input type="number" class="input" name="nb_pages"/>
+                </div>
+                <div class="horizontal">
+                    <h3>Date de sortie : </h3>
+                    <input type="text" class="input" name="date_sortie"/>
+                </div>
+                <div class="horizontal">
+                    <h3>Description: </h3>
+                    <textarea class="input" name="description"></textarea>
+                </div>
+                <div class="horizontal">
+                    <h3>Couverture: </h3>
+                    <input type="file" class="input" name="couverture"/>
+                </div>
+                <div class="validate">
+                    <button type="submit" name="valider" class="button">Valider</button>
+                </div>
             </form>
         </div>
     </main>
+
+    <script src="../js/admin.js" type="module"></script>
 
     <footer-component></footer-component>
 </body>

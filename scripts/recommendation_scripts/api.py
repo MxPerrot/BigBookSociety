@@ -203,6 +203,14 @@ async def get_tendance(limit:int):
     books_infos = getLivresInformation(cursor,list(book_id_list))
     return books_infos
 
+@app.get("/get_whislist/{limit}")
+async def get_whislist(limit:int):
+    book_id_list, book_count_list = bdd.getIdLivresWhislist(cursor, limit)
+    books_infos = getLivresInformation(cursor,list(book_id_list))
+    for i in range(len(books_infos)) : 
+        books_infos[i]['count'] = book_count_list[i]
+    return books_infos
+
 @app.get("/get_meme_auteur/")
 async def get_meme_auteur(current_user: dict = Depends(get_current_user), nbrecommendation:int=10):
     book_id_list = bdd.getBookIdSameAuthor(cursor, int(current_user[0]),int(nbrecommendation))

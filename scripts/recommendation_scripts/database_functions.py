@@ -172,6 +172,30 @@ def getIdLivresTendance(cursor, nbLivreEva):
 
     return idLivresAEvaluer
 
+def getIdLivresWhislist(cursor, nbLivreEva):
+    """
+    Renvoie la liste des livres de whislists
+    """
+    cursor.execute("""
+        SELECT b.id_livre, COUNT(*)
+        FROM BigBookSociety._livre_utilisateur b
+        WHERE b.lu = false
+        GROUP BY b.id_livre
+        ORDER BY COUNT(*) DESC
+        LIMIT  %s;
+    """,(nbLivreEva,))
+
+    idLivresAEvaluerRaw = cursor.fetchall()
+
+    if idLivresAEvaluerRaw == -1:
+        raise Exception("No books to be found in the database, the database is likely empty, please insert data into the database before")
+
+    # Reformate les données
+    idLivresAEvaluer = tuple([livre[0] for livre in idLivresAEvaluerRaw])
+    countLivresAEvaluer = tuple([livre[1] for livre in idLivresAEvaluerRaw])
+
+    return idLivresAEvaluer, countLivresAEvaluer
+
 def getLivresAEvaluerTendance(cursor, nbLivreEva):
     """
     Renvoie les données d'un nombre de livres pris parmi les plus populaires

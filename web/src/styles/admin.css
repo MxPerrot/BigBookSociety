@@ -21,11 +21,31 @@ h2 {
     text-align: center;
 }
 
+h3 {
+    text-align: right; 
+}
+
 .horizontal {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 10px 2em;
 }
 
 .input {
     margin-left: 10px;
+    align-self: center;
+}
+
+textarea {
+    resize: none;
+}
+
+.button {
+    padding: 15px 25px;
+    border: none;
+    font-size: 18px;
+}
+
+.validate {
+    text-align: right;
 }
