@@ -87,3 +87,69 @@ function fetchBooksWish(list_whish) {
     });
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+    let titre = document.getElementById("form-titre");
+    let auteur = document.getElementById("form-auteur");
+    let editeur = document.getElementById("form-edition");
+    let nb_pages = document.getElementById("form-nb_pages");
+    let date_sortie = document.getElementById("form-date_sortie");
+    let description = document.getElementById("form-description");
+    let isbn = document.getElementById("form-isbn");
+    let form = document.getElementById("uploadForm");
+    let preview = document.getElementById("preview");
+
+    // Prévisualisation avant l'envoi
+    isbn.addEventListener("change", function() {
+        console.log("change");
+        let url = 'https://covers.openlibrary.org/b/isbn/' + isbn.value + '-M.jpg?default=false';
+        preview.src = url;
+        preview.style.display = "block";
+    });
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault(); // Empêche le rechargement de la page
+
+        book_exist(isbn, titre, editeur);
+    });
+});
+
+function book_exist(isbn, titre, editeur) {
+    if (isbn.value) {            
+        fetch(`${API_PATH}/search_book_isbn/?isbn=${isbn.value}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                'Content-Type': 'application/json'
+            }                  
+        }).then(response => response.json())
+        .then(answer => {
+            if (answer.length > 0) {
+                alert("Un livre de cet ISBN existe déjà !")
+            }
+            else {
+                alert("Le livre de cer ISBN n'existe pas encore...");
+            }
+        });
+    } 
+    else if (titre.value && editeur.value) {
+        fetch(`${API_PATH}/search_book_titre_editeur/?titre=${titre.value}&editeur=${editeur.value}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                'Content-Type': 'application/json'
+            }                  
+        }).then(response => response.json())
+        .then(answer => {
+            if (answer.length > 0) {
+                alert("Un livre de ce titre/editeur existe déjà !")
+            }
+            else {
+                alert("Le livre de ce titre/editeur n'existe pas encore...");
+            }
+        });
+    }
+    
+    else {
+        alert("Les valeurs entrées sont insuffisantes");
+    }
+}

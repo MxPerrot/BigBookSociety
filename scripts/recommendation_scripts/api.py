@@ -44,6 +44,19 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode(), hashed_password.encode("utf-8"))
 
+@app.post("/register_book")
+def register_book(titre:str=None, auteur:str=None, edition:str=None, nb_pages:str=None, date_sortie:str=None, description:str=None, isbn13:str=None):
+    
+    #try:
+    #    cursor.execute("INSERT INTO _utilisateur(nom_utilisateur, mail_utilisateur, mot_de_passe_hashed, sexe) VALUES (%s, %s, %s, %s) RETURNING id_utilisateur", (username, email, hashed_pw, sexe))
+    #    user_id = cursor.fetchone()[0]
+    #    connection.commit()
+    #    # cursor.commit()
+    #    return {"message": "User created successfully", "user_id": user_id}
+    #except psycopg2.IntegrityError:
+    #    # cursor.rollback()
+    #    raise HTTPException(status_code=400, detail="Username or email already exists")
+    return {"message": "en cours..."}
 
 @app.post("/register")
 def register_user(username: str = Form(...), email: str = Form(...), password: str = Form(...), sexe: str = Form(...)):
@@ -321,9 +334,31 @@ async def get_authors():
     author_list = bdd.getAllAuthors(cursor)
     return json.dumps(author_list)
 
+@app.get("/search_book_isbn/")
+async def search_book_isbn(isbn:str):
+    cursor.execute("""
+        SELECT _livre.id_livre
+        FROM _livre
+        WHERE _livre.isbn13 = %s;
+    """,(isbn,))
+    bookData = cursor.fetchall()
+    return bookData
+
+@app.get("/search_book_titre_editeur/")
+async def search_book_titre_editeur(titre:str, editeur:str):
+    cursor.execute("""
+        SELECT _livre.id_livre
+        FROM _livre
+        LEFT JOIN _editeur ON _livre.id_editeur = _editeur.id_editeur
+        WHERE _livre.titre = %s
+        AND _editeur.nom_editeur = %s;
+    """,(titre, editeur, ))
+    bookData = cursor.fetchall()
+    return bookData
+
 @app.get("/search_books/")
 async def search_books(pageNum:int=1, paginTaille:int=20, title:str=None, authors:Annotated[list[int]|None,Query()]=None, genres:Annotated[list[int]|None,Query()]=None, minNote:int=None, maxNote:int=None):
-    book_id_list = bdd.rechercheLivre(cursor, pageNum, paginTaille, title, authors, genres, minNote, maxNote) 
+    book_id_list = bdd.rechercheLivre(cursor, pageNum, paginTaille, title, authors, genres, minNote, maxNote, None, None) 
     if len(book_id_list) < 1:
         return json.dumps([])
     books_infos = getLivresInformation(cursor,book_id_list)

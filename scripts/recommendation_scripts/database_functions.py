@@ -526,7 +526,8 @@ def getAllAuthors(cursor):
 
     return authors
 
-def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None):
+def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, genres=None, minNote=None, maxNote=None, isbn=None, edition=None):
+    print(isbn)
     baseQuery = """
         SELECT DISTINCT _livre.id_livre, _livre.titre
         FROM _livre
@@ -551,6 +552,10 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
     if maxNote is not None:
         baseQuery += " AND note_moyenne <= %s "
         parameterList.append(maxNote)
+
+    if isbn is not None:
+        baseQuery += " AND isbn13 <= %s "
+        parameterList.append(isbn)
     
     if titre:
         # Create a CTE that combines:
@@ -582,6 +587,7 @@ def rechercheLivre(cursor, pageNum=1, paginTaille=20, titre=None, auteurs=None, 
     else:
         finalQuery = baseQuery + " ORDER BY _livre.id_livre LIMIT %s OFFSET %s"
     
+    print(finalQuery)
     parameterList.append(paginTaille)
     parameterList.append(paginTaille * (pageNum - 1))
     

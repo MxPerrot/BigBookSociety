@@ -13,13 +13,6 @@
     <header-component></header-component>
 
     <main>
-        <!--
-        Possibilité ajout livre en base
-        Liste prédictive des top ventes obtenue grâce à la combinaison des listes de souhaits et des recommandations
-            Ordre des ventes achats
-            idéalement filtrage
-        -->
-
         <div class="stats">
             <h2>Les livres les plus populaires</h2>
             <div id="list_populaires">
@@ -31,38 +24,41 @@
             </div>
         </div>
         <div class="ajout_livre">
-            <form action="" method="post">
+            <form id="uploadForm" enctype='multipart/form-data'>
                 <h2>Ajouter un livre</h2>
                 <div class="horizontal">
-                    <h3>Titre : </h3>
-                    <input type="text" class="input" name="titre"/>
+                    <h3>Titre* : </h3>
+                    <input type="text" class="input" name="titre" id="form-titre" required/>
                 </div>
                 <div class="horizontal">
                     <h3>Auteur : </h3>
-                    <input type="text" class="input" name="auteur"/>
+                    <input type="text" class="input" name="auteur" id="form-auteur"/>
                 </div>
                 <div class="horizontal">
-                    <h3>Edition : </h3>
-                    <input type="text" class="input" name="edition"/>
+                    <h3>Edition* : </h3>
+                    <input type="text" class="input" name="edition" id="form-edition" required/>
                 </div>
                 <div class="horizontal">
                     <h3>Nombre de pages : </h3>
-                    <input type="number" class="input" name="nb_pages"/>
+                    <input type="number" class="input" name="nb_pages" id="form-nb_pages"/>
                 </div>
                 <div class="horizontal">
                     <h3>Date de sortie : </h3>
-                    <input type="text" class="input" name="date_sortie"/>
+                    <input type="text" class="input" name="date_sortie" id="form-date_sortie"/>
                 </div>
                 <div class="horizontal">
                     <h3>Description: </h3>
-                    <textarea class="input" name="description" rows="5"></textarea>
+                    <textarea class="input" name="description" rows="5" id="form-description"></textarea>
                 </div>
                 <div class="horizontal">
-                    <h3>Couverture: </h3>
-                    <input type="file" class="input" name="couverture"/>
+                    <h3>ISBN13: </h3>
+                    <input type="text" class="input" name="isbn" id="form-isbn" minlength="13" maxlength="13"/>
+                </div>
+                <div>
+                    <img id="preview" preview.onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';">
                 </div>
                 <div class="validate">
-                    <button type="submit" name="valider" class="button">Valider</button>
+                    <input type="submit" name="valider" id="submit" class="button"></input>
                 </div>
             </form>
         </div>
