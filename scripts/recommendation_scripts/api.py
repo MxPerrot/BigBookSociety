@@ -45,18 +45,32 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode(), hashed_password.encode("utf-8"))
 
 @app.post("/register_book")
-def register_book(titre:str=None, auteur:str=None, edition:str=None, nb_pages:str=None, date_sortie:str=None, description:str=None, isbn13:str=None):
+def register_book(titre:str=None, auteur:str=None, editeur:str=None, nb_pages:str=None, date_sortie:str=None, description:str=None, isbn13:str=None):
+
+    cursor.execute("SELECT id_editeur FROM _editeur WHERE nom_editeur = %s", (editeur,))
+    editeur_id = cursor.fetchone()
+    if not editeur_id :
+        cursor.execute("""SELECT setval(pg_get_serial_sequence('_editeur', 'id_editeur'), (SELECT MAX(id_editeur) FROM _editeur));""")
+        cursor.execute("INSERT INTO _editeur(nom_editeur) VALUES ('%s') RETURNING id_editeur" % editeur)
+        editeur_id = cursor.fetchone()[0]
+
+    cursor.execute("""SELECT setval(pg_get_serial_sequence('_livre', 'id_livre'), (SELECT MAX(id_livre) FROM _livre));""")
+    date_sortie = datetime.strptime(date_sortie, "%d/%m/%Y").date()
+    cursor.execute("INSERT INTO _livre(titre, nombre_pages, date_publication, description, isbn13, id_editeur) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id_livre", 
+        (titre, int(nb_pages), date_sortie, description, isbn13, int(editeur_id)))
+    book_id = cursor.fetchone()[0]
     
-    #try:
-    #    cursor.execute("INSERT INTO _utilisateur(nom_utilisateur, mail_utilisateur, mot_de_passe_hashed, sexe) VALUES (%s, %s, %s, %s) RETURNING id_utilisateur", (username, email, hashed_pw, sexe))
-    #    user_id = cursor.fetchone()[0]
-    #    connection.commit()
-    #    # cursor.commit()
-    #    return {"message": "User created successfully", "user_id": user_id}
-    #except psycopg2.IntegrityError:
-    #    # cursor.rollback()
-    #    raise HTTPException(status_code=400, detail="Username or email already exists")
-    return {"message": "en cours..."}
+    if auteur :
+        cursor.execute("SELECT id_auteur FROM _auteur WHERE nom = %s", (auteur,))
+        auteur_id = cursor.fetchone()
+        if not auteur_id :
+            cursor.execute("""SELECT setval(pg_get_serial_sequence('_auteur', 'id_auteur'), (SELECT MAX(id_auteur) FROM _auteur));""")
+            cursor.execute("INSERT INTO _auteur(nom) VALUES ('%s') RETURNING id_auteur" % auteur)
+            auteur_id = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO _auteur_livre(id_auteur, id_livre) VALUES (%d, %d)" % (int(auteur_id), int(book_id)))
+
+    connection.commit()
+    return {"message": "Book created successfully", "book_id": book_id, "editeur_id": editeur_id}
 
 @app.post("/register")
 def register_user(username: str = Form(...), email: str = Form(...), password: str = Form(...), sexe: str = Form(...)):

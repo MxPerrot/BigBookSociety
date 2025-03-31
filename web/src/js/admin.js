@@ -109,11 +109,11 @@ document.addEventListener("DOMContentLoaded", function() {
     form.addEventListener("submit", function(event) {
         event.preventDefault(); // Empêche le rechargement de la page
 
-        book_exist(isbn, titre, editeur);
+        book_exist(isbn, titre, editeur, auteur, nb_pages, date_sortie, description);
     });
 });
 
-function book_exist(isbn, titre, editeur) {
+function book_exist(isbn, titre, editeur, auteur, nb_pages, date_sortie, description) {
     if (isbn.value) {            
         fetch(`${API_PATH}/search_book_isbn/?isbn=${isbn.value}`, {
             method: 'GET',
@@ -127,7 +127,20 @@ function book_exist(isbn, titre, editeur) {
                 alert("Un livre de cet ISBN existe déjà !")
             }
             else {
-                alert("Le livre de cer ISBN n'existe pas encore...");
+                fetch(`${API_PATH}/register_book/?isbn13=${isbn.value}&titre=${titre.value}&editeur=${editeur.value}&auteur=${auteur.value}
+                    &nb_pages=${nb_pages.value}&date_sortie=${date_sortie.value}&description=${description.value}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }
+                    })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => {
+                        console.log('Response:', data);
+                        alert(`Le livre ${titre.value} a été créé !`);
+                    }) // Log the response
+                .catch(error => console.error('Error:', error));
             }
         });
     } 
@@ -144,7 +157,20 @@ function book_exist(isbn, titre, editeur) {
                 alert("Un livre de ce titre/editeur existe déjà !")
             }
             else {
-                alert("Le livre de ce titre/editeur n'existe pas encore...");
+                fetch(`${API_PATH}/register_book/?titre=${titre.value}&editeur=${editeur.value}&auteur=${auteur.value}
+                    &nb_pages=${nb_pages.value}&date_sortie=${date_sortie.value}&description=${description.value}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
+                        'Content-Type': 'application/json'
+                    }                  
+                    })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => {
+                    console.log('Response:', data);
+                    alert(`Le livre ${titre.value} a été créé !`);
+                })  // Log the response
+                .catch(error => console.error('Error:', error));
             }
         });
     }
