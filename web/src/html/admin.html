@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/admin.css">
     <script src="../js/header.js" defer></script>
     <script src="../js/footer.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin</title>
 </head>
 <body>
@@ -15,13 +16,13 @@
     <main>
         <div class="stats">
             <h2>Les livres les plus populaires</h2>
-            <div id="list_populaires">
-            </div>
+            <div id="list_populaires"></div>
+            <canvas id="populareChart" width="400" height="400"></canvas>
         </div>
         <div class="stats">
             <h2>Les livres les plus souhaités</h2>
-            <div id="list_whish">
-            </div>
+            <div id="list_whish"></div>
+            <canvas id="wishChart" width="400" height="400"></canvas>
         </div>
         <div class="ajout_livre">
             <form id="uploadForm" enctype='multipart/form-data'>

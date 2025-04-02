@@ -40,10 +40,10 @@ function fetchBooksTendance(list_populaires) {
         }
     })
     .then(response => response.json())
-    .then(books => {
-        console.log('Réponse de l\'API :', books);
+    .then(books_all => {
+        console.log('Réponse de l\'API :', books_all);
 
-        books = tri_books(books, 20);
+        let books = tri_books(books_all, 20);
         let infos = "<ul>";
         books.forEach(book => {
             infos += "<li>" + book['titre'];
@@ -52,6 +52,8 @@ function fetchBooksTendance(list_populaires) {
         });
         infos += "</ul>";
         list_populaires.innerHTML = infos;
+        let graph = document.getElementById('populareChart').getContext('2d');
+        fetchData(books_all, graph);
     })
     .catch(error => {
         console.error("Erreur lors de la récupération des livres :", error);
@@ -80,10 +82,73 @@ function fetchBooksWish(list_whish) {
         });
         infos += "</ul>";
         list_whish.innerHTML = infos;
+        let graph = document.getElementById('wishChart').getContext('2d');
+        fetchData(books, graph);
     })
     .catch(error => {
         console.error("Erreur lors de la récupération des livres :", error);
         document.getElementById('books-container').innerHTML = "<p>Erreur lors de la récupération des livres.</p>";
+    });
+}
+
+async function fetchData(books_infos, graph) {
+    console.log(graph);
+    let genreCounts = {};
+    books_infos.forEach(book => {
+        const count = book.count;
+        let genres = book.libelle_genre || [];
+        genres.forEach(genre => {
+            if (genreCounts[genre]) {
+                genreCounts[genre] += count;
+            } else {
+                genreCounts[genre] = count;
+            }
+        });
+    });
+    let filteredGenres = filter_max(genreCounts, 20);
+    console.log(filteredGenres);
+    let labels = Object.keys(filteredGenres);
+    let data = Object.values(filteredGenres);
+    createPieChart(labels, data, graph);
+}
+
+function filter_max(genreCounts, val) {
+    let filteredGenres = {};
+    let sortedGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1])
+    sortedGenres.slice(0, val).forEach(([genre, count]) => {
+        filteredGenres[genre] = count;
+    });
+    return filteredGenres;
+}
+
+function generateUniqueColor(x) {
+    const startColor = [255, 78, 78];
+    const endColor = [255, 255, 78];
+    let colors = [];
+    for (let i = 0; i < x; i++) {
+        let t = i / (x - 1); 
+        let r = Math.round((1 - t) * startColor[0] + t * endColor[0]);
+        let g = Math.round((1 - t) * startColor[1] + t * endColor[1]);
+        let b = Math.round((1 - t) * startColor[2] + t * endColor[2]);
+        let hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        colors.push(hexColor);
+    }
+    return colors;
+}
+
+function createPieChart(labels, data, ctx) {
+    const backgroundColors = generateUniqueColor(labels.length);
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: backgroundColors,  // Couleurs générées dynamiquement
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        }
     });
 }
 

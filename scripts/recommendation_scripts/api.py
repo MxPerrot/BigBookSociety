@@ -253,6 +253,8 @@ async def get_book_user_based(current_user: dict = Depends(get_current_user), nb
 async def get_tendance(limit:int):
     book_id_list = bdd.getIdLivresTendance(cursor, limit)
     books_infos = getLivresInformation(cursor,list(book_id_list))
+    for i in range(len(books_infos)) : 
+        books_infos[i]['count'] = 1
     return books_infos
 
 @app.get("/get_whislist/{limit}")
