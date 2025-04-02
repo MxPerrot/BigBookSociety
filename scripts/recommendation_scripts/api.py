@@ -147,7 +147,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
     # conn = get_db_connection()
     # cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT id_utilisateur, nom_utilisateur, mail_utilisateur FROM _utilisateur WHERE nom_utilisateur = %s", (username,))
+    cursor.execute("SELECT id_utilisateur, nom_utilisateur, mail_utilisateur, group_role FROM _utilisateur WHERE nom_utilisateur = %s", (username,))
     user = cursor.fetchone()
     # cur.close()
     # conn.close()
@@ -159,7 +159,22 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @app.get("/users/me")
 def read_users_me(current_user: dict = Depends(get_current_user)):
-    return {"id": current_user[0], "username": current_user[1], "email": current_user[2]}
+    return {"id": current_user[0], "username": current_user[1], "email": current_user[2], "group_role": current_user[3]}
+
+"""
+fetch(`${API_PATH}/users/me`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(user => {
+        groupRole = user.group_role || "";
+    })
+    .catch(error => console.error("Erreur lors de la récupération du profil:", error));
+"""
 
 @app.put("/users/update")
 def update_user_data(dataToChange:SimpleDict, current_user: dict = Depends(get_current_user)):
