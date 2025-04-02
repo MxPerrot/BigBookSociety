@@ -196,8 +196,18 @@ async def get_author_data_by_id(id:int):
 
 @app.get("/get_books_by_user/")
 async def get_books_by_user(current_user: dict = Depends(get_current_user)):
-    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(current_user[0]))
-    books_infos = getLivresInformation(cursor,book_id_list)
+    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(current_user[0]), False)
+    books_infos = []
+    if (book_id_list != -1) :
+        books_infos = getLivresInformation(cursor,book_id_list)
+    return books_infos
+
+@app.get("/get_books_lus_by_user/")
+async def get_books_lus_by_user(current_user: dict = Depends(get_current_user)):
+    book_id_list = bdd.getIdLivresUtilisateur(cursor, int(current_user[0]), True)
+    books_infos = []
+    if (book_id_list != -1) :
+        books_infos = getLivresInformation(cursor,book_id_list) 
     return books_infos
 
 @app.get("/get_book_item_based/")
@@ -261,7 +271,6 @@ async def update_note(current_user: dict = Depends(get_current_user), note:int=N
 @app.get("/get_note/")
 async def get_note(current_user: dict = Depends(get_current_user), bookID:int=None):
     cursor.execute("SELECT note FROM _livre_utilisateur WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
-    print(cursor.fetchall())
     return cursor.fetchall()
 
 @app.post("/no_lu/")

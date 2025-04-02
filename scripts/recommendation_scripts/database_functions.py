@@ -359,10 +359,11 @@ def getUtilisateursAEvaluer(cursor, nbUtilisateurEva):
     return getUtilisateursFromIdList(cursor, idUtilisateursAEvaluer)
     
 
-def getIdLivresUtilisateur(cursor, id_utilisateur):
+def getIdLivresUtilisateur(cursor, id_utilisateur, lu=False):
     """
     Renvoie les identifiants des livres préférés de l'utilisateur mis en paramètre
     """
+    print(lu)
     # Execute la requête
     cursor.execute("""
         SELECT DISTINCT _livre.id_livre
@@ -370,8 +371,9 @@ def getIdLivresUtilisateur(cursor, id_utilisateur):
         INNER JOIN _livre_utilisateur ON _livre_utilisateur.id_utilisateur = _utilisateur.id_utilisateur
         INNER JOIN _livre ON _livre.id_livre = _livre_utilisateur.id_livre
 
-        WHERE _utilisateur.id_utilisateur = %s;
-    """,(id_utilisateur,))
+        WHERE _utilisateur.id_utilisateur = %s
+        AND _livre_utilisateur.lu = %s;
+    """,(id_utilisateur,lu,))
 
     userData = cursor.fetchall()
 

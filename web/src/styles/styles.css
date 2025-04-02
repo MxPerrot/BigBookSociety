@@ -191,6 +191,10 @@ footer nav{
     margin: 20px auto;
 }
 
+p {
+    color: #FFFFFF;
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);
