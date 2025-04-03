@@ -72,7 +72,7 @@ headerTemplate.innerHTML = `
         }
 
         /* Liens de navigation */
-        nav a {
+        nav a, #deroulant-livre, #deroulant-compte {
             color: var(--blanc);
             text-decoration: none;
             display: flex;
@@ -88,7 +88,7 @@ headerTemplate.innerHTML = `
             color: var(--noir);
         }
 
-        #sous {
+        #sous-livre, #sous-compte {
             list-style-type: none;
             display: none;
             background-color: white;
@@ -99,22 +99,22 @@ headerTemplate.innerHTML = `
             top: 100px;
         }
 
-        nav > ul li:hover #sous {
+        nav > ul li:hover #sous-livre, nav > ul li:hover #sous-compte {
             display: block;
         }
 
-        #sous li {
+        #sous-livre li, #sous-compte li {
             float: none;
             width: 100%;
             text-align: left;
             height: 50%;
         }
 
-        #sous a {
+        #sous-livre a, #sous-compte a {
             color: var(--noir);
         }
 
-        #deroulant {
+        #deroulant-livre, #deroulant-compte {
             position: sticky;
             color: var(--blanc);
             text-decoration: none;
@@ -133,26 +133,36 @@ headerTemplate.innerHTML = `
 
     <header>
         <nav>
-          <ul>
-              <li><a href="../html/rechercher.html">RECHERCHER</a></li>
-              <li id="deroulant">MES LIVRES ▼
-                <ul id="sous">
-                    <li><a href="../html/meslivres.html">Livres à lire</a></li>
-                    <li><a href="../html/meslivres.html">Livres lus</a></li>
-                </ul>
-              </li>
-              <li><a id="BigBook" href="../../index.html">BigBook   </a></li>
-              <li><a href="../html/apropos.html">A PROPOS</a></li>
-              <li><a class="deconnexion" href="javascript:void(0);" onclick="localStorage.clear();refreshCarrousel()">DÉCONNEXION</a></li>
-          </ul>
+            <ul>
+                <li><a href="../html/rechercher.html">RECHERCHER</a></li>
+                <li id="deroulant-livre">MES LIVRES ▼
+                    <ul id="sous-livre">
+                        <li><a href="../html/meslivres.html">Livres à lire</a></li>
+                        <li><a href="../html/livreslus.html">Livres lus</a></li>
+                    </ul>
+                </li>
+                <li><a id="BigBook" href="../../index.html">BigBook   </a></li>
+                <li><a href="../html/apropos.html">A PROPOS</a></li>
+                <li id="deroulant-compte">MON COMPTE ▼
+                    <ul id="sous-compte">
+                        <li><a href="../html/profil.html">PROFIL</a></li>
+                        <li><a class="deconnexion" href="javascript:void(0);" onclick="localStorage.clear();refreshCarrousel()">DÉCONNEXION</a></li>
+                    </ul>
+                </li>
+            </ul>
         </nav>
     </header>
 
     <script>
-        const deroulant = document.getElementById('deroulant');
-        const sous = document.getElementById('sous');
-        deroulant.addEventListener('mouseover', function() {
-            sous.style.display = 'block';
+        const deroulant-livre = document.getElementById('deroulant-livre');
+        const sous-livre = document.getElementById('sous-livre');
+        deroulant-livre.addEventListener('mouseover', function() {
+            sous-livre.style.display = 'block';
+        });
+        const deroulant-compte = document.getElementById('deroulant-compte');
+        const sous-compte = document.getElementById('sous-compte');
+        deroulant-compte.addEventListener('mouseover', function() {
+            sous-compte.style.display = 'block';
         });
     </script>
 `;
@@ -191,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 li.innerHTML = `<a href="../html/connexion.html">CONNEXION</a>`;
             }
             if (link && link.getAttribute("href") === "../html/meslivres.html" && !token) {
-                li.innerHTML = `<li><a href="../html/connexion.html">MES LIVRES</a></li>`;
+                li.innerHTML = `<li id="deroulant-livre"><a href="../html/connexion.html">MES LIVRES</a></li>`;
             }
         });
     }
