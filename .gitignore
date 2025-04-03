@@ -6,3 +6,6 @@ graphs
 *.csv
 .env
 local_dependencies/
+data/populate/.DS_Store
+data/.DS_Store
+.DS_Store
