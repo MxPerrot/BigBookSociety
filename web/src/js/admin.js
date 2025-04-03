@@ -148,7 +148,14 @@ function createPieChart(labels, data, ctx) {
                 borderColor: '#fff',
                 borderWidth: 1
             }]
-        }
+        }/*, 
+        options : {
+            plugins : {
+                legend : {
+                    display: false
+                }
+            }
+        }*/
     });
 }
 

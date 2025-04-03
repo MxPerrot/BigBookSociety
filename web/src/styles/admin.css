@@ -49,3 +49,7 @@ textarea {
 .validate {
     text-align: right;
 }
+
+canvas {
+    margin: 10%;
+}
