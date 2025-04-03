@@ -7,8 +7,9 @@
 
 /* Conteneur principal pour la carte */
 .card {
+    position: relative;
     margin: 20px auto;
-    padding: 20px;
+    padding: 40px 20px 0;
     border: 1px solid #ccc;
     border-radius: 15px;
     background-color: #f8f8f8;
@@ -92,6 +93,20 @@
 
 .liked {
     background-color: var(--col3);
+}
+
+.go-back {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 30px;
+    width: 30px;
+    border: none;
+    background-size: contain;
+}
+
+.go-back:hover {
+    cursor: pointer;
 }
 
 .card-avis {

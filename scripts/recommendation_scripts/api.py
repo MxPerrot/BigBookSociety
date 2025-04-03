@@ -154,8 +154,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-
-    print(user)
+    
     return user
 
 @app.get("/users/me")
@@ -274,7 +273,7 @@ async def get_meme_auteur(current_user: dict = Depends(get_current_user), nbreco
 
 @app.get("/a_livre/")
 async def update_note(current_user: dict = Depends(get_current_user), bookID:int=None):
-    cursor.execute("SELECT id_utilisateur FROM _livre_utilisateur WHERE id_utililisateur = %s AND id=livre = %s", (current_user[0],livre))
+    cursor.execute("SELECT id_utilisateur FROM _livre_utilisateur WHERE id_utililisateur = %s AND id=livre = %s", (current_user[0],bookID))
     record = cursor.fetchall()
     if (len(record)>0):
         return True
