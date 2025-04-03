@@ -155,6 +155,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    print(user)
     return user
 
 @app.get("/users/me")
@@ -297,8 +298,13 @@ async def no_lu(current_user: dict = Depends(get_current_user), bookID:int=None)
     return {"message": "Link created successfully"}
 
 @app.post("/yes_lu/")
-async def yes_lu(current_user: dict = Depends(get_current_user), bookID:int=None):
-    cursor.execute("UPDATE _livre_utilisateur SET lu = true WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0],bookID))
+async def yes_lu(current_user: dict = Depends(get_current_user), bookID: int = None):
+    if not current_user or current_user[0] is None:
+        raise HTTPException(status_code=400, detail="User is invalid")
+    if bookID is None:
+        raise HTTPException(status_code=400, detail="Book ID is missing or invalid")
+
+    cursor.execute("UPDATE _livre_utilisateur SET lu = true WHERE id_utilisateur = %s AND id_livre = %s", (current_user[0], bookID))
     connection.commit()
     return {"message": "Link created successfully"}
 
