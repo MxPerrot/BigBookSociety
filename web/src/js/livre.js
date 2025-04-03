@@ -38,7 +38,7 @@ function fetchBookById(id) {
             bookData.note_moyenne = bookData.note_moyenne ? bookData.note_moyenne.toFixed(1) : "";  
 
             bookContainer.innerHTML = `
-                <button onclick="history.back()" class="go-back"></button>
+                <img class="go-back" src="../../public/img/close.svg" onclick="javascript: history.go(-1)">
                 <img class="card-img" src="${coverUrl}" alt="Couverture du livre ${bookData.titre}" onerror="this.onerror=null;this.src='../../public/img/couverture.jpg';" />
                 <div class="card-content">
                     <h2 class="card-title">${bookData.titre || "Titre non disponible"}</h2>
