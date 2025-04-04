@@ -146,7 +146,9 @@ function fetchBookById(id) {
             }).then(response => response.json())
             .then(answer => {
                 selectedRating = 0;
+                console.log(answer);
                 answer = answer[0][0];
+                console.log(answer);
                 if (answer) {
                     selectedRating = answer;
                 }
@@ -350,12 +352,14 @@ function fetchBookById(id) {
                     }
 
                     if (clickHandler) {
-                        star.addEventListener("mouseover", () => updateStarColors(i));
-                        star.addEventListener("mouseleave", () => updateStarColors(selectedRating));
                         star.addEventListener("click", () => {
                             selectedRating = i;
-                            updateStarColors(selectedRating);
+                            updateStarColors(selectedRating, selectedRating);
                         });
+                        /*
+                        star.addEventListener("mouseover", () => updateStarColors(i));
+                        star.addEventListener("mouseleave", () => updateStarColors(selectedRating));
+                        */
                     }
                 }
             }
@@ -400,7 +404,7 @@ function fetchBookById(id) {
                         return response.json();
                     })
                     .then(data => {
-                        console.log('enregistrement réussi');
+                        console.log('enregistrement réussi', data);
                     })
                     .catch(error => {
                         console.error('Fetch error:', error);

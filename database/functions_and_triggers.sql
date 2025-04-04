@@ -135,7 +135,7 @@ CREATE OR REPLACE FUNCTION updateNote() RETURNS TRIGGER AS $$
               old_nom_note := 'nb_note_5_etoile';
           END IF;
 
-          sql_query := 'UPDATE _livre SET ' || old_nom_note || ' = ' || old_nom_note || ' - 1, ' || nom_note || ' = ' || nom_note || ' + 1 WHERE id_livre = $1';
+          sql_query := 'UPDATE _livre SET nb_notes = nb_notes - 1, ' || nom_note || ' = ' || nom_note || ' + 1 WHERE id_livre = $1';
           EXECUTE sql_query USING NEW.id_livre;
       END IF;
     END IF;

@@ -125,6 +125,11 @@
     text-align: center;
 }
 
+.star {
+    position: relative;  
+    z-index: 100; 
+}
+
 @media (max-width: 768px) {
     .card {
         padding: 15px;

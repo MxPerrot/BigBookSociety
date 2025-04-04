@@ -51,9 +51,11 @@ function fetchBooksTendance(list_populaires) {
             infos += " (" + book['indice_succes'] + ")</li>";
         });
         infos += "</ul>";
+        infos += "<h2>Les 20 genres les plus fréquents dans la BDD</h2>";
+        infos += "<p>Nombre de livres par genre dans l'échantillon de 2000 livres utilisé pour l'analyse</p>";
         list_populaires.innerHTML = infos;
         let graph = document.getElementById('populareChart').getContext('2d');
-        fetchData(books_all, graph);
+        fetchData(books_all, graph, true);
     })
     .catch(error => {
         console.error("Erreur lors de la récupération des livres :", error);
@@ -81,9 +83,11 @@ function fetchBooksWish(list_whish) {
             infos += " (" + book['count'] +" voeux)</li>";
         });
         infos += "</ul>";
+        infos += "<h2>Les 20 genres les plus présents dans les whishlist</h2>";
+        infos += "<p>Nombre de  livres marqués \"à lire\" par les utilisateurs de chaque genre</p>";
         list_whish.innerHTML = infos;
         let graph = document.getElementById('wishChart').getContext('2d');
-        fetchData(books, graph);
+        fetchData(books, graph, false);
     })
     .catch(error => {
         console.error("Erreur lors de la récupération des livres :", error);
@@ -91,7 +95,7 @@ function fetchBooksWish(list_whish) {
     });
 }
 
-async function fetchData(books_infos, graph) {
+async function fetchData(books_infos, graph, disp) {
     console.log(graph);
     let genreCounts = {};
     books_infos.forEach(book => {
@@ -109,7 +113,7 @@ async function fetchData(books_infos, graph) {
     console.log(filteredGenres);
     let labels = Object.keys(filteredGenres);
     let data = Object.values(filteredGenres);
-    createPieChart(labels, data, graph);
+    createPieChart(labels, data, graph, disp);
 }
 
 function filter_max(genreCounts, val) {
@@ -136,7 +140,7 @@ function generateUniqueColor(x) {
     return colors;
 }
 
-function createPieChart(labels, data, ctx) {
+function createPieChart(labels, data, ctx, disp) {
     const backgroundColors = generateUniqueColor(labels.length);
     new Chart(ctx, {
         type: 'pie',
@@ -148,14 +152,37 @@ function createPieChart(labels, data, ctx) {
                 borderColor: '#fff',
                 borderWidth: 1
             }]
-        }/*, 
+        }, 
         options : {
             plugins : {
                 legend : {
                     display: false
+                }, tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const total = tooltipItem.dataset.data.reduce((acc, value) => acc + value, 0);
+                            const currentValue = tooltipItem.raw;
+                            let label = currentValue;
+                
+                            if (disp) {
+                              const percentage = ((currentValue / total) * 100).toFixed(2);
+                              label = percentage + '%';
+                            }
+                
+                            return label;
+                        }
+                    },
+                    titleFont: {
+                        size: 16,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 16
+                    }
                 }
             }
-        }*/
+        }
     });
 }
 
@@ -186,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function book_exist(isbn, titre, editeur, auteur, nb_pages, date_sortie, description) {
+
     if (isbn.value) {            
         fetch(`${API_PATH}/search_book_isbn/?isbn=${isbn.value}`, {
             method: 'GET',
@@ -200,7 +228,7 @@ function book_exist(isbn, titre, editeur, auteur, nb_pages, date_sortie, descrip
             }
             else {
                 fetch(`${API_PATH}/register_book/?isbn13=${isbn.value}&titre=${titre.value}&editeur=${editeur.value}&auteur=${auteur.value}
-                    &nb_pages=${nb_pages.value}&date_sortie=${date_sortie.value}&description=${description.value}`, {
+                    &nb_pages=${nb_pages.value}&description=${description.value}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request
@@ -230,7 +258,7 @@ function book_exist(isbn, titre, editeur, auteur, nb_pages, date_sortie, descrip
             }
             else {
                 fetch(`${API_PATH}/register_book/?titre=${titre.value}&editeur=${editeur.value}&auteur=${auteur.value}
-                    &nb_pages=${nb_pages.value}&date_sortie=${date_sortie.value}&description=${description.value}`, {
+                    &nb_pages=${nb_pages.value}&description=${description.value}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('Token')}`,  // Include the token in the request

@@ -54,13 +54,18 @@ def register_book(titre:str=None, auteur:str=None, editeur:str=None, nb_pages:st
         cursor.execute("INSERT INTO _editeur(nom_editeur) VALUES ('%s') RETURNING id_editeur" % editeur)
         editeur_id = cursor.fetchone()[0]
 
+    #date_sortie = datetime.strptime(date_sortie, "%d/%m/%Y").date()
+
     cursor.execute("""SELECT setval(pg_get_serial_sequence('_livre', 'id_livre'), (SELECT MAX(id_livre) FROM _livre));""")
-    date_sortie = datetime.strptime(date_sortie, "%d/%m/%Y").date()
-    cursor.execute("INSERT INTO _livre(titre, nombre_pages, date_publication, description, isbn13, id_editeur) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id_livre", 
-        (titre, int(nb_pages), date_sortie, description, isbn13, int(editeur_id)))
+    cursor.execute("INSERT INTO _livre(titre, nombre_pages, description, isbn13, id_editeur) VALUES (%s, %s, %s, %s, %s) RETURNING id_livre", 
+        (titre, int(nb_pages), description, isbn13, int(editeur_id)))
+    #cursor.execute("""SELECT setval(pg_get_serial_sequence('_livre', 'id_livre'), (SELECT MAX(id_livre) FROM _livre));""")
+    #cursor.execute("INSERT INTO _livre(titre, description, isbn13, id_editeur) VALUES (%s, %s, %s, %s) RETURNING id_livre", 
+    #    (titre, description, isbn13, int(editeur_id)))
+    
     book_id = cursor.fetchone()[0]
     
-    if auteur :
+    if auteur:
         cursor.execute("SELECT id_auteur FROM _auteur WHERE nom = %s", (auteur,))
         auteur_id = cursor.fetchone()
         if not auteur_id :
@@ -109,7 +114,7 @@ def register_user(username: str = Form(...), email: str = Form(...), password: s
 
 SECRET_KEY = "5312SDFSOPKEZ213FSDIOJ" #FIXME URGENT TODO IMPORTANT: GENERATE & PLACE IN .env FILE
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 3000000
 
 def create_access_token(username: str):
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
